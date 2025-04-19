@@ -1,10 +1,10 @@
-package com.education.qporter;
+package com.education.takeit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class QporterApplicationTests {
+class TakeitApplicationTests {
 
 	@Test
 	void contextLoads() {
