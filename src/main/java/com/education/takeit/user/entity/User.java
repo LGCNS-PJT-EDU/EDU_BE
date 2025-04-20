@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 무분별하게 new User() 하는 것을 막음
 public class User {
@@ -27,11 +27,16 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "login_type",nullable = false)
+    private LoginType loginType; // 어떤 방식으로 로그인 했는지 저장
+
     @Builder
-    public User(String userId, String email, String nickname, String password) {
+    public User(String userId, String email, String nickname, String password, LoginType loginType) {
         this.userId = userId;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.loginType = loginType;
     }
 }
