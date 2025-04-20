@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 MSG=$(cat "$1")
 PAT="^([A-Z]+-[0-9]+) (feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{1,72}"
-[[ "$MSG" =~ $PAT ]] || { echo -e "\n❌  커밋 메시지 형식 오류!"; exit 1; }
+[[ "$MSG" =~ $PAT ]] || { echo -e "\n Commit Message Error"; exit 1; }
