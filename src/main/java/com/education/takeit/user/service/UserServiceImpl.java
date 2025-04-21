@@ -2,6 +2,8 @@ package com.education.takeit.user.service;
 
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.exception.StatusCode;
+import com.education.takeit.global.security.JwtUtils;
+import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
 
     @Override
@@ -39,17 +42,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String signIn(ReqSignupDto reqSignupDto) {
-        User user = userRepository.findByUserId(reqSignupDto.userId())
+    public String signIn(ReqSigninDto reqSigninDto) {
+        User user = userRepository.findByUserId(reqSigninDto.userId())
                 .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
         if (user.getLoginType() != LoginType.LOCAL) {
             throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
         }
 
-        if (!passwordEncoder.matches(reqSignupDto.password(), user.getPassword())) {
+        if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
             throw new CustomException(StatusCode.NOT_EXIST_USER);
         }
-        return "";
+        return jwtUtils.createToken(user.getId(), user.getEmail());
     }
 }
