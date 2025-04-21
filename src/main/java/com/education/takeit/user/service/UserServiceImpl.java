@@ -14,24 +14,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-
     @Override
     public void signUp(ReqSignupDto reqSignupDto) {
-        if (userRepository.existsByUserId(reqSignupDto.userId())) {
-            throw new CustomException(StatusCode.ALREADY_EXIST_USERID);
-        }
         if (userRepository.existsByEmail(reqSignupDto.email())) {
             throw new CustomException(StatusCode.ALREADY_EXIST_EMAIL);
         }
 
         User user = User.builder()
-                .userId(reqSignupDto.userId())
                 .email(reqSignupDto.email())
                 .nickname(reqSignupDto.nickname())
                 .password(passwordEncoder.encode(reqSignupDto.password()))
@@ -43,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String signIn(ReqSigninDto reqSigninDto) {
-        User user = userRepository.findByUserId(reqSigninDto.userId())
+        User user = userRepository.findByEmail(reqSigninDto.email())
                 .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
         if (user.getLoginType() != LoginType.LOCAL) {
@@ -53,6 +47,6 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
             throw new CustomException(StatusCode.NOT_EXIST_USER);
         }
-        return jwtUtils.createToken(user.getId(), user.getEmail());
+        return jwtUtils.createToken(user.getUserId(), user.getEmail());
     }
 }
