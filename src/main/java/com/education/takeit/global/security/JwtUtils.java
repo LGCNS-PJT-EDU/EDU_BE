@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private String secretKey = "test"; // 임시
+    private String secretKey = "AbcDefGhijkLmnOpQRStuvwXYZ1234567890!@#"; // 임시
 
     private long expiration = 86400000; // 임시입니다.
 
@@ -23,13 +23,13 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createToken(Long userId, String userName) {
+    public String createToken(Long userId, String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setSubject(userId.toString())
-                .claim("userId", userName)
+                .claim("email", email)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
