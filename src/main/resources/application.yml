@@ -26,6 +26,14 @@ spring:
       name: takeit
       password: takeit
 
+kakao:
+  client-id: 0257e0d9342333ce55ef60c412d20c5f
+  client-secret: n6XfSXYOF595aQ2yJd3ZU6U5S1a3GXuY
+  redirect-url: http://localhost:8080/oauth/kakao/callback
+  token-uri: https://kauth.kakao.com/oauth/token
+  jwk-uri: https://kauth.kakao.com/.well-known/jwks.json
+
+
 management:
   endpoints:
     web:
