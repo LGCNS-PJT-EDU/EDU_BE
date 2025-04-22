@@ -26,6 +26,13 @@ spring:
       name: takeit
       password: takeit
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+
 management:
   endpoints:
     web:
@@ -33,6 +40,7 @@ management:
         include:
           - health
           - info
+
   endpoint:
     health:
       show-details: always
