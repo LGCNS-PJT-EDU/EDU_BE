@@ -15,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // pk Long 타입의 id
 
-    @Column(name = "user_id", nullable = false, unique = true)
+    @Column(name = "user_id", nullable = true, unique = true)
     private String userId; // 로그인할 때 입력하는 회원의 id
 
     @Column(name = "email", nullable = false, unique = true)
@@ -24,7 +24,7 @@ public class User {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     private String password;
 
     @Enumerated(EnumType.STRING)

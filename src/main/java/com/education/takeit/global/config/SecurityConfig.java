@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final String[] swaggerPath = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api-docs/**", "/swagger-ui.html", "/error"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -19,7 +20,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // H2 콘솔 iframe 허용
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**","/oauth2/**","/login/**").permitAll() // H2 콘솔 허용
+                        .requestMatchers(swaggerPath).permitAll()
+                        .requestMatchers("/h2-console/**",
+                                "/oauth2/**",
+                                "/login/**").permitAll() // H2 콘솔 허용
                         .anyRequest().permitAll() // 나머지는 일단 전부 허용 (테스트용)
                 )
                 .oauth2Login(Customizer.withDefaults())

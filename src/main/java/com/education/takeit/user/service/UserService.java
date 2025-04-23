@@ -2,6 +2,7 @@ package com.education.takeit.user.service;
 
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,6 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User loginByOAuth(String code, LoginType loginType) {
+        // 여러 소셜 로그인 서비스 돌면서
         for (OAuth2LoginService service : oAuth2LoginServices) {
             if (service.supports().equals(loginType)) {
                 User user = service.toEntityUser(code, loginType);
