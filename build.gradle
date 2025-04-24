@@ -52,6 +52,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     // Feign Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    // Redis + Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // Kakao id_token 검증용
     implementation 'com.auth0:java-jwt:4.4.0'
     // JWT
