@@ -2,6 +2,9 @@ spring:
   application:
     name: takeit
 
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -31,13 +34,13 @@ spring:
     port: ${SPRING_REDIS_PORT:6379}
   cache:
     type: redis
-
-kakao:
-  client-id: 0257e0d9342333ce55ef60c412d20c5f
-  client-secret: n6XfSXYOF595aQ2yJd3ZU6U5S1a3GXuY
-  redirect-url: http://localhost:8080/oauth/kakao/callback
-  token-uri: https://kauth.kakao.com/oauth/token
-  jwk-uri: https://kauth.kakao.com/.well-known/jwks.json
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    redirect-url: ${KAKAO_REDIRECT_URI
+    token-uri: https://kauth.kakao.com/oauth/token
+    jwk-uri: https://kauth.kakao.com/.well-known/jwks.json
 
 
 management:

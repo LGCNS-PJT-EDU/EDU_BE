@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import lombok.Getter;
 import lombok.Setter;
 
-@ConfigurationProperties(prefix = "kakao")
+@ConfigurationProperties(prefix = "oauth.kakao")
 @Component
 @Getter
 @Setter
