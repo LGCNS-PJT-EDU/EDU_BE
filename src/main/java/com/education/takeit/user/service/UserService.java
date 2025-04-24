@@ -4,6 +4,9 @@ import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
 
 public interface UserService {
-    void signUp(ReqSignupDto reqSignupDto);
-    String signIn(ReqSigninDto reqSigninDto);
+	void signUp(ReqSignupDto reqSignupDto);
+
+	String signIn(ReqSigninDto reqSigninDto);
+
+	void signOut(String email);
 }
