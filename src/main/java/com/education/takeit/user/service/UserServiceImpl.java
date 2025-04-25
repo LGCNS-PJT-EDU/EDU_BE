@@ -12,11 +12,8 @@ import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -79,10 +76,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signOut(String accessToken) {
-        // 1. access token에서 userId 추출
+        // access token에서 userId 추출
         Long userId = jwtUtils.getUserId(accessToken);
 
-        // 2. Redis에서 refresh token 삭제
+        // Redis에서 refresh token 삭제
         redisTemplate.delete(userId + "'s refresh token");
     }
 
@@ -91,17 +88,16 @@ public class UserServiceImpl implements UserService {
     public boolean checkDuplicate(String email) {
         return userRepository.existsByEmailAndLoginType(email, LoginType.LOCAL);
     }
-		if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
-			throw new CustomException(StatusCode.NOT_EXIST_USER);
-		}
-		return jwtUtils.createToken(user.getUserId(), user.getEmail());
-	}
+
 
 	@Override
 	@Transactional
-	public void signOut(String email) {
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+	public void Withdraw(Long userId) {
+		User user = userRepository.findByUserId(userId);
+
+        if(user == null) {
+            throw new CustomException(StatusCode.NOT_EXIST_USER);
+        }
 
 		user.changeActivateStatus();
 	}

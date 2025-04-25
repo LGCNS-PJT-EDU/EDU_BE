@@ -2,6 +2,7 @@ package com.education.takeit.user.controller;
 
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.exception.StatusCode;
+import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.entity.LoginType;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -53,13 +55,12 @@ public class UserController {
     @GetMapping("/check-email")
     @Operation(summary = "이메일 중복확인", description = "이메일 중복확인 API")
     public ResponseEntity<Message> checkEmail(@RequestParam("email") String email) {
-        userService.checkDuplicate(email);
-        return ResponseEntity.ok(new Message(StatusCode.OK));
+        return ResponseEntity.ok(new Message(StatusCode.OK, userService.checkDuplicate(email)));
     }
-	@PostMapping("/signout")
+	@PostMapping("/withdraw")
 	@Operation(summary = "회원탈퇴", description = "회원 탈퇴 API")
-	public ResponseEntity<Message> signOut(@AuthenticationPrincipal JwtUserDetails principal) {
-		userService.signOut(principal.getUsername());
+	public ResponseEntity<Message> Withdraw(@AuthenticationPrincipal CustomUserDetails principal) {
+		userService.Withdraw(principal.getUserId());
 		return ResponseEntity.ok(new Message(StatusCode.OK));
 	}
 }
