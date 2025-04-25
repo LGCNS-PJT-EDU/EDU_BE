@@ -26,14 +26,19 @@ spring:
       name: takeit
       password: takeit
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 
 
 naver:
-  request-token-uri: https://nid.naver.com/oauth2.0/token
-  client-id: bG5y9c7SsXkdkxq2I14X
-  client-secret: M35Iv92jTu
-  redirect-uri: http://localhost:8080/oauth/naver
-  user-info-uri: https://openapi.naver.com/v1/nid/me
+  request-token-uri: ${NAVER_REQUEST_TOKEN_URI}
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_SECRET}
+  redirect-uri: ${NAVER_REDIRECT_URI}
+  user-info-uri: ${NAVER_USER_INFO_URI}
 
 
 springdoc:

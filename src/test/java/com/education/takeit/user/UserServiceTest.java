@@ -17,8 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,14 +86,20 @@ public class UserServiceTest {
         // Given
         when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
-        when(jwtUtils.createToken(null, user.getEmail())).thenReturn("token");
+
+        Map<String, String> fakeTokens = new HashMap<>();
+        fakeTokens.put("accessToken", "fake-access-token");
+        fakeTokens.put("refreshToken", "fake-refresh-token");
+
+        when(jwtUtils.generateTokens(user.getUserId())).thenReturn(fakeTokens);
 
         // When
-        String token = userService.signIn(signinDto);
+        Map<String, String> tokens = userService.signIn(signinDto);
 
         // Then
-        assertThat(token).isEqualTo("token");
+        assertThat(tokens).isEqualTo(fakeTokens);
     }
+
 
     @Test
     void 로그인_비밀번호_불일치시_예외() {

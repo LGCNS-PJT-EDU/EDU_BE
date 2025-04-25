@@ -9,10 +9,12 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final List<OAuth2LoginService> oAuth2LoginServices;
-
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public String loginByOAuth(String code, LoginType loginType) {
@@ -31,7 +33,7 @@ public class UserServiceImpl implements UserService {
                 User user = service.toEntityUser(code, loginType);
                 User savedUser = userRepository.findByEmail(user.getEmail())
                         .orElseGet(() -> userRepository.save(user));
-                return jwtUtils.createToken(savedUser.getUserId(), savedUser.getEmail());
+                return jwtUtils.generateAccessToken(savedUser.getUserId());
             }
         }
         throw new IllegalArgumentException("지원하지 않는 플랫폼입니다.");
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     
     @Override
-    public String signIn(ReqSigninDto reqSigninDto) {
+    public Map<String, String> signIn(ReqSigninDto reqSigninDto) {
         User user = userRepository.findByEmail(reqSigninDto.email())
                 .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
@@ -67,8 +69,18 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
             throw new CustomException(StatusCode.NOT_EXIST_USER);
         }
-        return jwtUtils.createToken(user.getUserId(), user.getEmail());
+        return jwtUtils.generateTokens(user.getUserId());
     }
+
+    @Override
+    public void signOut(String accessToken) {
+        // 1. access token에서 userId 추출
+        Long userId = jwtUtils.getUserId(accessToken);
+
+        // 2. Redis에서 refresh token 삭제
+        redisTemplate.delete(userId + "'s refresh token");
+    }
+
 
     @Override
     public boolean checkDuplicate(String email) {

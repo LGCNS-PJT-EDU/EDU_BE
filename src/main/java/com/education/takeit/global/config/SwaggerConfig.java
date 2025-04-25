@@ -2,12 +2,15 @@ package com.education.takeit.global.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+    final String securitySchemeName = "BearerAuth";
+
     @Bean
     public OpenAPI customOpenAPI() {
         SecurityScheme securityScheme = new SecurityScheme()
@@ -22,7 +25,8 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("takeIT API 문서")
                         .version("1.0")
-                        .description("아 왜 안 뜨는건데"))
+                        .description("LG CNS Final Project - TakeIT API⭐️"))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .schemaRequirement("BearerAuth", securityScheme);
     }
 }
