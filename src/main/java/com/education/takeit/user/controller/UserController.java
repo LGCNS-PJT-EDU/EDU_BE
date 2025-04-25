@@ -1,6 +1,8 @@
 package com.education.takeit.user.controller;
 
 
+import com.education.takeit.global.dto.Message;
+import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.service.UserService;
@@ -19,7 +21,7 @@ public class UserController {
     @GetMapping("/oauth/naver")
     @Operation(summary = "네이버 로그인", description = "네이버 소셜 로그인 API")
     public ResponseEntity<?> loginByNaver(@RequestParam("code") String code) {
-        User user = userService.loginByOAuth(code, LoginType.NAVER);
-        return ResponseEntity.ok(user);
+        String token = userService.loginByOAuth(code,LoginType.NAVER);
+        return ResponseEntity.ok(new Message(StatusCode.OK, token));
     }
 }

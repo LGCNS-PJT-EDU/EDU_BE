@@ -26,19 +26,19 @@ public class NaverLoginService implements OAuth2LoginService {
         return LoginType.NAVER;
     }
 
-    @Override
+    @Override // User 엔티티 객체 생성
     public User toEntityUser(String code, LoginType loginType) {
-        String accessToken = toRequestAccessToken(code);
+        String accessToken = toRequestAccessToken(code); //액세스 토큰 발급받기
         NaverUserResponse.NaverUserDetail profile = toRequestProfile(accessToken);
 
-        return User.builder() // User 엔티티 객체 생성
+        return User.builder()
                 .email(profile.getEmail())
                 .nickname(profile.getNickname())
                 .loginType(LoginType.NAVER)
                 .build();
     }
 
-    // code를 AccessToken으로 교환
+    // 인가 코드로 네이버에 엑세스 토큰 요청 보내기
     private String toRequestAccessToken(String code) {
         ResponseEntity<NaverTokenResponse> response =
                 restTemplate.exchange(
@@ -52,7 +52,7 @@ public class NaverLoginService implements OAuth2LoginService {
    // AccessToken으로 네이버 사용자 정보 가져오기
     private NaverUserResponse.NaverUserDetail toRequestProfile(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken); // Authorization 헤더 설정
+        headers.setBearerAuth(accessToken); // 엑세스토큰을 Authorization 헤더에 설정
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 
