@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -33,6 +30,12 @@ public class UserController {
     public ResponseEntity<Message> signIn(@RequestBody ReqSigninDto reqSigninDto) {
         String token = userService.signIn(reqSigninDto);
         return ResponseEntity.ok(new Message(StatusCode.OK, token));
+    }
+
+    @GetMapping("/check-email")
+    @Operation(summary = "이메일 중복확인", description = "자체 회원가입에서 중복된 이메일이 있는지 확인하는 API")
+    public ResponseEntity<Message> checkEmail(@RequestParam("email") String email) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, userService.checkDuplicate(email)));
     }
 
 }

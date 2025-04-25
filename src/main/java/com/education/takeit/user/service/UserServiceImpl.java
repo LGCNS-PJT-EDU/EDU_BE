@@ -49,4 +49,9 @@ public class UserServiceImpl implements UserService {
         }
         return jwtUtils.createToken(user.getUserId(), user.getEmail());
     }
+
+    @Override
+    public boolean checkDuplicate(String email) {
+        return userRepository.existsByEmailAndLoginType(email, LoginType.LOCAL);
+    }
 }

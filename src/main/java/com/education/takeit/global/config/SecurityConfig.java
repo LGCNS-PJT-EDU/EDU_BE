@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/user/signin",     // 로그인 허용
                                 "/api/user/signup",     // 회원가입 허용
+                                "/api/user/check-email",    // 회원가입시 이메일 중복 확인
                                 "/h2-console/**"      // H2 콘솔 허용 (개발 시)
                         ).permitAll()
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
