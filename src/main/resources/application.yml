@@ -48,6 +48,19 @@ oauth:
     client-secret: ${GOOGLE_CLIENT_SECRET}
     redirect-uri: ${GOOGLE_REDIRECT_URI}
 
+naver:
+  request-token-uri: ${NAVER_REQUEST_TOKEN_URI}
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_SECRET}
+  redirect-uri: ${NAVER_REDIRECT_URI}
+  user-info-uri: ${NAVER_USER_INFO_URI}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
 
 management:
   endpoints:
@@ -56,6 +69,11 @@ management:
         include:
           - health
           - info
+
   endpoint:
     health:
       show-details: always
+
+
+
+

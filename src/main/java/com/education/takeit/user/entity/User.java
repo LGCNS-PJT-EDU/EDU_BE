@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId; // pk Long 타입의 id
+    private Long userId; // 로그인할 때 입력하는 회원의 id
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
