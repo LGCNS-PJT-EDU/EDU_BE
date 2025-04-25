@@ -34,6 +34,7 @@ spring:
     port: ${SPRING_REDIS_PORT:6379}
   cache:
     type: redis
+
 oauth:
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
@@ -41,6 +42,7 @@ oauth:
     redirect-url: ${KAKAO_REDIRECT_URI
     token-uri: https://kauth.kakao.com/oauth/token
     jwk-uri: https://kauth.kakao.com/.well-known/jwks.json
+    scope: profile_nickname account_email
 
 
 management:

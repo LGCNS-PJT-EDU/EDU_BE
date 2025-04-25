@@ -1,5 +1,7 @@
 package com.education.takeit.oauth.controller;
 
+import com.education.takeit.global.dto.Message;
+import com.education.takeit.global.exception.StatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +22,9 @@ public class KakaoAuthController {
 	private final KakaoOAuthService kakaoOAuthService;
 
 	@PostMapping("/login")
-	public ResponseEntity<JwtResponse> login(@RequestBody KakaoLoginRequest request) {
-		String jwt = kakaoOAuthService.loginWithKakao(request.getCode());
-		return ResponseEntity.ok(new JwtResponse(jwt));
+	public ResponseEntity<Message> login(@RequestBody KakaoLoginRequest request) {
+		String token = kakaoOAuthService.loginWithKakao(request);
+		return ResponseEntity.ok(new Message(StatusCode.OK, token));
 	}
 }
 
