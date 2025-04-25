@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class KakaoLoginRequest {
-	private String code;
-	private LoginType loginType;
+public class OAuthLoginRequest {
+    private String code;
+    private LoginType loginType;
 }
