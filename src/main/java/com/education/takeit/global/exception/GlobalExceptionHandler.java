@@ -1,6 +1,5 @@
 package com.education.takeit.global.exception;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,4 +20,6 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return new RuntimeException(e);
     }
+
 }
+

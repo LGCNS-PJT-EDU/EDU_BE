@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // pk Long 타입의 id
-
-    @Column(name = "user_id", nullable = true, unique = true)
     private String userId; // 로그인할 때 입력하는 회원의 id
 
     @Column(name = "email", nullable = false, unique = true)
@@ -32,8 +29,7 @@ public class User {
     private LoginType loginType; // 어떤 방식으로 로그인 했는지 저장
 
     @Builder
-    public User(String userId, String email, String nickname, String password, LoginType loginType) {
-        this.userId = userId;
+    public User(String email, String nickname, String password, LoginType loginType) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
