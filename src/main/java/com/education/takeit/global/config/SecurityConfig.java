@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/api/user/signin",  
                                 "/api/user/signup",  
                                 "/h2-console/**",     // H2 콘솔 허용
-                                "/oauth2/**",         // OAuth2 경로 허용
+                                "/oauth2/**",
+                                "/api/user/oauth/naver",// OAuth2 경로 허용
                                 "/login/**"           // 로그인 경로 허용
                         ).permitAll() 
                         .anyRequest().authenticated()  // 나머지 요청들은 인증 필요
