@@ -4,7 +4,6 @@ package com.education.takeit.user.controller;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.user.entity.LoginType;
-import com.education.takeit.user.entity.User;
 import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
