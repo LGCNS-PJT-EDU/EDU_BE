@@ -1,13 +1,11 @@
 package com.education.takeit.oauth.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @ConfigurationProperties(prefix = "oauth.kakao")
-@Component
 @Getter
 @Setter
 public class KakaoProperties {

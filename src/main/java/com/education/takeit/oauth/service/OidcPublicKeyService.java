@@ -18,11 +18,22 @@ public class OidcPublicKeyService {
 
 	private final OidcJwkCacheService oidcJwkCacheService;
 
+	/**
+	 * Kakao Oauth 키 매칭
+	 * @param kid
+	 * @param alg
+	 * @return
+	 */
 	public RSAPublicKey getMatchingKey(String kid, String alg) {
 		OIDCPublicKey matchedKey = oidcJwkCacheService.getCachedPublicKeys().getMatchedKey(kid, alg);
 		return toPublicKey(matchedKey);
 	}
 
+	/**
+	 * Kakao OAuth 공개 키
+	 * @param key
+	 * @return
+	 */
 	private RSAPublicKey toPublicKey(OIDCPublicKey key) {
 		try {
 			BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(key.getN()));

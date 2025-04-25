@@ -14,6 +14,10 @@ public class OidcJwkCacheService {
 
 	private final KakaoOauthClient kakaoOauthClient;
 
+	/**
+	 * Kakao JWKS Redis 캐싱
+	 * @return
+	 */
 	@Cacheable(value = "kakao-jwk", key = "'jwks'")
 	public OIDCPublicKeysResponse getCachedPublicKeys() {
 		return kakaoOauthClient.getPublicKeys();

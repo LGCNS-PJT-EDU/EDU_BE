@@ -2,12 +2,18 @@ package com.education.takeit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+
+import com.education.takeit.oauth.property.GoogleProperties;
+import com.education.takeit.oauth.property.KakaoProperties;
 
 @SpringBootApplication
-@EnableFeignClients
 @EnableCaching
+@EnableConfigurationProperties({
+	GoogleProperties.class,
+	KakaoProperties.class
+})
 public class TakeitApplication {
 
 	public static void main(String[] args) {

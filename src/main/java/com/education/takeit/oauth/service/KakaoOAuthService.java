@@ -4,28 +4,27 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
-import com.education.takeit.oauth.dto.OAuthLoginRequest;
-import com.education.takeit.user.entity.LoginType;
-import com.education.takeit.user.entity.User;
-import com.education.takeit.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
+import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
-import com.education.takeit.oauth.property.KakaoProperties;
+import com.education.takeit.user.entity.LoginType;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuthService implements OAuthService{
+public class KakaoOAuthService implements OAuthService {
 
 	private final KakaoOauthClient kakaoClient;
 	private final UserRepository userRepository;
@@ -33,23 +32,34 @@ public class KakaoOAuthService implements OAuthService{
 
 	private final JwtUtils jwtUtils;
 
+	/**
+	 * Kakao OAuth 소셜 로그인 메인 로직
+	 * @param request
+	 * @return
+	 */
 	@Override
-	public String login(OAuthLoginRequest request) {
+	public Map<String, String> login(OAuthLoginRequest request) {
+		/* 토큰 발급을 위한 RestClient 요청*/
 		OAuthTokenResponse token = kakaoClient.getToken(request.getCode());
 
 		Map<String, String> userInfo = validateIdToken(token);
 		LoginType loginType = request.getLoginType();
 
 		User user = userRepository.findByEmailAndLoginType(userInfo.get("email"), loginType)
-				.orElseGet(() -> userRepository.save(User.builder().email(userInfo.get("email"))
-						.nickname(userInfo.get("nickname"))
-						.loginType(loginType)
+			.orElseGet(() -> userRepository.save(User.builder().email(userInfo.get("email"))
+				.nickname(userInfo.get("nickname"))
+				.loginType(loginType)
 
-						.build()));
+				.build()));
 
-		return jwtUtils.createToken(user.getUserId(), user.getEmail());
+		return jwtUtils.generateTokens(user.getUserId());
 	}
 
+	/**
+	 * Kakao OAuth 소셜 로그인 검증 로직
+	 * @param token
+	 * @return
+	 */
 	@Override
 	public Map<String, String> validateIdToken(OAuthTokenResponse token) {
 		DecodedJWT decodedJWT = JWT.decode(token.getIdToken());
