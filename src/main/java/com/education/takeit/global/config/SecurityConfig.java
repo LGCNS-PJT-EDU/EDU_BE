@@ -41,13 +41,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(swaggerPath).permitAll()  // Swagger 관련 경로 허용
                         .requestMatchers(
-                                "/api/user/signin",  
-                                "/api/user/signup",  
+                                "/api/user/signin",
+                                "/api/user/signup",
                                 "/h2-console/**",     // H2 콘솔 허용
                                 "/oauth2/**",
                                 "/api/user/oauth/naver",// OAuth2 경로 허용
-                                "/login/**"           // 로그인 경로 허용
-                        ).permitAll() 
+                                "/login/**",          // 로그인 경로 허용
+                                "/api/user/check-email" // 회원가입시 이메일 중복확인
+                        ).permitAll()
                         .anyRequest().authenticated()  // 나머지 요청들은 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
