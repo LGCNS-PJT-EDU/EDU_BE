@@ -12,12 +12,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final List<OAuth2LoginService> oAuth2LoginServices;
+
+
+    @Override
+    public String loginByOAuth(String code, LoginType loginType) {
+        for (OAuth2LoginService service : oAuth2LoginServices) {
+            if (service.supports().equals(loginType)) {
+                User user = service.toEntityUser(code, loginType);
+                User savedUser = userRepository.findByEmail(user.getEmail())
+                        .orElseGet(() -> userRepository.save(user));
+                return jwtUtils.createToken(savedUser.getId(), savedUser.getEmail());
+            }
+        }
+        throw new IllegalArgumentException("지원하지 않는 플랫폼입니다.");
+    }
+
 
     @Override
     public void signUp(ReqSignupDto reqSignupDto) {
@@ -35,6 +54,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    
     @Override
     public String signIn(ReqSigninDto reqSigninDto) {
         User user = userRepository.findByEmail(reqSigninDto.email())
