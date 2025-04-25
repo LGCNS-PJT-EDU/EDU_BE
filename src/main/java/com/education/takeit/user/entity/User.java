@@ -18,22 +18,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 무분별하게 new User() 하는 것을 막음
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userId; // pk Long 타입의 id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId; // 로그인할 때 입력하는 회원의 id
 
-	@Column(name = "email", nullable = false, unique = true)
-	private String email;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
-	@Column(name = "nickname", nullable = false)
-	private String nickname;
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
 
-	@Column(name = "password", nullable = false)
-	private String password;
+    @Column(name = "password", nullable = true)
+    private String password;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "login_type", nullable = false)
-	private LoginType loginType; // 어떤 방식으로 로그인 했는지 저장
+    @Enumerated(EnumType.STRING)
+    @Column(name = "login_type",nullable = false)
+    private LoginType loginType; // 어떤 방식으로 로그인 했는지 저장
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean active = true; // 계정 활성화 여부(탈퇴 여부) 저장

@@ -26,6 +26,21 @@ spring:
       name: takeit
       password: takeit
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+
+
+naver:
+  request-token-uri: ${NAVER_REQUEST_TOKEN_URI}
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_SECRET}
+  redirect-uri: ${NAVER_REDIRECT_URI}
+  user-info-uri: ${NAVER_USER_INFO_URI}
+
+
 springdoc:
   api-docs:
     path: /api-docs
@@ -44,3 +59,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+
+
+

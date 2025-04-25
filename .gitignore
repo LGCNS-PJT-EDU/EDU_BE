@@ -39,3 +39,6 @@ out/
 ### Naver 코드 컨벤션 관련 설정 파일 ###
 naver-checkstyle-rules.xml
 naver-intellij-formatter.xml
+
+### .env파일 ###
+*.env
