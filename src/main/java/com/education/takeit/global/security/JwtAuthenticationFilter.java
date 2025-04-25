@@ -35,4 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         return EXCLUDE_PATHS.stream().anyMatch(uri::startsWith);
     }
+
 }
+
