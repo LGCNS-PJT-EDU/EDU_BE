@@ -24,12 +24,12 @@ public class JwtUtils {
     private final long accessTokenExpiration = 1000L * 60 * 15; // 액세스 토큰 유효시간 : 15분
     private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
-    private Key key;
+	private Key key;
 
-    @PostConstruct
-    public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
+	@PostConstruct
+	public void init() {
+		this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+	}
 
     // 액세스, 리프레시 토큰 함께 생성
     public Map<String, String> generateTokens(Long userId) {

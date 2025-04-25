@@ -1,6 +1,13 @@
 package com.education.takeit.user.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,11 +35,20 @@ public class User {
     @Column(name = "login_type",nullable = false)
     private LoginType loginType; // 어떤 방식으로 로그인 했는지 저장
 
-    @Builder
-    public User(String email, String nickname, String password, LoginType loginType) {
-        this.email = email;
-        this.nickname = nickname;
-        this.password = password;
-        this.loginType = loginType;
-    }
+	@Column(name = "is_active", nullable = false)
+	private Boolean active = true; // 계정 활성화 여부(탈퇴 여부) 저장
+
+	@Builder
+	public User(String email, String nickname, String password, LoginType loginType) {
+		this.email = email;
+		this.nickname = nickname;
+		this.password = password;
+		this.loginType = loginType;
+	}
+
+	public void changeActivateStatus() {
+		if (active) {
+			active = false;
+		}
+	}
 }

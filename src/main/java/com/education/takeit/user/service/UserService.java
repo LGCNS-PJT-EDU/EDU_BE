@@ -12,5 +12,6 @@ public interface UserService {
     Map<String, String> signIn(ReqSigninDto reqSigninDto);
     void signOut(String accessToken);
     boolean checkDuplicate(String email);
+    void Withdraw(Long userId);
     String loginByOAuth(String code, LoginType loginType);
 }
