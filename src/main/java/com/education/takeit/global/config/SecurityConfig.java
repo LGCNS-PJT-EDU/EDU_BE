@@ -23,8 +23,6 @@ public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
 
-    private final String[] swaggerPath = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api-docs/**", "/swagger-ui.html", "/error"};
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

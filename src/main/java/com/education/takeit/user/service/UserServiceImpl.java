@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
                 User user = service.toEntityUser(code, loginType);
                 User savedUser = userRepository.findByEmail(user.getEmail())
                         .orElseGet(() -> userRepository.save(user));
-                return jwtUtils.createToken(savedUser.getId(), savedUser.getEmail());
+                return jwtUtils.createToken(savedUser.getUserId(), savedUser.getEmail());
             }
         }
         throw new IllegalArgumentException("지원하지 않는 플랫폼입니다.");
