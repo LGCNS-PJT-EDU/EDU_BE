@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/login/naver")
+    @GetMapping("/oauth/naver")
     @Operation(summary = "네이버 로그인", description = "네이버 소셜 로그인 API")
     public ResponseEntity<?> loginByNaver(@RequestParam("code") String code) {
         User user = userService.loginByOAuth(code, LoginType.NAVER);

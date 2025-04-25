@@ -26,7 +26,7 @@ public class SecurityConfig {
                                 "/login/**").permitAll() // H2 콘솔 허용
                         .anyRequest().permitAll() // 나머지는 일단 전부 허용 (테스트용)
                 )
-                .oauth2Login(Customizer.withDefaults())
+//                .oauth2Login(Customizer.withDefaults())
                 .build();
 
 
