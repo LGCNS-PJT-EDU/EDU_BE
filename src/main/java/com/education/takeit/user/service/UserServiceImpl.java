@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public String loginByOAuth(String code, LoginType loginType) {
+    public Map<String, String> loginByOAuth(String code, LoginType loginType) {
         for (OAuth2LoginService service : oAuth2LoginServices) {
             if (service.supports().equals(loginType)) {
                 User user = service.toEntityUser(code, loginType);
                 User savedUser = userRepository.findByEmail(user.getEmail())
                         .orElseGet(() -> userRepository.save(user));
-                return jwtUtils.generateAccessToken(savedUser.getUserId());
+                return jwtUtils.generateTokens(savedUser.getUserId());
             }
         }
         throw new IllegalArgumentException("지원하지 않는 플랫폼입니다.");

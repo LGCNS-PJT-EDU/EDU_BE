@@ -55,8 +55,19 @@ public class UserController {
     @GetMapping("/oauth/naver")
     @Operation(summary = "네이버 로그인", description = "네이버 소셜 로그인 API")
     public ResponseEntity<Message> loginByNaver(@RequestParam("code") String code) {
-        String token = userService.loginByOAuth(code, LoginType.NAVER);
-        return ResponseEntity.ok(new Message(StatusCode.OK, token));
+        Map<String, String> tokens = userService.loginByOAuth(code, LoginType.NAVER);
+        String accessToken = tokens.get("accessToken");
+        String refreshToken = tokens.get("refreshToken");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("X-Refresh-Token", refreshToken);
+
+        Message message = new Message(StatusCode.OK);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(message);
     }
 
     @DeleteMapping("/signout")
