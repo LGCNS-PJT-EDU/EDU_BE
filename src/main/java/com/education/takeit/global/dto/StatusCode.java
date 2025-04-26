@@ -1,4 +1,4 @@
-package com.education.takeit.global.exception;
+package com.education.takeit.global.dto;
 
 import org.springframework.http.HttpStatus;
 

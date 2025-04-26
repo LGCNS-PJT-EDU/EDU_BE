@@ -1,7 +1,7 @@
 package com.education.takeit.user.controller;
 
 import com.education.takeit.global.dto.Message;
-import com.education.takeit.global.exception.StatusCode;
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
@@ -10,6 +10,7 @@ import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +35,22 @@ public class UserController {
     @PostMapping("/signin")
     @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
     public ResponseEntity<Message> signIn(@RequestBody ReqSigninDto reqSigninDto) {
-        Map<String, String> token = userService.signIn(reqSigninDto);
-        return ResponseEntity.ok(new Message(StatusCode.OK, token));
+        Map<String, String> tokens = userService.signIn(reqSigninDto);
+
+        String accessToken = tokens.get("accessToken");
+        String refreshToken = tokens.get("refreshToken");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("X-Refresh-Token", refreshToken);
+
+        Message message = new Message(StatusCode.OK);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(message);
     }
+
 
     @DeleteMapping("/signout")
     @Operation(summary = "로그아웃", description = "로그아웃 API")

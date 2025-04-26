@@ -1,12 +1,7 @@
 package com.education.takeit.oauth.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.GoogleOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
@@ -16,8 +11,11 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

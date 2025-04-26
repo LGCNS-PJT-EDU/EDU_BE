@@ -1,5 +1,6 @@
 package com.education.takeit.global.exception;
 
+import com.education.takeit.global.dto.StatusCode;
 import lombok.Getter;
 
 @Getter

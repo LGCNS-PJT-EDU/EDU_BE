@@ -2,7 +2,7 @@
 package com.education.takeit.user;
 
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
