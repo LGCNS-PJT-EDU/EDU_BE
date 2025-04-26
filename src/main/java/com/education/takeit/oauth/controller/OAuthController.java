@@ -2,11 +2,9 @@ package com.education.takeit.oauth.controller;
 
 import java.util.Map;
 
+import com.education.takeit.oauth.service.NaverOAuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.exception.StatusCode;
@@ -26,6 +24,7 @@ public class OAuthController {
 
 	private final GoogleOAuthService googleOAuthService;
 	private final KakaoOAuthService kakaoOAuthService;
+	private final NaverOAuthService naverOAuthService;
 
 	/**
 	 * Google OAuth 소셜 로그인
@@ -48,6 +47,13 @@ public class OAuthController {
 	@Operation(summary = "Kakao OAuth 소셜 로그인", description = "Kakao OAuth 소셜 로그인 API")
 	public ResponseEntity<Message> loginWithKakao(@RequestBody OAuthLoginRequest request) {
 		Map<String, String> tokens = kakaoOAuthService.login(request);
+		return ResponseEntity.ok(new Message(StatusCode.OK, tokens));
+	}
+
+	@PostMapping("/naver/login")
+	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
+	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
+		Map<String, String> tokens = naverOAuthService.login(request);
 		return ResponseEntity.ok(new Message(StatusCode.OK, tokens));
 	}
 }

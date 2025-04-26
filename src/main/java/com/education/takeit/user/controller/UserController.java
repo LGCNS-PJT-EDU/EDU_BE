@@ -38,13 +38,6 @@ public class UserController {
         return ResponseEntity.ok(new Message(StatusCode.OK, token));
     }
 
-    @GetMapping("/oauth/naver")
-    @Operation(summary = "네이버 로그인", description = "네이버 소셜 로그인 API")
-    public ResponseEntity<Message> loginByNaver(@RequestParam("code") String code) {
-        String token = userService.loginByOAuth(code, LoginType.NAVER);
-        return ResponseEntity.ok(new Message(StatusCode.OK, token));
-    }
-
     @DeleteMapping("/signout")
     @Operation(summary = "로그아웃", description = "로그아웃 API")
     public ResponseEntity<Message> logout(@RequestParam("accessToken") String accessToken) {

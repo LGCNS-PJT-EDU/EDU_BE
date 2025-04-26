@@ -1,4 +1,4 @@
-package com.education.takeit.user.dto.response;
+package com.education.takeit.oauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,18 +9,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NaverUserResponse {
+    private String resultcode;
+    private String message;
+
     @JsonProperty("response")
-    private NaverUserDetail naverUserDetail;
+    private NaverUserInfo naverUserInfo;
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NaverUserDetail {
+    public static class NaverUserInfo {
         private String id;
+
         @JsonProperty("nickname")
         private String nickname;
 
         private String email;
     }
 }
-

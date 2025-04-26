@@ -1,5 +1,6 @@
 package com.education.takeit;
 
+import com.education.takeit.oauth.property.NaverProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,7 +13,8 @@ import com.education.takeit.oauth.property.KakaoProperties;
 @EnableCaching
 @EnableConfigurationProperties({
 	GoogleProperties.class,
-	KakaoProperties.class
+	KakaoProperties.class,
+		NaverProperties.class
 })
 public class TakeitApplication {
 
