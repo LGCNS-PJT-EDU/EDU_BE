@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;

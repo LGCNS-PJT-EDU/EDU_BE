@@ -1,7 +1,5 @@
 package com.education.takeit.global.dto;
 
-import com.education.takeit.global.exception.StatusCode;
-
 public record Message(int stateCode, String message, Object data) {
     public static final String DEFAULT_RESPONSE = "Request processed successfully";
 
