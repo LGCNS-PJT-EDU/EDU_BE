@@ -1,11 +1,7 @@
 package com.education.takeit.user.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
@@ -14,8 +10,9 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 @Service
@@ -25,21 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-    private final List<OAuth2LoginService> oAuth2LoginServices;
     private final RedisTemplate<String, String> redisTemplate;
-
-    @Override
-    public Map<String, String> loginByOAuth(String code, LoginType loginType) {
-        for (OAuth2LoginService service : oAuth2LoginServices) {
-            if (service.supports().equals(loginType)) {
-                User user = service.toEntityUser(code, loginType);
-                User savedUser = userRepository.findByEmail(user.getEmail())
-                        .orElseGet(() -> userRepository.save(user));
-                return jwtUtils.generateTokens(savedUser.getUserId());
-            }
-        }
-        throw new IllegalArgumentException("지원하지 않는 플랫폼입니다.");
-    }
 
 
     @Override
@@ -64,9 +47,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(reqSigninDto.email())
                 .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
-		if (user.getLoginType() != LoginType.LOCAL) {
-			throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
-		}
+        if (user.getLoginType() != LoginType.LOCAL) {
+            throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
+        }
 
         if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
             throw new CustomException(StatusCode.NOT_EXIST_USER);
@@ -90,15 +73,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
-	@Override
-	@Transactional
-	public void Withdraw(Long userId) {
-		User user = userRepository.findByUserId(userId);
+    @Override
+    @Transactional
+    public void Withdraw(Long userId) {
+        User user = userRepository.findByUserId(userId);
 
-        if(user == null) {
+        if (user == null) {
             throw new CustomException(StatusCode.NOT_EXIST_USER);
         }
 
-		user.changeActivateStatus();
-	}
+        user.changeActivateStatus();
+    }
 }

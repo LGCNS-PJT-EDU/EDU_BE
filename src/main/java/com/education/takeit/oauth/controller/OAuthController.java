@@ -1,5 +1,7 @@
 package com.education.takeit.oauth.controller;
 
+import java.util.Map;
+import com.education.takeit.oauth.service.NaverOAuthService;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
@@ -10,12 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +23,7 @@ public class OAuthController {
 
 	private final GoogleOAuthService googleOAuthService;
 	private final KakaoOAuthService kakaoOAuthService;
+	private final NaverOAuthService naverOAuthService;
 
 	/**
 	 * Google OAuth 소셜 로그인
@@ -72,5 +71,12 @@ public class OAuthController {
 		return ResponseEntity.ok()
 				.headers(headers)
 				.body(message);
+	}
+
+	@PostMapping("/naver/login")
+	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
+	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
+		Map<String, String> tokens = naverOAuthService.login(request);
+		return ResponseEntity.ok(new Message(StatusCode.OK, tokens));
 	}
 }

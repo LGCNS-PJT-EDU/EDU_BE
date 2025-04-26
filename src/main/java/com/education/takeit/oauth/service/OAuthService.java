@@ -14,6 +14,7 @@ public interface OAuthService {
 	 */
 	Map<String, String> login(OAuthLoginRequest request);
 
+
 	/**
 	 * 소셜 로그인 검증 로직 (서명 및 유효성 검사)
 	 * @param token

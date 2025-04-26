@@ -13,5 +13,4 @@ public interface UserService {
     void signOut(String accessToken);
     boolean checkDuplicate(String email);
     void Withdraw(Long userId);
-    Map<String, String> loginByOAuth(String code, LoginType loginType);
 }
