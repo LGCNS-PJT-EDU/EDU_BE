@@ -1,17 +1,11 @@
 package com.education.takeit.oauth.service;
 
-import java.security.interfaces.RSAPublicKey;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
@@ -19,8 +13,12 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.security.interfaces.RSAPublicKey;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
