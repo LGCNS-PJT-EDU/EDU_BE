@@ -26,7 +26,7 @@ public class NaverOauthClient {
         form.add("state", state);
 
         return restClient.post()
-                .uri(properties.getTokenUri())
+                .uri(properties.getRequestTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()
