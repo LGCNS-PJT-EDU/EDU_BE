@@ -1,7 +1,7 @@
 package com.education.takeit.oauth.service;
 
+import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.exception.StatusCode;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.NaverOauthClient;
 import com.education.takeit.oauth.dto.NaverUserResponse;
