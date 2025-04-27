@@ -77,6 +77,18 @@ public class OAuthController {
 	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
 	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
 		Map<String, String> tokens = naverOAuthService.login(request);
-		return ResponseEntity.ok(new Message(StatusCode.OK, tokens));
+
+		String accessToken = tokens.get("accessToken");
+		String refreshToken = tokens.get("refreshToken");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization","Bearer "+accessToken);
+		headers.add("X-Refresh-Token",refreshToken);
+
+		Message message = new Message(StatusCode.OK);
+
+		return ResponseEntity.ok()
+				.headers(headers)
+				.body(message);
 	}
 }
