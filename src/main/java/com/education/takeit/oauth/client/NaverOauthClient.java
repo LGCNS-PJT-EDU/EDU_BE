@@ -26,7 +26,7 @@ public class NaverOauthClient {
         form.add("state", state);
 
         return restClient.post()
-                .uri("https://nid.naver.com/oauth2.0/token")
+                .uri(properties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form)
                 .retrieve()
@@ -35,7 +35,7 @@ public class NaverOauthClient {
 
     public NaverUserResponse getUserInfo(String accessToken) {
         return restClient.get()
-                .uri("https://openapi.naver.com/v1/nid/me")
+                .uri(properties.getUserInfoUri())
                 .headers(headers -> headers.setBearerAuth(accessToken))
                 .retrieve()
                 .body(NaverUserResponse.class);
