@@ -73,45 +73,10 @@ public class OAuthController {
 				.body(message);
 	}
 
-//	@PostMapping("/naver/login")
-//	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
-//	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
-//		Map<String, String> tokens = naverOAuthService.login(request);
-//
-//		String accessToken = tokens.get("accessToken");
-//		String refreshToken = tokens.get("refreshToken");
-//
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.add("Authorization","Bearer "+accessToken);
-//		headers.add("X-Refresh-Token",refreshToken);
-//
-//		Message message = new Message(StatusCode.OK);
-//
-//		return ResponseEntity.ok()
-//				.headers(headers)
-//				.body(message);
-//	}
-@GetMapping("/naver/login")
-@Operation(summary = "Naver OAuth 콜백", description = "Naver OAuth 콜백 API")
-public ResponseEntity<Message> naverCallback(@RequestParam String code, @RequestParam String state) {
-	OAuthLoginRequest request = new OAuthLoginRequest();
-	request.setCode(code);
-	request.setState(state);
-
-	Map<String, String> tokens = naverOAuthService.login(request);
-
-	String accessToken = tokens.get("accessToken");
-	String refreshToken = tokens.get("refreshToken");
-
-	HttpHeaders headers = new HttpHeaders();
-	headers.add("Authorization", "Bearer " + accessToken);
-	headers.add("X-Refresh-Token", refreshToken);
-
-	Message message = new Message(StatusCode.OK);
-
-	return ResponseEntity.ok()
-			.headers(headers)
-			.body(message);
-}
-
+	@PostMapping("/naver/login")
+	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
+	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
+		Map<String, String> tokens = naverOAuthService.login(request);
+		return ResponseEntity.ok(new Message(StatusCode.OK, tokens));
+	}
 }

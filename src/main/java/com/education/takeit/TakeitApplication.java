@@ -12,8 +12,8 @@ import com.education.takeit.oauth.property.KakaoProperties;
 @SpringBootApplication
 @EnableCaching
 @EnableConfigurationProperties({
-		GoogleProperties.class,
-		KakaoProperties.class,
+	GoogleProperties.class,
+	KakaoProperties.class,
 		NaverProperties.class
 })
 public class TakeitApplication {
