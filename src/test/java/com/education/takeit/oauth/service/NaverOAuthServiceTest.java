@@ -54,14 +54,18 @@ public class NaverOAuthServiceTest {
                 "mock@email.com"
         );
 
-        NaverUserResponse userResponse = new NaverUserResponse();
-        userResponse.setNaverUserInfo(userInfo);
+        NaverUserResponse userResponse = NaverUserResponse.builder()
+                .naverUserInfo(userInfo)
+                .build();
+
+
 
         User mockUser = User.builder()
                 .email(userInfo.getEmail())
                 .nickname(userInfo.getNickname())
                 .loginType(LoginType.NAVER)
                 .build();
+
         Map<String,String> tokenMap = Map.of(
                 "accessToken","jwt-access-token",
                 "refreshToken", "jwt-refresh-token"
@@ -77,9 +81,11 @@ public class NaverOAuthServiceTest {
         // then
         Map<String, String> result = naverOAuthService.login(loginRequest);
 
+        // 결과에 토큰 들어있는지 확인
         assertThat(result).containsEntry("accessToken", "jwt-access-token");
         assertThat(result).containsEntry("refreshToken", "jwt-refresh-token");
 
+        //메서드 호출 검증
         verify(naverOauthClient).getToken("mock-code", "mock-state");
         verify(naverOauthClient).getUserInfo("mock-access-token");
         verify(userRepository).findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER);
