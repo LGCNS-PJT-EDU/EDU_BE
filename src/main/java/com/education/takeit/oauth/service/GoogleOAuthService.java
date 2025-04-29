@@ -21,59 +21,61 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GoogleOAuthService implements OAuthService {
 
-	private final GoogleOauthClient googleClient;
-	private final UserRepository userRepository;
-	private final GoogleIdTokenVerifier googleIdTokenVerifier;
-	private final JwtUtils jwtUtils;
+    private final GoogleOauthClient googleClient;
+    private final UserRepository userRepository;
+    private final GoogleIdTokenVerifier googleIdTokenVerifier;
+    private final JwtUtils jwtUtils;
 
-	/**
-	 * Google OAuth 소셜 로그인 메인 로직
-	 * @param request
-	 * @return
-	 */
-	@Override
-	public Map<String, String> login(OAuthLoginRequest request) {
-		/* 토큰 발급을 위한 RestClient 요청*/
-		OAuthTokenResponse token = googleClient.getToken(request);
-		
-		Map<String, String> userInfo = validateIdToken(token);
-		LoginType loginType = request.getLoginType();
+    /**
+     * Google OAuth 소셜 로그인 메인 로직
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, String> login(OAuthLoginRequest request) {
+        /* 토큰 발급을 위한 RestClient 요청*/
+        OAuthTokenResponse token = googleClient.getToken(request.code());
 
-		User user = userRepository.findByEmailAndLoginType(userInfo.get("email"), loginType)
-			.orElseGet(() -> userRepository.save(User.builder()
-				.email(userInfo.get("email"))
-				.nickname(userInfo.get("nickname"))
-				.loginType(loginType)
-				.build()));
+        Map<String, String> userInfo = validateIdToken(token);
+        LoginType loginType = request.loginType();
 
-		return jwtUtils.generateTokens(user.getUserId());
-	}
+        User user = userRepository.findByEmailAndLoginType(userInfo.get("email"), loginType)
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .email(userInfo.get("email"))
+                        .nickname(userInfo.get("nickname"))
+                        .loginType(loginType)
+                        .build()));
 
-	/**
-	 * Google OAuth ID_TOKEN 검증 로직
-	 * @param token
-	 * @return
-	 */
-	@Override
-	public Map<String, String> validateIdToken(OAuthTokenResponse token) {
-		GoogleIdToken idToken;
-		try {
-			idToken = googleIdTokenVerifier.verify(token.getIdToken());
-		} catch (Exception e) {
-			throw new CustomException(StatusCode.INVALID_GOOGLE_ID_TOKEN);
-		}
-		if (idToken == null) {
-			throw new CustomException(StatusCode.INVALID_GOOGLE_ID_TOKEN);
-		}
+        return jwtUtils.generateTokens(user.getUserId());
+    }
 
-		GoogleIdToken.Payload payload = idToken.getPayload();
-		String email = payload.getEmail();
-		String nickname = (String)payload.get("name");
+    /**
+     * Google OAuth ID_TOKEN 검증 로직
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public Map<String, String> validateIdToken(OAuthTokenResponse token) {
+        GoogleIdToken idToken;
+        try {
+            idToken = googleIdTokenVerifier.verify(token.getIdToken());
+        } catch (Exception e) {
+            throw new CustomException(StatusCode.INVALID_GOOGLE_ID_TOKEN);
+        }
+        if (idToken == null) {
+            throw new CustomException(StatusCode.INVALID_GOOGLE_ID_TOKEN);
+        }
 
-		Map<String, String> userInfo = new HashMap<>();
-		userInfo.put("email", email);
-		userInfo.put("nickname", nickname);
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        String email = payload.getEmail();
+        String nickname = (String) payload.get("name");
 
-		return userInfo;
-	}
+        Map<String, String> userInfo = new HashMap<>();
+        userInfo.put("email", email);
+        userInfo.put("nickname", nickname);
+
+        return userInfo;
+    }
 }
