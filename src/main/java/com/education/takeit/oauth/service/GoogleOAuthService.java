@@ -37,7 +37,7 @@ public class GoogleOAuthService implements OAuthService {
 		OAuthTokenResponse token = googleClient.getToken(request);
 		
 		Map<String, String> userInfo = validateIdToken(token);
-		LoginType loginType = request.getLoginType();
+		LoginType loginType = request.loginType();
 
 		User user = userRepository.findByEmailAndLoginType(userInfo.get("email"), loginType)
 			.orElseGet(() -> userRepository.save(User.builder()

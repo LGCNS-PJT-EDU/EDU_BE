@@ -22,7 +22,7 @@ public class GoogleOauthClient {
 	public OAuthTokenResponse getToken(OAuthLoginRequest request) {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.add("grant_type", "authorization_code");
-		form.add("code", request.getCode());
+		form.add("code", request.code());
 		form.add("client_id", properties.getClientId());
 		form.add("client_secret", properties.getClientSecret());
 		form.add("redirect_uri", properties.getRedirectUri());

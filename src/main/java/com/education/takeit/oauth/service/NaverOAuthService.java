@@ -25,11 +25,11 @@ public class NaverOAuthService implements OAuthService {
 
     @Override
     public Map<String,String> login(OAuthLoginRequest request){
-        if(request.getState()==null || request.getState().isBlank()){
+        if(request.state()==null || request.state().isBlank()){
             throw new CustomException(StatusCode.MISSING_NAVER_STATE);
         }
 
-        OAuthTokenResponse token = naverClient.getToken(request.getCode(),request.getState());
+        OAuthTokenResponse token = naverClient.getToken(request.code(),request.state());
         NaverUserResponse userResponse = naverClient.getUserInfo(token.getAccessToken());
         NaverUserResponse.NaverUserInfo userInfo = userResponse.getNaverUserInfo();
 

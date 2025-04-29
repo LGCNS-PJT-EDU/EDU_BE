@@ -38,10 +38,10 @@ public class KakaoOAuthService implements OAuthService {
 	@Override
 	public Map<String, String> login(OAuthLoginRequest request) {
 		/* 토큰 발급을 위한 RestClient 요청*/
-		OAuthTokenResponse token = kakaoClient.getToken(request.getCode());
+		OAuthTokenResponse token = kakaoClient.getToken(request.code());
 
 		Map<String, String> userInfo = validateIdToken(token);
-		LoginType loginType = request.getLoginType();
+		LoginType loginType = request.loginType();
 
 		User user = userRepository.findByEmailAndLoginType(userInfo.get("email"), loginType)
 			.orElseGet(() -> userRepository.save(User.builder().email(userInfo.get("email"))
