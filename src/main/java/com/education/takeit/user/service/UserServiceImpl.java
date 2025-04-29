@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signUp(ReqSignupDto reqSignupDto) {
-        if (userRepository.existsByEmail(reqSignupDto.email())) {
+        if (userRepository.existsByEmailAndLoginType(reqSignupDto.email(), LoginType.LOCAL)) {
             throw new CustomException(StatusCode.ALREADY_EXIST_EMAIL);
         }
 
