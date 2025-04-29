@@ -60,7 +60,7 @@ public class NaverOAuthServiceTest {
         User mockUser = User.builder()
                 .email(userInfo.getEmail())
                 .nickname(userInfo.getNickname())
-                .loginType(LoginType.KAKAO)
+                .loginType(LoginType.NAVER)
                 .build();
         Map<String,String> tokenMap = Map.of(
                 "accessToken","jwt-access-token",
