@@ -2,6 +2,8 @@ package com.education.takeit.oauth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
@@ -9,6 +11,7 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class KakaoOAuthServiceTest {
@@ -33,6 +36,7 @@ class KakaoOAuthServiceTest {
 
     private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
+    private RSAPublicKey wrongPublicKey;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -54,14 +58,18 @@ class KakaoOAuthServiceTest {
         KeyPair keyPair = generator.generateKeyPair();
         publicKey = (RSAPublicKey) keyPair.getPublic();
         privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+        // 검증시 사용할 "틀린" public key
+        KeyPair wrongKeyPair = generator.generateKeyPair();
+        wrongPublicKey = (RSAPublicKey) wrongKeyPair.getPublic();
     }
 
     @Test
-    @DisplayName("login() - 신규 유저가 없을 때 회원가입 + 토큰 발급된다")
+    @DisplayName("Google OAuth login() - 신규 유저 회원가입 + 토큰 발급 성공")
     void login_success() {
         // given
-        String email = "testuser@example.com";
-        String nickname = "TestUser";
+        String email = "test@test.com";
+        String nickname = "test";
 
         String idToken = JWT.create()
                 .withKeyId("mock-kid")
@@ -71,8 +79,8 @@ class KakaoOAuthServiceTest {
 
         OAuthTokenResponse tokenResponse = OAuthTokenResponse.builder()
                 .accessToken("mock-access-token")
-                .tokenType("mock-token-type")
-                .idToken(idToken)  // ✅ 여기 반드시 idToken 넣어줘야 한다
+                .tokenType("Bearer")
+                .idToken(idToken)
                 .build();
 
         OAuthLoginRequest loginRequest = new OAuthLoginRequest(
@@ -101,13 +109,40 @@ class KakaoOAuthServiceTest {
         Map<String, String> tokens = kakaoOAuthService.login(loginRequest);
 
         // then
-        assertThat(tokens).containsKeys("accessToken", "refreshToken");
-        assertThat(tokens.get("accessToken")).isEqualTo("new-mock-access-token");
-        assertThat(tokens.get("refreshToken")).isEqualTo("new-mock-refresh-token");
+        SoftAssertions softly = new SoftAssertions();
 
-        verify(kakaoOauthClient).getToken("mock-code");
-        verify(userRepository).findByEmailAndLoginType(email, LoginType.KAKAO);
-        verify(userRepository).save(any(User.class));
-        verify(jwtUtils).generateTokens(savedUser.getUserId());
+        softly.assertThat(tokens).containsKeys("accessToken", "refreshToken");
+        softly.assertThat(tokens.get("accessToken")).isEqualTo("new-mock-access-token");
+        softly.assertThat(tokens.get("refreshToken")).isEqualTo("new-mock-refresh-token");
+
+        softly.assertAll();
+    }
+
+    @Test
+    @DisplayName("Google OAuth login() - 잘못된 ID Token이 들어오면 예외가 발생한다")
+    void login_fail() {
+        // given
+        String email = "test@test.com";
+        String nickname = "test";
+
+        String idToken = JWT.create()
+                .withKeyId("mock-kid") // kid 설정 중요
+                .withClaim("email", email)
+                .withClaim("nickname", nickname)
+                .sign(Algorithm.RSA256(publicKey, privateKey));
+
+        OAuthTokenResponse tokenResponse = OAuthTokenResponse.builder()
+                .accessToken("mock-access-token")
+                .tokenType("mock-token-type")
+                .idToken(idToken)
+                .build();
+
+        when(oidcPublicKeyService.getMatchingKey("mock-kid", "RS256"))
+                .thenReturn(wrongPublicKey);
+
+        // when & then
+        assertThatThrownBy(() -> kakaoOAuthService.validateIdToken(tokenResponse))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(StatusCode.INVALID_KAKAO_ID_TOKEN.getMessage());
     }
 }

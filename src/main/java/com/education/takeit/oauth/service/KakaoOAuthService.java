@@ -67,7 +67,7 @@ public class KakaoOAuthService implements OAuthService {
 
         try {
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
-            algorithm.verify(decodedJWT);  // ✅ 서명 검증
+            algorithm.verify(decodedJWT);
         } catch (JWTVerificationException e) {
             throw new CustomException(StatusCode.INVALID_KAKAO_ID_TOKEN);
         }
