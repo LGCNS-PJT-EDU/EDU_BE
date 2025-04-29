@@ -81,4 +81,3 @@ public class KakaoOAuthService implements OAuthService {
         return userInfo;
     }
 }
-
