@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +23,12 @@ public class NaverOAuthService implements OAuthService {
     private final JwtUtils jwtUtils;
 
     @Override
-    public Map<String,String> login(OAuthLoginRequest request){
-        if(request.state()==null || request.state().isBlank()){
+    public Map<String, String> login(OAuthLoginRequest request) {
+        if (request.state() == null || request.state().isBlank()) {
             throw new CustomException(StatusCode.MISSING_NAVER_STATE);
         }
 
-        OAuthTokenResponse token = naverClient.getToken(request.code(),request.state());
+        OAuthTokenResponse token = naverClient.getToken(request.code(), request.state());
         NaverUserResponse userResponse = naverClient.getUserInfo(token.getAccessToken());
         NaverUserResponse.NaverUserInfo userInfo = userResponse.getNaverUserInfo();
 
@@ -43,6 +42,7 @@ public class NaverOAuthService implements OAuthService {
         return jwtUtils.generateTokens(user.getUserId());
 
     }
+
     @Override
     public Map<String, String> validateIdToken(OAuthTokenResponse tokenResponse) {
         throw new UnsupportedOperationException("Naver 로그인은 ID Token을 사용하지 않습니다.");

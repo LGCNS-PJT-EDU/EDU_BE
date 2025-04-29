@@ -1,4 +1,3 @@
-/*
 package com.education.takeit.user;
 
 import com.education.takeit.global.exception.CustomException;
@@ -46,7 +45,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        signupDto = new ReqSignupDto("test@example.com", "nickname", "password");
+        signupDto = new ReqSignupDto("test@example.com", "nickname", "password", LoginType.LOCAL);
         signinDto = new ReqSigninDto("test@example.com", "password");
         user = User.builder()
                 .email("test@example.com")
@@ -59,7 +58,7 @@ public class UserServiceTest {
     @Test
     void 회원가입_성공() {
         // Given (테스트 조건 준비 - 가짜(mock) 객체의 동작 정의 및 입력값 준비)
-        when(userRepository.existsByEmail(signupDto.email())).thenReturn(false);
+        when(userRepository.existsByEmailAndLoginType(signupDto.email(),LoginType.LOCAL)).thenReturn(false);
         when(passwordEncoder.encode(signupDto.password())).thenReturn("encodedPassword");
 
         // When (실제 테스트할 대상 메소드 호출)
@@ -72,7 +71,7 @@ public class UserServiceTest {
     @Test
     void 회원가입_이메일중복시_예외발생() {
         // Given
-        when(userRepository.existsByEmail(signupDto.email())).thenReturn(true);
+        when(userRepository.existsByEmailAndLoginType(signupDto.email(),LoginType.LOCAL)).thenReturn(true);
 
         // When
         CustomException exception = assertThrows(CustomException.class, () -> userService.signUp(signupDto));
@@ -131,4 +130,3 @@ public class UserServiceTest {
         assertFalse(userService.checkDuplicate("new@example.com"));
     }
 }
-*/

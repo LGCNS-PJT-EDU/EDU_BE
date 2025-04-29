@@ -2,14 +2,12 @@ package com.education.takeit.oauth.dto;
 
 import java.io.Serializable;
 
-import lombok.Getter;
-
-@Getter
-public class OIDCPublicKey implements Serializable {
-	private String kid;
-	private String alg;
-	private String kty;
-	private String use;
-	private String n;
-	private String e;
+public record OIDCPublicKey(
+        String kid,
+        String alg,
+        String kty,
+        String use,
+        String n,
+        String e
+) implements Serializable {
 }
