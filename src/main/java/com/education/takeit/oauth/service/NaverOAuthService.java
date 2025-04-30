@@ -10,43 +10,43 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class NaverOAuthService implements OAuthService {
-    private final NaverOauthClient naverClient;
-    private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
+  private final NaverOauthClient naverClient;
+  private final UserRepository userRepository;
+  private final JwtUtils jwtUtils;
 
-    @Override
-    public Map<String, String> login(OAuthLoginRequest request) {
-        if (request.state() == null || request.state().isBlank()) {
-            throw new CustomException(StatusCode.MISSING_NAVER_STATE);
-        }
-
-        OAuthTokenResponse token = naverClient.getToken(request.code(), request.state());
-        NaverUserResponse userResponse = naverClient.getUserInfo(token.getAccessToken());
-        NaverUserResponse.NaverUserInfo userInfo = userResponse.getNaverUserInfo();
-
-
-        User user = userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER)
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .email(userInfo.getEmail())
-                        .nickname(userInfo.getNickname())
-                        .loginType(LoginType.NAVER)
-                        .build()));
-        return jwtUtils.generateTokens(user.getUserId());
-
+  @Override
+  public Map<String, String> login(OAuthLoginRequest request) {
+    if (request.state() == null || request.state().isBlank()) {
+      throw new CustomException(StatusCode.MISSING_NAVER_STATE);
     }
 
-    @Override
-    public Map<String, String> validateIdToken(OAuthTokenResponse tokenResponse) {
-        throw new UnsupportedOperationException("Naver 로그인은 ID Token을 사용하지 않습니다.");
-    }
+    OAuthTokenResponse token = naverClient.getToken(request.code(), request.state());
+    NaverUserResponse userResponse = naverClient.getUserInfo(token.getAccessToken());
+    NaverUserResponse.NaverUserInfo userInfo = userResponse.getNaverUserInfo();
 
+    User user =
+        userRepository
+            .findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER)
+            .orElseGet(
+                () ->
+                    userRepository.save(
+                        User.builder()
+                            .email(userInfo.getEmail())
+                            .nickname(userInfo.getNickname())
+                            .loginType(LoginType.NAVER)
+                            .build()));
+    return jwtUtils.generateTokens(user.getUserId());
+  }
 
+  @Override
+  public Map<String, String> validateIdToken(OAuthTokenResponse tokenResponse) {
+    throw new UnsupportedOperationException("Naver 로그인은 ID Token을 사용하지 않습니다.");
+  }
 }
