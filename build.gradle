@@ -6,6 +6,8 @@ plugins {
     id 'com.github.jakemarsden.git-hooks' version '0.0.2'
     //spotless
     id 'com.diffplug.spotless' version '6.25.0'
+    //Flyway 플러그인
+    id 'org.flywaydb.flyway' version '9.22.3'
 }
 
 group = 'com.education'
@@ -35,7 +37,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // Swagger UI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -43,7 +44,6 @@ dependencies {
     //developmentOnly 'org.springframework.boot:spring-boot-devtools' 캐싱을 위해서 끄기
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    runtimeOnly 'com.h2database:h2' // 임시로 사용할 데이터베이스
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //OAuth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -61,6 +61,11 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+    // MySQL JDBC 드라이버
+    implementation 'mysql:mysql-connector-java:8.0.33'
 }
 
 tasks.named('test') {
