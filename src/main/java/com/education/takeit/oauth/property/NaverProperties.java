@@ -8,9 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class NaverProperties {
-    private String clientId;
-    private String clientSecret;
-    private String redirectUri;
-    private String requestTokenUri;
-    private String userInfoUri;
+  private String clientId;
+  private String clientSecret;
+  private String redirectUri;
+  private String requestTokenUri;
+  private String userInfoUri;
 }

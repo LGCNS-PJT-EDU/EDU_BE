@@ -14,31 +14,32 @@ import org.springframework.web.client.RestClient;
 @Component
 public class NaverOauthClient {
 
-    private final RestClient restClient;
-    private final NaverProperties properties;
+  private final RestClient restClient;
+  private final NaverProperties properties;
 
-    public OAuthTokenResponse getToken(String code, String state) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "authorization_code");
-        form.add("client_id", properties.getClientId());
-        form.add("client_secret", properties.getClientSecret());
-        form.add("code", code);
-        form.add("state", state);
+  public OAuthTokenResponse getToken(String code, String state) {
+    MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+    form.add("grant_type", "authorization_code");
+    form.add("client_id", properties.getClientId());
+    form.add("client_secret", properties.getClientSecret());
+    form.add("code", code);
+    form.add("state", state);
 
-        return restClient.post()
-                .uri(properties.getRequestTokenUri())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(form)
-                .retrieve()
-                .body(OAuthTokenResponse.class);
-    }
+    return restClient
+        .post()
+        .uri(properties.getRequestTokenUri())
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .body(form)
+        .retrieve()
+        .body(OAuthTokenResponse.class);
+  }
 
-    public NaverUserResponse getUserInfo(String accessToken) {
-        return restClient.get()
-                .uri(properties.getUserInfoUri())
-                .headers(headers -> headers.setBearerAuth(accessToken))
-                .retrieve()
-                .body(NaverUserResponse.class);
-    }
-
+  public NaverUserResponse getUserInfo(String accessToken) {
+    return restClient
+        .get()
+        .uri(properties.getUserInfoUri())
+        .headers(headers -> headers.setBearerAuth(accessToken))
+        .retrieve()
+        .body(NaverUserResponse.class);
+  }
 }

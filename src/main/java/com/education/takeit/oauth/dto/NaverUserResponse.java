@@ -8,25 +8,25 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NaverUserResponse {
-    private String resultcode;
-    private String message;
+  private String resultcode;
+  private String message;
 
-    @JsonProperty("response")
-    private NaverUserInfo naverUserInfo;
+  @JsonProperty("response")
+  private NaverUserInfo naverUserInfo;
 
-    public NaverUserResponse(NaverUserInfo naverUserInfo) {
-        this.naverUserInfo = naverUserInfo;
-    }
+  public NaverUserResponse(NaverUserInfo naverUserInfo) {
+    this.naverUserInfo = naverUserInfo;
+  }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class NaverUserInfo {
-        private String id;
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class NaverUserInfo {
+    private String id;
 
-        @JsonProperty("nickname")
-        private String nickname;
+    @JsonProperty("nickname")
+    private String nickname;
 
-        private String email;
-    }
+    private String email;
+  }
 }
