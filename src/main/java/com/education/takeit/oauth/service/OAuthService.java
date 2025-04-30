@@ -12,7 +12,7 @@ public interface OAuthService {
 	 * @param request
 	 * @return
 	 */
-	Map<String, String> login(OAuthLoginRequest request);
+	String login(OAuthLoginRequest request);
 
 
 	/**

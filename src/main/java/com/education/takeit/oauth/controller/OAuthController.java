@@ -33,14 +33,10 @@ public class OAuthController {
 	@PostMapping("/google/login")
 	@Operation(summary = "Google OAuth 소셜 로그인", description = "Google OAuth 소셜 로그인 API")
 	public ResponseEntity<Message> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
-		Map<String, String> tokens = googleOAuthService.login(request);
-
-		String accessToken = tokens.get("accessToken");
-		String refreshToken = tokens.get("refreshToken");
+		String accessToken = googleOAuthService.login(request);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + accessToken);
-		headers.add("X-Refresh-Token", refreshToken);
 
 		Message message = new Message(StatusCode.OK);
 
@@ -57,14 +53,10 @@ public class OAuthController {
 	@PostMapping("/kakao/login")
 	@Operation(summary = "Kakao OAuth 소셜 로그인", description = "Kakao OAuth 소셜 로그인 API")
 	public ResponseEntity<Message> loginWithKakao(@RequestBody OAuthLoginRequest request) {
-		Map<String, String> tokens = kakaoOAuthService.login(request);
-
-		String accessToken = tokens.get("accessToken");
-		String refreshToken = tokens.get("refreshToken");
+		String accessToken = kakaoOAuthService.login(request);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + accessToken);
-		headers.add("X-Refresh-Token", refreshToken);
 
 		Message message = new Message(StatusCode.OK);
 
@@ -76,14 +68,10 @@ public class OAuthController {
 	@PostMapping("/naver/login")
 	@Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
 	public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
-		Map<String, String> tokens = naverOAuthService.login(request);
-
-		String accessToken = tokens.get("accessToken");
-		String refreshToken = tokens.get("refreshToken");
+		String accessToken = naverOAuthService.login(request);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + accessToken);
-		headers.add("X-Refresh-Token", refreshToken);
 
 		Message message = new Message(StatusCode.OK);
 

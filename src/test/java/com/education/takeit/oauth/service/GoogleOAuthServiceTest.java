@@ -92,7 +92,7 @@ class GoogleOAuthServiceTest {
         ));
 
         // when
-        Map<String, String> tokens = googleOAuthService.login(loginRequest);
+        Map<String, String tokens = googleOAuthService.login(loginRequest);
 
         //then
         SoftAssertions softly = new SoftAssertions();

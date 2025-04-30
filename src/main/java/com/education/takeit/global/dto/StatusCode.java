@@ -13,7 +13,8 @@ public enum StatusCode {
 	USER_NOT_FOUND(404, "존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND),
 	INVALID_KAKAO_ID_TOKEN(401, "유효하지 않은 KAKAO ID 토큰입니다.", HttpStatus.UNAUTHORIZED),
 	INVALID_GOOGLE_ID_TOKEN(401, "유효하지 않은 GOOGLE ID 토큰입니다.", HttpStatus.UNAUTHORIZED),
-	MISSING_NAVER_STATE(401,"NAVER STATE 값이 비어있습니다.", HttpStatus.BAD_REQUEST);
+	MISSING_NAVER_STATE(401,"NAVER STATE 값이 비어있습니다.", HttpStatus.BAD_REQUEST),
+	UNAUTHORIZED(401,"만료된 토큰입니다.", HttpStatus.UNAUTHORIZED);
 
 	private final int statusCode;
 	private final String message;

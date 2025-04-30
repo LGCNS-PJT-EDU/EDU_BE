@@ -9,8 +9,14 @@ import java.util.Map;
 
 public interface UserService {
     void signUp(ReqSignupDto reqSignupDto);
-    Map<String, String> signIn(ReqSigninDto reqSigninDto);
+    String signIn(ReqSigninDto reqSigninDto);
     void signOut(String accessToken);
     boolean checkDuplicate(String email);
     void Withdraw(Long userId);
+    String reissueAccessToken(String expiredAccessToken);
+    Long extractUserId(String token);
+    boolean validateRefreshToken(Long userId);
+
+
+
 }

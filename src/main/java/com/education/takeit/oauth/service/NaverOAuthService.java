@@ -23,7 +23,7 @@ public class NaverOAuthService implements OAuthService {
     private final JwtUtils jwtUtils;
 
     @Override
-    public Map<String, String> login(OAuthLoginRequest request) {
+    public String login(OAuthLoginRequest request) {
         if (request.state() == null || request.state().isBlank()) {
             throw new CustomException(StatusCode.MISSING_NAVER_STATE);
         }

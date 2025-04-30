@@ -3,6 +3,7 @@ package com.education.takeit.global.security;
 import java.io.IOException;
 import java.util.List;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final List<String> EXCLUDE_PATHS = List.of(
 		"/api/auth/**", "/swagger-ui", "/swagger-ui.html", "/v3/api-docs", "/swagger-resources", "/api/user/signin",
-		"/api/user/signup", "/error", "/api/user/check-email"
+		"/api/user/signup", "/error", "/api/user/check-email","/api/user/reissue"
 	);
 
 	public JwtAuthenticationFilter(JwtUtils jwtUtils, CustomUserDetailService customUserDetailService) {
@@ -33,29 +34,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-		HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+									HttpServletResponse response,
+									FilterChain filterChain) throws ServletException, IOException {
+		String token = resolveToken(request);
 
-		String token = resolveToken(request); // 1. 헤더에서 토큰 꺼냄
+		if (token != null) {
+			try {
+				if (jwtUtils.validateToken(token)) {
+					Long userId = jwtUtils.getUserId(token);
+					UserDetails userDetails = customUserDetailService.loadUserByUsername(userId.toString());
 
-		if (token != null && jwtUtils.validateToken(token)) {
-			Long userId = jwtUtils.getUserId(token);
+					UsernamePasswordAuthenticationToken authentication =
+							new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-			// UserDetailsService 등을 통해 사용자 정보 조회
-			UserDetails userDetails = customUserDetailService.loadUserByUsername(userId.toString());
-
-			// 인증 객체 생성
-			UsernamePasswordAuthenticationToken authentication =
-				new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-			// SecurityContextHolder에 인증 객체 등록
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			} catch (ExpiredJwtException ex) {
+				String uri = request.getRequestURI();
+				if (!uri.equals("/api/user/reissue")) {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					response.setContentType("application/json");
+					response.getWriter().write("{\"message\": \"엑세스 토큰 만료됨\"}");
+					return;
+				}
+			}
 		}
 
 		filterChain.doFilter(request, response);
 	}
+
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

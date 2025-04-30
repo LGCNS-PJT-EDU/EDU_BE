@@ -1,8 +1,6 @@
 package com.education.takeit.global.security;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,7 @@ public class JwtUtils {
     private final RedisTemplate<String, String> redisTemplate;
 
     private String secretKey = "AbcDefGhijkLmnOpQRStuvwXYZ1234567890!@#"; // 임시
-    private final long accessTokenExpiration = 1000L * 60 * 15; // 액세스 토큰 유효시간 : 15분
+    private final long accessTokenExpiration = 1000L * 60 * 1; // 액세스 토큰 유효시간 : 15분
     private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
 	private Key key;
@@ -32,7 +30,7 @@ public class JwtUtils {
 	}
 
     // 액세스, 리프레시 토큰 함께 생성
-    public Map<String, String> generateTokens(Long userId) {
+    public String generateTokens(Long userId) {
         Date now = new Date();
 
         // 액세스 토큰
@@ -56,17 +54,13 @@ public class JwtUtils {
 
         // Redis에 저장 (key: {userId}'s refresh token, value: refreshToken)
         redisTemplate.opsForValue().set(
-                userId + "'s refresh token",
+                "refresh:" + userId,
                 refreshToken,
                 refreshTokenExpiration,
                 TimeUnit.MILLISECONDS
         );
 
-        // 반환
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-        return tokens;
+        return accessToken;
     }
 
     //  엑세스 토큰 검증
@@ -95,6 +89,7 @@ public class JwtUtils {
 
 
     public Long getUserId(String token) {
+        token = token.trim();
         return Long.parseLong(Jwts.parser()
                 .setSigningKey(key)
                 .build()
@@ -103,10 +98,15 @@ public class JwtUtils {
                 .getSubject());
     }
 
+
+
+
     // Redis에 저장된 리프레시 토큰 검증
-    public boolean validateRefreshToken(Long userId, String refreshToken) {
-        String stored = redisTemplate.opsForValue().get("refresh:" + userId);
-        return stored != null && stored.equals(refreshToken);
+    public boolean validateRefreshToken(Long userId) {
+        String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
+
+        return storedRefreshToken != null;
     }
+
 }
 
