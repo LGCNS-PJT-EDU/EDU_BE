@@ -66,6 +66,8 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
     // MySQL JDBC 드라이버
     implementation 'mysql:mysql-connector-java:8.0.33'
+    // 테스트코드 수행할대 필요한 H2
+    testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {
