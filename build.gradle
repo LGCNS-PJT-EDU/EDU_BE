@@ -4,6 +4,8 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     //git-hooks
     id 'com.github.jakemarsden.git-hooks' version '0.0.2'
+    //spotless
+    id 'com.diffplug.spotless' version '6.25.0'
     //Flyway 플러그인
     id 'org.flywaydb.flyway' version '9.22.3'
 }
@@ -79,4 +81,11 @@ gitHooks {
             'prepare-commit-msg': file('githooks-src/prepare-commit-msg').text,
             'commit-msg'        : file('githooks-src/commit-msg').text
     ]
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.17.0') // 버전은 최신으로 변경 가능
+        target 'src/**/*.java'
+    }
 }
