@@ -1,14 +1,10 @@
 package com.education.takeit.global.security;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +16,7 @@ public class JwtUtils {
   private final RedisTemplate<String, String> redisTemplate;
 
   private String secretKey = "AbcDefGhijkLmnOpQRStuvwXYZ1234567890!@#"; // 임시
-  private final long accessTokenExpiration = 1000L * 60 * 15; // 액세스 토큰 유효시간 : 15분
+  private final long accessTokenExpiration = 1000L * 60 * 1; // 액세스 토큰 유효시간 : 15분
   private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
   private Key key;
@@ -31,7 +27,7 @@ public class JwtUtils {
   }
 
   // 액세스, 리프레시 토큰 함께 생성
-  public Map<String, String> generateTokens(Long userId) {
+  public String generateTokens(Long userId) {
     Date now = new Date();
 
     // 액세스 토큰
@@ -58,17 +54,9 @@ public class JwtUtils {
     // Redis에 저장 (key: {userId}'s refresh token, value: refreshToken)
     redisTemplate
         .opsForValue()
-        .set(
-            userId + "'s refresh token",
-            refreshToken,
-            refreshTokenExpiration,
-            TimeUnit.MILLISECONDS);
+        .set("refresh:" + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
 
-    // 반환
-    Map<String, String> tokens = new HashMap<>();
-    tokens.put("accessToken", accessToken);
-    tokens.put("refreshToken", refreshToken);
-    return tokens;
+    return accessToken;
   }
 
   //  엑세스 토큰 검증
@@ -96,13 +84,19 @@ public class JwtUtils {
   }
 
   public Long getUserId(String token) {
-    return Long.parseLong(
-        Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
+    try {
+      Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
+
+      return Long.parseLong(claims.getSubject());
+    } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우 claims만 꺼내기
+      return Long.parseLong(e.getClaims().getSubject());
+    }
   }
 
   // Redis에 저장된 리프레시 토큰 검증
-  public boolean validateRefreshToken(Long userId, String refreshToken) {
-    String stored = redisTemplate.opsForValue().get("refresh:" + userId);
-    return stored != null && stored.equals(refreshToken);
+  public boolean validateRefreshToken(Long userId) {
+    String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
+
+    return storedRefreshToken != null;
   }
 }

@@ -13,8 +13,6 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.education.takeit.user.service.UserServiceImpl;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -87,14 +85,12 @@ public class UserServiceTest {
     when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
-    Map<String, String> fakeTokens = new HashMap<>();
-    fakeTokens.put("accessToken", "fake-access-token");
-    fakeTokens.put("refreshToken", "fake-refresh-token");
+    String fakeTokens = "fake-access-token";
 
     when(jwtUtils.generateTokens(user.getUserId())).thenReturn(fakeTokens);
 
     // When
-    Map<String, String> tokens = userService.signIn(signinDto);
+    String tokens = userService.signIn(signinDto);
 
     // Then
     assertThat(tokens).isEqualTo(fakeTokens);

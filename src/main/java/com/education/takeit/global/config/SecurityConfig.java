@@ -55,6 +55,7 @@ public class SecurityConfig {
                         "/api/user/oauth/naver", // OAuth2 경로 허용
                         "/login/**", // 로그인 경로 허용
                         "/api/user/check-email", // 회원가입시 이메일 중복확인
+                        "/api/user/reissue", // 토큰 재발급
                         "/api/auth/**" // 임시 허용
                         )
                     .permitAll()

@@ -3,12 +3,12 @@ package com.education.takeit.user.controller;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
+import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
   private final UserService userService;
+  private final JwtUtils jwtUtils;
 
   @PostMapping("/signup")
   @Operation(summary = "회원가입", description = "자체 서비스 회원가입 API")
@@ -33,17 +34,31 @@ public class UserController {
   @PostMapping("/signin")
   @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
   public ResponseEntity<Message> signIn(@RequestBody ReqSigninDto reqSigninDto) {
-    Map<String, String> tokens = userService.signIn(reqSigninDto);
-
-    String accessToken = tokens.get("accessToken");
-    String refreshToken = tokens.get("refreshToken");
+    String accessToken = userService.signIn(reqSigninDto);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + accessToken);
-    headers.add("X-Refresh-Token", refreshToken);
 
     Message message = new Message(StatusCode.OK);
 
+    return ResponseEntity.ok().headers(headers).body(message);
+  }
+
+  @PostMapping("/reissue")
+  @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급")
+  public ResponseEntity<Message> reissue(
+      @RequestHeader("Authorization") String expiredAccessToken) {
+    String token = expiredAccessToken.replace("Bearer ", "").trim();
+
+    Long userId = userService.extractUserId(token);
+    if (!userService.validateRefreshToken(userId)) {
+      return ResponseEntity.status(401).body(new Message(StatusCode.UNAUTHORIZED));
+    }
+    String newAccessToken = userService.reissueAccessToken(token);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "Bearer " + newAccessToken);
+    Message message = new Message(StatusCode.OK);
     return ResponseEntity.ok().headers(headers).body(message);
   }
 
