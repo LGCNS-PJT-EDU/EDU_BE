@@ -1,13 +1,11 @@
 package com.education.takeit.user.service;
 
-
-import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.dto.ReqSigninDto;
 import com.education.takeit.user.dto.ReqSignupDto;
-
 import java.util.Map;
 
 public interface UserService {
+
     void signUp(ReqSignupDto reqSignupDto);
     String signIn(ReqSigninDto reqSigninDto);
     void signOut(String accessToken);
@@ -16,7 +14,6 @@ public interface UserService {
     String reissueAccessToken(String expiredAccessToken);
     Long extractUserId(String token);
     boolean validateRefreshToken(Long userId);
-
 
 
 }

@@ -10,10 +10,9 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +41,8 @@ public class NaverOAuthService implements OAuthService {
         return jwtUtils.generateTokens(user.getUserId());
 
     }
-
     @Override
-    public Map<String, String> validateIdToken(OAuthTokenResponse tokenResponse) {
+    public Map<String, String> validateIdToken(OAuthTokenResponse tokenResponse){
         throw new UnsupportedOperationException("Naver 로그인은 ID Token을 사용하지 않습니다.");
     }
-
-
 }

@@ -9,17 +9,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    protected ResponseEntity<ErrorResponseEntity> handleCustomException(CustomException e) {
-        e.printStackTrace();
-        return ErrorResponseEntity.toResponseEntity(e.getStatusCode());
-    }
+  @ExceptionHandler(CustomException.class)
+  protected ResponseEntity<ErrorResponseEntity> handleCustomException(CustomException e) {
+    e.printStackTrace();
+    return ErrorResponseEntity.toResponseEntity(e.getStatusCode());
+  }
 
-    @ExceptionHandler(Exception.class)
-    protected RuntimeException handleException(Exception e) {
-        e.printStackTrace();
-        return new RuntimeException(e);
-    }
-
+  @ExceptionHandler(Exception.class)
+  protected RuntimeException handleException(Exception e) {
+    e.printStackTrace();
+    return new RuntimeException(e);
+  }
 }
-

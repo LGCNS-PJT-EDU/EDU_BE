@@ -5,55 +5,8 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  security:
-    user:
-      name: takeit
-      password: takeit
-
-  redis:
-    host: ${SPRING_REDIS_HOST:redis}
-    port: ${SPRING_REDIS_PORT:6379}
-  cache:
-    type: redis
-
-oauth:
-  kakao:
-    client-id: ${KAKAO_CLIENT_ID}
-    client-secret: ${KAKAO_CLIENT_SECRET}
-    redirect-uri: ${KAKAO_REDIRECT_URI}
-    token-uri: https://kauth.kakao.com/oauth/token
-    jwk-uri: https://kauth.kakao.com/.well-known/jwks.json
-    scope: profile_nickname account_email
-  google:
-    client-id: ${GOOGLE_CLIENT_ID}
-    client-secret: ${GOOGLE_CLIENT_SECRET}
-    redirect-uri: ${GOOGLE_REDIRECT_URI}
-
-  naver:
-    request-token-uri: ${NAVER_REQUEST_TOKEN_URI}
-    client-id: ${NAVER_CLIENT_ID}
-    client-secret: ${NAVER_SECRET}
-    redirect-uri: ${NAVER_REDIRECT_URI}
-    user-info-uri: ${NAVER_USER_INFO_URI}
+  profiles:
+    active: dev
 
 springdoc:
   api-docs:
@@ -73,7 +26,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-
-
-

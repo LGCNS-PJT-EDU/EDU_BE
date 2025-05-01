@@ -46,3 +46,6 @@ naver-intellij-formatter.xml
 
 ### .env파일 ###
 *.env
+
+### mysql 볼륨 폴더 ###
+/mysql/

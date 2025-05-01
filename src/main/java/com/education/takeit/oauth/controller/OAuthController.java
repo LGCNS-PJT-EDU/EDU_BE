@@ -1,6 +1,5 @@
 package com.education.takeit.oauth.controller;
 
-import java.util.Map;
 import com.education.takeit.oauth.service.NaverOAuthService;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;

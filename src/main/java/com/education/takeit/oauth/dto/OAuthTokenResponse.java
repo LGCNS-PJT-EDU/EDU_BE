@@ -11,12 +11,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OAuthTokenResponse {
-    @JsonProperty("access_token")
-    private String accessToken;
+  @JsonProperty("access_token")
+  private String accessToken;
 
-    @JsonProperty("id_token")
-    private String idToken;
+  @JsonProperty("id_token")
+  private String idToken;
 
-    @JsonProperty("token_type")
-    private String tokenType;
+  @JsonProperty("token_type")
+  private String tokenType;
 }
