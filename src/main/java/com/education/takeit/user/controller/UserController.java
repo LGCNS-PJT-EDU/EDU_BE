@@ -54,16 +54,17 @@ public class UserController {
     @Operation(summary = "엑세스 토큰 재발급",description = "만료된 액세스 토큰 재발급")
     public ResponseEntity<Message> reissue(@RequestHeader("Authorization") String expiredAccessToken){
         String token = expiredAccessToken.replace("Bearer ", "").trim();
-        System.out.println(token);
 
         Long userId = userService.extractUserId(token);
         if (!userService.validateRefreshToken(userId)) {
             return ResponseEntity.status(401).body(new Message(StatusCode.UNAUTHORIZED));
         }
-        String newAccessToken = userService.reissueAccessToken(expiredAccessToken);
+        String newAccessToken = userService.reissueAccessToken(token);
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + newAccessToken);
-        return ResponseEntity.ok(new Message(StatusCode.OK));
+        Message message = new Message(StatusCode.OK);
+        return ResponseEntity.ok().headers(headers).body(message);
     }
 
 

@@ -18,7 +18,7 @@ public class JwtUtils {
   private final RedisTemplate<String, String> redisTemplate;
 
   private String secretKey = "AbcDefGhijkLmnOpQRStuvwXYZ1234567890!@#"; // 임시
-  private final long accessTokenExpiration = 1000L * 60 * 15; // 액세스 토큰 유효시간 : 15분
+  private final long accessTokenExpiration = 1000L * 60 * 1; // 액세스 토큰 유효시간 : 15분
   private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
   private Key key;
@@ -90,10 +90,19 @@ public class JwtUtils {
         .compact();
   }
 
-  public Long getUserId(String token) {
-    return Long.parseLong(
-        Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
-  }
+    public Long getUserId(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return Long.parseLong(claims.getSubject());
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우 claims만 꺼내기
+            return Long.parseLong(e.getClaims().getSubject());
+        }
+    }
 
 
 
