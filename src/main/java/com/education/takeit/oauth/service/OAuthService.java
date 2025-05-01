@@ -6,13 +6,13 @@ import java.util.Map;
 
 public interface OAuthService {
 
-
-	/**
-	 * 소셜 로그인 메인 로직
-	 * @param request
-	 * @return
-	 */
-	String login(OAuthLoginRequest request);
+  /**
+   * 소셜 로그인 메인 로직
+   *
+   * @param request
+   * @return
+   */
+  String login(OAuthLoginRequest request);
 
   /**
    * 소셜 로그인 검증 로직 (서명 및 유효성 검사)

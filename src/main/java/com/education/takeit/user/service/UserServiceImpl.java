@@ -8,14 +8,12 @@ import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Map;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +41,12 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
   }
 
-
-    @Override
-    public String signIn(ReqSigninDto reqSigninDto) {
-        User user = userRepository.findByEmail(reqSigninDto.email())
-                .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+  @Override
+  public String signIn(ReqSigninDto reqSigninDto) {
+    User user =
+        userRepository
+            .findByEmail(reqSigninDto.email())
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
     if (user.getLoginType() != LoginType.LOCAL) {
       throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
@@ -82,34 +81,33 @@ public class UserServiceImpl implements UserService {
       throw new CustomException(StatusCode.NOT_EXIST_USER);
     }
 
-        user.changeActivateStatus();
-    }
-    @Override
-    public String reissueAccessToken(String expiredAccessToken) {
-        Long userId = jwtUtils.getUserId(expiredAccessToken);
+    user.changeActivateStatus();
+  }
 
-        String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
-        if (storedRefreshToken == null) {
-            throw new CustomException(StatusCode.UNAUTHORIZED);
-        }
+  @Override
+  public String reissueAccessToken(String expiredAccessToken) {
+    Long userId = jwtUtils.getUserId(expiredAccessToken);
 
-        // 새로운 엑세스토큰 발급
-        return jwtUtils.generateAccessToken(userId);
-    }
-    @Override
-    public Long extractUserId(String token) {
-        try {
-            return jwtUtils.getUserId(token);
-        } catch (ExpiredJwtException e) {
-            return Long.parseLong(e.getClaims().getSubject());
-        }
-    }
-    @Override
-    public boolean validateRefreshToken(Long userId) {
-        return jwtUtils.validateRefreshToken(userId);
+    String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
+    if (storedRefreshToken == null) {
+      throw new CustomException(StatusCode.UNAUTHORIZED);
     }
 
+    // 새로운 엑세스토큰 발급
+    return jwtUtils.generateAccessToken(userId);
+  }
 
+  @Override
+  public Long extractUserId(String token) {
+    try {
+      return jwtUtils.getUserId(token);
+    } catch (ExpiredJwtException e) {
+      return Long.parseLong(e.getClaims().getSubject());
+    }
+  }
 
-
+  @Override
+  public boolean validateRefreshToken(Long userId) {
+    return jwtUtils.validateRefreshToken(userId);
+  }
 }

@@ -25,16 +25,16 @@ public class GoogleOAuthService implements OAuthService {
   private final GoogleIdTokenVerifier googleIdTokenVerifier;
   private final JwtUtils jwtUtils;
 
-    /**
-     * Google OAuth 소셜 로그인 메인 로직
-     *
-     * @param request
-     * @return
-     */
-    @Override
-    public String login(OAuthLoginRequest request) {
-        /* 토큰 발급을 위한 RestClient 요청*/
-        OAuthTokenResponse token = googleClient.getToken(request.code());
+  /**
+   * Google OAuth 소셜 로그인 메인 로직
+   *
+   * @param request
+   * @return
+   */
+  @Override
+  public String login(OAuthLoginRequest request) {
+    /* 토큰 발급을 위한 RestClient 요청*/
+    OAuthTokenResponse token = googleClient.getToken(request.code());
 
     Map<String, String> userInfo = validateIdToken(token);
     LoginType loginType = request.loginType();

@@ -29,16 +29,16 @@ public class KakaoOAuthService implements OAuthService {
 
   private final JwtUtils jwtUtils;
 
-    /**
-     * Kakao OAuth 소셜 로그인 메인 로직
-     *
-     * @param request
-     * @return
-     */
-    @Override
-    public String login(OAuthLoginRequest request) {
-        /* 토큰 발급을 위한 RestClient 요청*/
-        OAuthTokenResponse token = kakaoClient.getToken(request.code());
+  /**
+   * Kakao OAuth 소셜 로그인 메인 로직
+   *
+   * @param request
+   * @return
+   */
+  @Override
+  public String login(OAuthLoginRequest request) {
+    /* 토큰 발급을 위한 RestClient 요청*/
+    OAuthTokenResponse token = kakaoClient.getToken(request.code());
 
     Map<String, String> userInfo = validateIdToken(token);
     LoginType loginType = request.loginType();

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,18 +18,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtUtils jwtUtils;
   private final CustomUserDetailService customUserDetailService;
 
-	private final List<String> EXCLUDE_PATHS = List.of(
-		"/api/auth/**", "/swagger-ui", "/swagger-ui.html", "/v3/api-docs", "/swagger-resources", "/api/user/signin",
-		"/api/user/signup", "/error", "/api/user/check-email","/api/user/reissue"
-	);
+  private final List<String> EXCLUDE_PATHS =
+      List.of(
+          "/api/auth/**",
+          "/swagger-ui",
+          "/swagger-ui.html",
+          "/v3/api-docs",
+          "/swagger-resources",
+          "/api/user/signin",
+          "/api/user/signup",
+          "/error",
+          "/api/user/check-email",
+          "/api/user/reissue");
 
   public JwtAuthenticationFilter(
       JwtUtils jwtUtils, CustomUserDetailService customUserDetailService) {
     this.jwtUtils = jwtUtils;
     this.customUserDetailService = customUserDetailService;
   }
-
-
 
   @Override
   protected void doFilterInternal(
@@ -55,17 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-
     filterChain.doFilter(request, response);
   }
-
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
     String uri = request.getRequestURI();
     return EXCLUDE_PATHS.stream().anyMatch(uri::startsWith);
   }
-
 
   private String resolveToken(HttpServletRequest request) {
     String bearerToken = request.getHeader("Authorization");

@@ -11,7 +11,6 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,24 +56,16 @@ public class NaverOAuthServiceTest {
             .loginType(LoginType.NAVER)
             .build();
 
-    Map<String, String> tokenMap =
-        Map.of(
-            "accessToken", "jwt-access-token",
-            "refreshToken", "jwt-refresh-token");
+    String tokens = naverOAuthService.login(loginRequest);
 
     // when
     when(naverOauthClient.getToken("mock-code", "mock-state")).thenReturn(tokenResponse);
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn(tokenMap);
+    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn(tokens);
 
-    // then
-    Map<String, String> result = naverOAuthService.login(loginRequest);
-
-    // 결과에 토큰 들어있는지 확인
-    assertThat(result).containsEntry("accessToken", "jwt-access-token");
-    assertThat(result).containsEntry("refreshToken", "jwt-refresh-token");
+    assertThat(tokens).isEqualTo("mock-access-token");
 
     // 메서드 호출 검증
     verify(naverOauthClient).getToken("mock-code", "mock-state");
