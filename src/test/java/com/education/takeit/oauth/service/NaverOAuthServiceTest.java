@@ -32,7 +32,7 @@ public class NaverOAuthServiceTest {
 
   @Test
   void login_success() {
-
+    // given 테스트를 위한 객체 맻 mock 데이터 설정
     OAuthLoginRequest loginRequest =
         new OAuthLoginRequest("mock-code", LoginType.NAVER, "mock-state");
     OAuthTokenResponse tokenResponse =
@@ -56,15 +56,16 @@ public class NaverOAuthServiceTest {
             .loginType(LoginType.NAVER)
             .build();
 
-    String tokens = naverOAuthService.login(loginRequest);
-
-    // when
+    // when (login 메소드가 실행되기전에 mock 객체 동작을 설정)
     when(naverOauthClient.getToken("mock-code", "mock-state")).thenReturn(tokenResponse);
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn(tokens);
+    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn("mock-access-token");
 
+    String tokens = naverOAuthService.login(loginRequest);
+
+    // then
     assertThat(tokens).isEqualTo("mock-access-token");
 
     // 메서드 호출 검증
