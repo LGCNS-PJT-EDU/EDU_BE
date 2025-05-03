@@ -17,14 +17,14 @@ CREATE TABLE IF NOT EXISTS subject(
     CONSTRAINT fk_subject_track FOREIGN KEY (track_id) REFERENCES track(track_id)
 );
 
---roadmap_management(로드맵 관리) 테이블 생성
+-- roadmap_management(로드맵 관리) 테이블 생성
 CREATE TABLE IF NOT EXISTS roadmap_management(
     roadmap_management_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     roadmap_nm VARCHAR(255),
     roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
---roadmap(로드맵) 테이블 생성
+-- roadmap(로드맵) 테이블 생성
 CREATE TABLE IF NOT EXISTS roadmap(
     roadmap_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     order_sub INT NOT NULL,
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS roadmap(
     CONSTRAINT fk_roadmap_roadmap_management FOREIGN KEY (roadmap_management_id) REFERENCES roadmap_management(roadmap_management_id)
 );
 
---track(과정) 정보 주입
-INSERT IGNORE INTO track (trakc_id, track_nm) VALUES
+-- track(과정) 정보 주입
+INSERT IGNORE INTO track (track_id, track_nm) VALUES
                                  (1, '기초지식'),
                                  (2, 'VCS'),
                                  (3, 'HTTP 통신 및 상태 동기화 고도화'),
@@ -73,6 +73,7 @@ INSERT IGNORE INTO track (trakc_id, track_nm) VALUES
                                  (33, 'Django Advanced'),
                                  (34, 'Flask Advanced');
 
+-- subject(과목) 정보 주입
 INSERT IGNORE INTO subject (sub_id, sub_nm, track_id, sub_type, sub_essential, base_sub_order) VALUES
        (1, 'HTML', 1, 'FE', 'Y', 1),
        (2, 'CSS', 1, 'FE', 'Y', 2),
@@ -108,29 +109,28 @@ INSERT IGNORE INTO subject (sub_id, sub_nm, track_id, sub_type, sub_essential, b
        (32, 'AWS S3 + CloudFront 기반 SPA 배포', 13, 'FE', 'N', 32),
        (33, 'Unit Test, Snapshot Test, Integration Test', 14, 'FE', 'N', 33),
        (34, 'E2E Test, Visual Regression Test', 15, 'FE', 'N', 34),
-       (35, '리눅스 명령어', 16, 'BE', 'Y', 35),
-       (36, 'HTTP, HTTPS, DNS, TCP/IP 기본 개념', 16, 'BE', 'Y', 36),
-       (37, 'Git & GitHub', 2, 'BE', 'Y', 37),
-       (38, 'Git Hook (Husky, lint-staged) 자동화', 2, 'BE', 'Y', 38),
-       (39, 'Java', 17, 'BE', 'N', 39),
-       (40, 'Python', 18, 'BE', 'N', 40),
-       (41, 'JavaScript', 19, 'BE', 'N', 41),
-       (42, 'Kotlin', 20, 'BE', 'N', 42),
-       (43, 'SQL문', 21, 'BE', 'Y', 43),
-       (44, 'More About Database(RDB 종류, NoSQL)', 22, 'BE', 'N', 44),
-       (45, 'Scaling Databases(쿼리튜닝, 정규화)', 23, 'BE', 'N', 45),
-       (46, 'Spring & Spring Boot(Java)' 24, 'BE', 'N', 46),
-       (47, 'Node.js & Express.js', 25, 'BE', 'N', 47),
-       (48, 'Django', 26, 'BE', 'N', 48),
-       (49, 'Flask', 27, 'BE', 'N', 49),
-       (50, 'Spring & Spring Boot(Kotlin)', 28, 'BE', 'N', 50),
-       (51, 'Java + Spring 라이브러리 & 유틸', 29, 'BE', 'N', 51),
-       (51, 'Kotlin + Spring 라이브러리 & 유틸', 30, 'BE', 'N', 52),
-       (52, 'java,kotlin + spring 운영 & 배포', 31, 'BE', 'N', 52),
-       (53, 'Node.js 라이브러리 & 유틸', 32, 'BE', 'N', 53),
-       (54, 'Node.js 운영 & 배포', 32, 'BE', 'N', 54),
-       (55, 'Django 라이브러리 & 유틸', 33, 'BE', 'N', 55),
-       (56, 'Django 운영 & 배포', 33, 'BE', 'N', 56),
-       (57, 'Flask 라이브러리 & 유틸', 34, 'BE', 'N', 57),
-       (58, 'Flask 운영 & 배포', 34, 'BE', 'N', 58)
-       --BE, FE order 따로 분류, 라이브러리, 운영& 배포 Spring, java, kotlin 부분 다시 찾아서 배열
+       (35, '리눅스 명령어', 16, 'BE', 'Y', 1),
+       (36, 'HTTP, HTTPS, DNS, TCP/IP 기본 개념', 16, 'BE', 'Y', 2),
+       (37, 'Git & GitHub', 2, 'BE', 'Y', 3),
+       (38, 'Git Hook (Husky, lint-staged) 자동화', 2, 'BE', 'Y', 4),
+       (39, 'Java', 17, 'BE', 'N', 5),
+       (40, 'Python', 18, 'BE', 'N', 6),
+       (41, 'JavaScript', 19, 'BE', 'N', 7),
+       (42, 'Kotlin', 20, 'BE', 'N', 8),
+       (43, 'SQL문', 21, 'BE', 'Y', 9),
+       (44, 'More About Database(RDB 종류, NoSQL)', 22, 'BE', 'N', 10),
+       (45, 'Scaling Databases(쿼리튜닝, 정규화)', 23, 'BE', 'N', 11),
+       (46, 'Spring & Spring Boot(Java)', 24, 'BE', 'N', 12),
+       (47, 'Node.js & Express.js', 25, 'BE', 'N', 13),
+       (48, 'Django', 26, 'BE', 'N', 14),
+       (49, 'Flask', 27, 'BE', 'N', 15),
+       (50, 'Spring & Spring Boot(Kotlin)', 28, 'BE', 'N', 16),
+       (51, 'Java + Spring 라이브러리 & 유틸', 29, 'BE', 'N', 17),
+       (51, 'Kotlin + Spring 라이브러리 & 유틸', 30, 'BE', 'N', 18),
+       (52, 'java,kotlin + spring 운영 & 배포', 31, 'BE', 'N', 19),
+       (53, 'Node.js 라이브러리 & 유틸', 32, 'BE', 'N', 20),
+       (54, 'Node.js 운영 & 배포', 32, 'BE', 'N', 21),
+       (55, 'Django 라이브러리 & 유틸', 33, 'BE', 'N', 22),
+       (56, 'Django 운영 & 배포', 33, 'BE', 'N', 23),
+       (57, 'Flask 라이브러리 & 유틸', 34, 'BE', 'N', 24),
+       (58, 'Flask 운영 & 배포', 34, 'BE', 'N', 25)
