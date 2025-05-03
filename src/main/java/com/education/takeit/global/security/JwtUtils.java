@@ -54,7 +54,7 @@ public class JwtUtils {
     // Redis에 저장 (key: {userId}'s refresh token, value: refreshToken)
     redisTemplate
         .opsForValue()
-        .set("refresh:" + userId, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        .set(userId + "'s refresh token", refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
 
     return accessToken;
   }
@@ -95,7 +95,7 @@ public class JwtUtils {
 
   // Redis에 저장된 리프레시 토큰 검증
   public boolean validateRefreshToken(Long userId) {
-    String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
+    String storedRefreshToken = redisTemplate.opsForValue().get(userId + "'s refresh token");
 
     return storedRefreshToken != null;
   }
