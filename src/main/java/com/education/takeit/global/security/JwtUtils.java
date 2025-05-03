@@ -54,7 +54,11 @@ public class JwtUtils {
     // Redis에 저장 (key: {userId}'s refresh token, value: refreshToken)
     redisTemplate
         .opsForValue()
-        .set(userId + "'s refresh token", refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        .set(
+            userId + "'s refresh token",
+            refreshToken,
+            refreshTokenExpiration,
+            TimeUnit.MILLISECONDS);
 
     return accessToken;
   }
