@@ -169,6 +169,7 @@ public class RoadmapService {
                 .collect(Collectors.joining(","));
 
         redisTemplate.opsForValue().set(key, subjectIds, Duration.ofMinutes(30));
+        System.out.println("Redis 저장 키: " + key);
 
         return new RoadmapResponseDto(uuid, subjects);
     }
