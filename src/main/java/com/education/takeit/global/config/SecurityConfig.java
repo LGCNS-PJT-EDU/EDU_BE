@@ -12,58 +12,81 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-  private final String[] swaggerPath = {
-    "/swagger-ui/**",
-    "/v3/api-docs/**",
-    "/swagger-resources/**",
-    "/api-docs/**",
-    "/swagger-ui.html",
-    "/error"
-  };
+    private final String[] swaggerPath = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/api-docs/**",
+            "/swagger-ui.html",
+            "/error"
+    };
 
-  private final JwtUtils jwtUtils;
-  private final CustomUserDetailService customUserDetailService;
+    private final JwtUtils jwtUtils;
+    private final CustomUserDetailService customUserDetailService;
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public JwtAuthenticationFilter jwtAuthenticationFilter() {
-    return new JwtAuthenticationFilter(jwtUtils, customUserDetailService);
-  }
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtils, customUserDetailService);
+    }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http.csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
-        .headers(headers -> headers.frameOptions(frame -> frame.disable())) // H2 콘솔을 사용할 경우
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(swaggerPath)
-                    .permitAll() // Swagger 관련 경로 허용
-                    .requestMatchers(
-                        "/api/user/signin",
-                        "/api/user/signup",
-                        "/h2-console/**", // H2 콘솔 허용
-                        "/oauth2/**",
-                        "/api/user/oauth/naver", // OAuth2 경로 허용
-                        "/login/**", // 로그인 경로 허용
-                        "/api/user/check-email", // 회원가입시 이메일 중복확인
-                        "/api/user/reissue", // 토큰 재발급
-                        "/api/auth/**" // 임시 허용
-                        )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated() // 나머지 요청들은 인증 필요
-            )
-        .addFilterBefore(
-            jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 필터 추가
-        .build();
-  }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // H2 콘솔을 사용할 경우
+                .authorizeHttpRequests(
+                        auth ->
+                                auth.requestMatchers(swaggerPath)
+                                        .permitAll() // Swagger 관련 경로 허용
+                                        .requestMatchers(
+                                                "/api/user/signin",
+                                                "/api/user/signup",
+                                                "/h2-console/**", // H2 콘솔 허용
+                                                "/oauth2/**",
+                                                "/api/user/oauth/naver", // OAuth2 경로 허용
+                                                "/login/**", // 로그인 경로 허용
+                                                "/api/user/check-email", // 회원가입시 이메일 중복확인
+                                                "/api/user/reissue", // 토큰 재발급
+                                                "/api/auth/**" // 임시 허용
+                                        )
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated() // 나머지 요청들은 인증 필요
+                )
+                .addFilterBefore(
+                        jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 필터 추가
+                .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of(
+                "Authorization"
+        ));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
