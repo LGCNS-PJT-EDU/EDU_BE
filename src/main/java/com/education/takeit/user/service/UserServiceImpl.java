@@ -60,6 +60,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void signOut(String accessToken) {
+    if (!jwtUtils.validateToken(accessToken)) {
+      throw new CustomException(StatusCode.INVALID_TOKEN);
+    }
     // access token에서 userId 추출
     Long userId = jwtUtils.getUserId(accessToken);
 
