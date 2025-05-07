@@ -57,8 +57,7 @@ public class SecurityConfig {
                         "/api/user/check-email", // 회원가입시 이메일 중복확인
                         "/api/user/reissue", // 토큰 재발급
                         "/api/auth/**", // 임시 허용
-                            "api/**"
-                        )
+                        "api/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요

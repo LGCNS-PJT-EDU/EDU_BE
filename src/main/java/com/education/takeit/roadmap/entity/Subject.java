@@ -14,26 +14,25 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 public class Subject {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long subId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long subId;
 
-    @Column(nullable = false)
-    private String subNm;
+  @Column(nullable = false)
+  private String subNm;
 
-    @Column(nullable = false)
-    private String subType;
+  @Column(nullable = false)
+  private String subType;
 
-    @Column(nullable = false, length = 1)
-    private String subEssential;
+  @Column(nullable = false, length = 1)
+  private String subEssential;
 
-    @Column(nullable = false)
-    private Integer baseSubOrder;
+  @Column(nullable = false)
+  private Integer baseSubOrder;
 
-    @Lob
-    private String subOverview;
+  @Lob private String subOverview;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "track_id", nullable = false)
-    private Track track;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "track_id", nullable = false)
+  private Track track;
 }

@@ -4,27 +4,26 @@ import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.service.RoadmapService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/roadmap")
 public class RoadmapController {
-    private final RoadmapService roadmapService;
+  private final RoadmapService roadmapService;
 
-    @PostMapping("/guest")
-    @Operation(summary = "게스트가 진단 결과로 로드맵 요청", description = "로드맵 및 UUID 반환 POST API")
-    public RoadmapResponseDto getRoadmap(@RequestBody List<RoadmapRequestDto> answers) {
-        return roadmapService.getRoadmap(answers);
-    }
+  @PostMapping("/guest")
+  @Operation(summary = "게스트가 진단 결과로 로드맵 요청", description = "로드맵 및 UUID 반환 POST API")
+  public RoadmapResponseDto getRoadmap(@RequestBody List<RoadmapRequestDto> answers) {
+    return roadmapService.getRoadmap(answers);
+  }
 
-    @GetMapping("/users/{userId}/progress")
-    public ResponseEntity<Integer> getUserProgress(@PathVariable Long userId){
-        int percentage = roadmapService.getProgressPercentage(userId);
-        return ResponseEntity.ok(percentage);
-    }
+  @GetMapping("/users/{userId}/progress")
+  public ResponseEntity<Integer> getUserProgress(@PathVariable Long userId) {
+    int percentage = roadmapService.getProgressPercentage(userId);
+    return ResponseEntity.ok(percentage);
+  }
 }
