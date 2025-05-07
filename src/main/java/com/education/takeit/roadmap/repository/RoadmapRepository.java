@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
   List<Roadmap> findByUserId(Long userId);
+  List<Roadmap> findAllByUserId(Long userId);
 }
