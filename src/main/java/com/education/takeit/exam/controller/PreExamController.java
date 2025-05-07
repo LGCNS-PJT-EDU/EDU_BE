@@ -3,6 +3,7 @@ package com.education.takeit.exam.controller;
 import com.education.takeit.exam.dto.ExamResponse;
 import com.education.takeit.exam.service.PreExamService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/exam")
 @RequiredArgsConstructor
+@Tag(name = "PreExam", description = "사전 평가와 관련된 API")
 public class PreExamController {
 
     private final PreExamService preExamService;
