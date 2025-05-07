@@ -1,6 +1,6 @@
 package com.education.takeit.user;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +31,8 @@ public class UserServiceTest {
   @Mock private PasswordEncoder passwordEncoder;
 
   @Mock private JwtUtils jwtUtils;
+
+  @Mock private RedisTemplate<String, Object> redisTemplate;
 
   @InjectMocks private UserServiceImpl userService;
 
@@ -135,7 +138,7 @@ public class UserServiceTest {
     when(userRepository.findByUserId(userId)).thenReturn(user);
 
     // No Exception
-    assertDoesNotThrow(() -> userService.Withdraw(userId));
+    assertDoesNotThrow(() -> userService.withdraw(userId));
 
     // is active = false?
     assertThat(user.getActive()).isFalse();
@@ -150,7 +153,7 @@ public class UserServiceTest {
     when(userRepository.findByUserId(userId)).thenReturn(null);
 
     // if user is null, return Error
-    CustomException ex = assertThrows(CustomException.class, () -> userService.Withdraw(userId));
+    CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
     assertEquals(StatusCode.NOT_EXIST_USER, ex.getStatusCode());
 
     verify(userRepository, times(1)).findByUserId(userId);

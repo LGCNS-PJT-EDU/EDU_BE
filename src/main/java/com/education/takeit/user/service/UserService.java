@@ -13,7 +13,7 @@ public interface UserService {
 
   boolean checkDuplicate(String email);
 
-  void Withdraw(Long userId);
+  void withdraw(Long userId);
 
   String reissueAccessToken(String expiredAccessToken);
 

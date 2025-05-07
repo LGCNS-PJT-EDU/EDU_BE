@@ -1,7 +1,11 @@
 package com.education.takeit.roadmap.service;
 
+<<<<<<< HEAD
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+=======
+import com.education.takeit.global.security.JwtUtils;
+>>>>>>> e0b24545603e06d0ebb6a9173a76ae80cd478210
 import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
@@ -25,14 +29,54 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RoadmapService {
   private final SubjectRepository subjectRepository;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final long roadmapTime = 1000L * 60 * 30;
+  private final RoadmapManagementRepository roadmapManagementRepository;
+
+  private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
+<<<<<<< HEAD
   private final RoadmapManagementRepository roadmapManagementRepository;
   private final RedisTemplate<Object, Object> redisTemplate;
+=======
+>>>>>>> e0b24545603e06d0ebb6a9173a76ae80cd478210
 
-  public RoadmapResponseDto getRoadmap(List<RoadmapRequestDto> answers) {
-    List<Subject> resultSubjects = new ArrayList<>();
+  public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers) {
 
-    // BE, FE 정보 처리
+    RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
+
+    if (flag == null) {
+      // uuid 생성
+      String guestUuid = UUID.randomUUID().toString();
+
+      String subjectIds =
+          roadmapResponseDto.subjects().stream()
+              .map(subject -> subject.subjectId().toString())
+              .collect(Collectors.joining(","));
+
+      redisTemplate.opsForValue().set(guestUuid, subjectIds, Duration.ofMinutes(15));
+
+      System.out.println("guest roadmap create:" + guestUuid);
+
+      return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+    } else {
+      // 개인 roadmap 데이터 저장
+      List<Long> subjectIds =
+          roadmapResponseDto.subjects().stream()
+              .map(SubjectDto::subjectId)
+              .collect(Collectors.toList());
+
+      saveRoadmap(flag, subjectIds);
+
+      System.out.println("user roadmap create:" + flag);
+
+      return roadmapResponseDto;
+    }
+  }
+
+  public RoadmapResponseDto createRoadmap(List<RoadmapRequestDto> answers) {
+
+    // BE, FE 분기
     Optional<String> mainTrack =
         answers.stream()
             .filter(a -> a.questionId() == 1)
@@ -47,29 +91,33 @@ public class RoadmapService {
 
     // 필수 과목 추가
     List<Subject> essentialSubjects = subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
-    resultSubjects.addAll(essentialSubjects);
+    List<Subject> resultSubjects = new ArrayList<>(essentialSubjects);
 
     // 조건별 과목 처리
     int flag = 0;
     for (RoadmapRequestDto answer : answers) {
       if (answer.questionId() == 5) {
-        if (answer.answer().equals("React")) {
-          subjectRepository.findById(10L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(11L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(12L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(22L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(23L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(24L).ifPresent(resultSubjects::add);
-        } else if (answer.answer().equals("Vue")) {
-          subjectRepository.findById(13L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(14L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(25L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(26L).ifPresent(resultSubjects::add);
-        } else if (answer.answer().equals("Angular")) {
-          subjectRepository.findById(15L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(16L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(27L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+        switch (answer.answer()) {
+          case "React" -> {
+            subjectRepository.findById(10L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(11L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(12L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(22L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(23L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(24L).ifPresent(resultSubjects::add);
+          }
+          case "Vue" -> {
+            subjectRepository.findById(13L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(14L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(25L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(26L).ifPresent(resultSubjects::add);
+          }
+          case "Angular" -> {
+            subjectRepository.findById(15L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(16L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(27L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+          }
         }
       }
       if (answer.questionId() == 6 && answer.answer().equals("Y")) {
@@ -93,26 +141,32 @@ public class RoadmapService {
         subjectRepository.findById(34L).ifPresent(resultSubjects::add);
       }
       if (answer.questionId() == 11) {
-        if (answer.answer().equals("Java/Spring")) {
-          subjectRepository.findById(39L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(46L).ifPresent(resultSubjects::add);
-          flag = 1;
-        } else if (answer.answer().equals("Python/Flask")) {
-          subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(49L).ifPresent(resultSubjects::add);
-          flag = 2;
-        } else if (answer.answer().equals("Python/Django")) {
-          subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(48L).ifPresent(resultSubjects::add);
-          flag = 3;
-        } else if (answer.answer().equals("Js/Node")) {
-          subjectRepository.findById(41L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(47L).ifPresent(resultSubjects::add);
-          flag = 4;
-        } else if (answer.answer().equals("Kotlin/Spring")) {
-          subjectRepository.findById(42L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(50L).ifPresent(resultSubjects::add);
-          flag = 5;
+        switch (answer.answer()) {
+          case "Java/Spring" -> {
+            subjectRepository.findById(39L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(46L).ifPresent(resultSubjects::add);
+            flag = 1;
+          }
+          case "Python/Flask" -> {
+            subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(49L).ifPresent(resultSubjects::add);
+            flag = 2;
+          }
+          case "Python/Django" -> {
+            subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(48L).ifPresent(resultSubjects::add);
+            flag = 3;
+          }
+          case "Js/Node" -> {
+            subjectRepository.findById(41L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(47L).ifPresent(resultSubjects::add);
+            flag = 4;
+          }
+          case "Kotlin/Spring" -> {
+            subjectRepository.findById(42L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(50L).ifPresent(resultSubjects::add);
+            flag = 5;
+          }
         }
       }
       if (answer.questionId() == 12 && answer.answer().equals("Y")) {
@@ -157,18 +211,50 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    // 5. UUID 생성 및 Redis 저장
-    String uuid = UUID.randomUUID().toString();
-    String key = "roadmap:" + uuid;
+    return new RoadmapResponseDto("??", subjects);
+  }
 
-    // JSON 직렬화 또는 간단한 리스트 저장 예시 (여기선 ID 리스트 저장)
-    String subjectIds =
-        resultSubjects.stream().map(s -> s.getSubId().toString()).collect(Collectors.joining(","));
+  public void saveRoadmap(String flag, List<Long> subjectIds) {
+    Long userId = jwtUtils.getUserId(flag);
 
-    redisTemplate.opsForValue().set(key, subjectIds, Duration.ofMinutes(30));
-    System.out.println("Redis 저장 키: " + key);
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .build();
 
-    return new RoadmapResponseDto(uuid, subjects);
+    roadmapManagementRepository.save(roadmapManagement);
+
+    int order = 1;
+    for (Long subjectId : subjectIds) {
+      Subject subject =
+          subjectRepository
+              .findById(subjectId)
+              .orElseThrow(() -> new RuntimeException("Subject " + subjectId + " not found"));
+
+      Roadmap roadmap =
+          Roadmap.builder()
+              .userId(userId)
+              .roadmapManagement(roadmapManagement)
+              .subject(subject)
+              .orderSub(order++)
+              .build();
+
+      roadmapRepository.save(roadmap);
+    }
+  }
+
+  public void saveGuestRoadmap(String uuid, String jwt) {
+
+    String redisSubjects = redisTemplate.opsForValue().get(uuid);
+
+    if (redisSubjects == null) {
+      throw new IllegalArgumentException("Not found roadmap UUID: " + uuid);
+    }
+
+    List<Long> subjectIds = Arrays.stream(redisSubjects.split(",")).map(Long::parseLong).toList();
+
+    saveRoadmap(jwt, subjectIds);
   }
 
   public int getProgressPercentage(Long userId) {

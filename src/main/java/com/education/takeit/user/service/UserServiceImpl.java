@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void Withdraw(Long userId) {
+  public void withdraw(Long userId) {
     User user = userRepository.findByUserId(userId);
 
     if (user == null) {
@@ -87,7 +87,6 @@ public class UserServiceImpl implements UserService {
     user.changeActivateStatus();
     // Redis에서 리프레시 토큰 삭제
     redisTemplate.delete(userId + "'s refresh token");
-
   }
 
   @Override
