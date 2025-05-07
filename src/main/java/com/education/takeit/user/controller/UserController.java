@@ -64,7 +64,8 @@ public class UserController {
 
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
-  public ResponseEntity<Message> logout(@RequestParam("accessToken") String accessToken) {
+  public ResponseEntity<Message> logout(@RequestHeader("Authorization") String authorizationHeader) {
+    String accessToken = authorizationHeader.replace("Bearer ","");
     userService.signOut(accessToken);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
