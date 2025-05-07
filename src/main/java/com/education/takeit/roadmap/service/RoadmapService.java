@@ -85,25 +85,27 @@ public class RoadmapService {
         int flag = 0;
         for(RoadmapRequestDto answer: answers) {
             if(answer.questionId() == 5) {
-                if(answer.answer().equals("React")){
-                    subjectRepository.findById(10L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(11L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(12L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(22L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(23L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(24L).ifPresent(resultSubjects::add);
-                }
-                else if(answer.answer().equals("Vue")){
-                    subjectRepository.findById(13L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(14L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(25L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(26L).ifPresent(resultSubjects::add);
-                }
-                else if(answer.answer().equals("Angular")){
-                    subjectRepository.findById(15L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(16L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(27L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+                switch (answer.answer()) {
+                    case "React" -> {
+                        subjectRepository.findById(10L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(11L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(12L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(22L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(23L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(24L).ifPresent(resultSubjects::add);
+                    }
+                    case "Vue" -> {
+                        subjectRepository.findById(13L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(14L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(25L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(26L).ifPresent(resultSubjects::add);
+                    }
+                    case "Angular" -> {
+                        subjectRepository.findById(15L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(16L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(27L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+                    }
                 }
             }
             if(answer.questionId() == 6 && answer.answer().equals("Y")) {
@@ -127,30 +129,32 @@ public class RoadmapService {
                 subjectRepository.findById(34L).ifPresent(resultSubjects::add);
             }
             if(answer.questionId() == 11) {
-                if(answer.answer().equals("Java/Spring")) {
-                    subjectRepository.findById(39L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(46L).ifPresent(resultSubjects::add);
-                    flag = 1;
-                }
-                else if(answer.answer().equals("Python/Flask")) {
-                    subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(49L).ifPresent(resultSubjects::add);
-                    flag = 2;
-                }
-                else if(answer.answer().equals("Python/Django")) {
-                    subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(48L).ifPresent(resultSubjects::add);
-                    flag = 3;
-                }
-                else if(answer.answer().equals("Js/Node")) {
-                    subjectRepository.findById(41L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(47L).ifPresent(resultSubjects::add);
-                    flag = 4;
-                }
-                else if(answer.answer().equals("Kotlin/Spring")) {
-                    subjectRepository.findById(42L).ifPresent(resultSubjects::add);
-                    subjectRepository.findById(50L).ifPresent(resultSubjects::add);
-                    flag = 5;
+                switch (answer.answer()) {
+                    case "Java/Spring" -> {
+                        subjectRepository.findById(39L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(46L).ifPresent(resultSubjects::add);
+                        flag = 1;
+                    }
+                    case "Python/Flask" -> {
+                        subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(49L).ifPresent(resultSubjects::add);
+                        flag = 2;
+                    }
+                    case "Python/Django" -> {
+                        subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(48L).ifPresent(resultSubjects::add);
+                        flag = 3;
+                    }
+                    case "Js/Node" -> {
+                        subjectRepository.findById(41L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(47L).ifPresent(resultSubjects::add);
+                        flag = 4;
+                    }
+                    case "Kotlin/Spring" -> {
+                        subjectRepository.findById(42L).ifPresent(resultSubjects::add);
+                        subjectRepository.findById(50L).ifPresent(resultSubjects::add);
+                        flag = 5;
+                    }
                 }
             }
             if(answer.questionId() == 12 && answer.answer().equals("Y")) {
@@ -237,8 +241,11 @@ public class RoadmapService {
     public void saveGuestRoadmap(String uuid, String jwt){
 
         String redisSubjects = redisTemplate.opsForValue().get(uuid);
-        System.out.println(redisSubjects);
-        System.out.println(uuid);
+
+        if (redisSubjects == null) {
+            throw new IllegalArgumentException("Not found roadmap UUID: " + uuid);
+        }
+
         List<Long> subjectIds = Arrays.stream(redisSubjects.split(","))
                 .map(Long::parseLong)
                 .toList();
