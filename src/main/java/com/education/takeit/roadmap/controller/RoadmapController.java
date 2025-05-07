@@ -4,16 +4,17 @@ import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.service.RoadmapService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/roadmap")
+@Tag(name = "로드맵", description = "로드맵 관련 API")
 public class RoadmapController {
     private final RoadmapService roadmapService;
 
