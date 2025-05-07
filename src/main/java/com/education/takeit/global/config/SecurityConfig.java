@@ -76,6 +76,9 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+      // WebConfig 설정 뿐만 아니라, SecurityConfig 안에 http.cors() 설정과 CorsCOnfigurationSource Bean 등록은 필수이다!
+      // WebConfig 설정은 Spring MVC 레벨에서의 CORS 처리 담당.
+      // 따라서 SpringSecurity도 따로 CORS 설정을 명시해줘야 함.
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
