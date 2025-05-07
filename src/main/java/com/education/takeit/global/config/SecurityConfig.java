@@ -22,27 +22,27 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final String[] swaggerPath = {
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-resources/**",
-            "/api-docs/**",
-            "/swagger-ui.html",
-            "/error"
-    };
+  private final String[] swaggerPath = {
+    "/swagger-ui/**",
+    "/v3/api-docs/**",
+    "/swagger-resources/**",
+    "/api-docs/**",
+    "/swagger-ui.html",
+    "/error"
+  };
 
-    private final JwtUtils jwtUtils;
-    private final CustomUserDetailService customUserDetailService;
+  private final JwtUtils jwtUtils;
+  private final CustomUserDetailService customUserDetailService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtils, customUserDetailService);
-    }
+  @Bean
+  public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    return new JwtAuthenticationFilter(jwtUtils, customUserDetailService);
+  }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
