@@ -37,7 +37,7 @@ public class RoadmapService {
 
         if(flag == null){
             //uuid 생성
-            String guestUuid = "roadmap:" + UUID.randomUUID().toString();
+            String guestUuid = UUID.randomUUID().toString();
 
             String subjectIds = roadmapResponseDto.subjects().stream()
                     .map(subject -> subject.subjectId().toString())
@@ -51,7 +51,11 @@ public class RoadmapService {
         }
         else{
             //개인 roadmap 데이터 저장
-            saveRoadmap(flag, roadmapResponseDto);
+            List<Long> subjectIds = roadmapResponseDto.subjects().stream()
+                            .map(SubjectDto::subjectId)
+                                    .collect(Collectors.toList());
+
+            saveRoadmap(flag, subjectIds);
 
             System.out.println("user roadmap create:" + flag);
 
@@ -201,7 +205,7 @@ public class RoadmapService {
         return new RoadmapResponseDto("??", subjects);
     }
 
-    public void saveRoadmap(String flag, RoadmapResponseDto roadmapResponseDto) {
+    public void saveRoadmap(String flag, List<Long> subjectIds) {
         Long userId = jwtUtils.getUserId(flag);
 
         RoadmapManagement roadmapManagement =
@@ -212,12 +216,11 @@ public class RoadmapService {
 
         roadmapManagementRepository.save(roadmapManagement);
 
-        List<SubjectDto> subjects = roadmapResponseDto.subjects();
 
         int order = 1;
-        for(SubjectDto subjectDto : subjects){
-            Subject subject = subjectRepository.findById(subjectDto.subjectId())
-                    .orElseThrow(() -> new RuntimeException("Subject " + subjectDto.subjectId() + " not found"));
+        for(Long subjectId : subjectIds){
+            Subject subject = subjectRepository.findById(subjectId)
+                    .orElseThrow(() -> new RuntimeException("Subject " + subjectId + " not found"));
 
             Roadmap roadmap =
                     Roadmap.builder()
@@ -229,6 +232,18 @@ public class RoadmapService {
 
             roadmapRepository.save(roadmap);
         }
+    }
+
+    public void saveGuestRoadmap(String uuid, String jwt){
+
+        String redisSubjects = redisTemplate.opsForValue().get(uuid);
+        System.out.println(redisSubjects);
+        System.out.println(uuid);
+        List<Long> subjectIds = Arrays.stream(redisSubjects.split(","))
+                .map(Long::parseLong)
+                .toList();
+
+        saveRoadmap(jwt, subjectIds);
     }
 
 }
