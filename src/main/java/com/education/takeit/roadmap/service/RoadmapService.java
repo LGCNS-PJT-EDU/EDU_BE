@@ -17,12 +17,39 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoadmapService {
     private final SubjectRepository subjectRepository;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final long roadmapTime = 1000L * 60 * 30;
 
-    public RoadmapResponseDto getRoadmap(List<RoadmapRequestDto> answers) {
-        List<Subject> resultSubjects = new ArrayList<>();
 
-        // BE, FE 정보 처리
+    public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers){
+
+        RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
+
+        if(flag == null){
+            //uuid 생성
+            String guestUuid = "roadmap:" + UUID.randomUUID().toString();
+
+            String subjectIds = roadmapResponseDto.subjects().stream()
+                    .map(subject -> subject.subjectId().toString())
+                    .collect(Collectors.joining(","));
+
+            redisTemplate.opsForValue().set(guestUuid, subjectIds, Duration.ofMinutes(15));
+
+            System.out.println("guest roadmap create:" + guestUuid);
+
+            return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+        }
+        else{
+            //개인 roadmap 데이터 저장
+            System.out.println("user roadmap create:" + flag);
+
+            return roadmapResponseDto;
+        }
+    }
+
+    public RoadmapResponseDto createRoadmap(List<RoadmapRequestDto> answers) {
+
+        // BE, FE 분기
         Optional<String> mainTrack = answers.stream()
                 .filter(a -> a.questionId() == 1)
                 .map(RoadmapRequestDto::answer)
@@ -36,7 +63,7 @@ public class RoadmapService {
 
         // 필수 과목 추가
         List<Subject> essentialSubjects =   subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
-        resultSubjects.addAll(essentialSubjects);
+        List<Subject> resultSubjects = new ArrayList<>(essentialSubjects);
 
         // 조건별 과목 처리
         int flag = 0;
@@ -159,19 +186,7 @@ public class RoadmapService {
                 .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
                 .collect(Collectors.toList());
 
-        // 5. UUID 생성 및 Redis 저장
-        String uuid = UUID.randomUUID().toString();
-        String key = "roadmap:" + uuid;
-
-        // JSON 직렬화 또는 간단한 리스트 저장 예시 (여기선 ID 리스트 저장)
-        String subjectIds = resultSubjects.stream()
-                .map(s -> s.getSubId().toString())
-                .collect(Collectors.joining(","));
-
-        redisTemplate.opsForValue().set(key, subjectIds, Duration.ofMinutes(30));
-        System.out.println("Redis 저장 키: " + key);
-
-        return new RoadmapResponseDto(uuid, subjects);
+        return new RoadmapResponseDto("??", subjects);
     }
 
 }
