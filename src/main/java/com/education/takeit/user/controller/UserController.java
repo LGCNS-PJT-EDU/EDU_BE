@@ -64,8 +64,9 @@ public class UserController {
 
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
-  public ResponseEntity<Message> logout(@RequestHeader("Authorization") String authorizationHeader) {
-    String accessToken = authorizationHeader.replace("Bearer ","");
+  public ResponseEntity<Message> logout(
+      @RequestHeader("Authorization") String authorizationHeader) {
+    String accessToken = authorizationHeader.replace("Bearer ", "");
     userService.signOut(accessToken);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
@@ -79,7 +80,7 @@ public class UserController {
   @PostMapping("/withdraw")
   @Operation(summary = "회원탈퇴", description = "회원 탈퇴 API")
   public ResponseEntity<Message> Withdraw(@AuthenticationPrincipal CustomUserDetails principal) {
-    userService.Withdraw(principal.getUserId());
+    userService.withdraw(principal.getUserId());
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 }
