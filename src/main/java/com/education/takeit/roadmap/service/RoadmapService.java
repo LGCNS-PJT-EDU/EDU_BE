@@ -3,7 +3,9 @@ package com.education.takeit.roadmap.service;
 import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
+import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoadmapService {
     private final SubjectRepository subjectRepository;
+    private final RoadmapRepository roadmapRepository;
     private final RedisTemplate<Object, Object> redisTemplate;
 
     public RoadmapResponseDto getRoadmap(List<RoadmapRequestDto> answers) {
@@ -173,5 +176,21 @@ public class RoadmapService {
 
         return new RoadmapResponseDto(uuid, subjects);
     }
+
+    public int getProgressPercentage(Long userId){
+        List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
+        if(roadmaps.isEmpty()) return 0;
+
+        long total = roadmaps.size();
+        long completed = roadmaps.stream()
+                .filter(Roadmap::isComplete)
+                .count();
+
+        return (int)((double) completed/total*100);
+    }
+
+
+
+
 
 }
