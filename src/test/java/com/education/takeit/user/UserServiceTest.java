@@ -1,6 +1,6 @@
 package com.education.takeit.user;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -13,8 +13,6 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.education.takeit.user.service.UserServiceImpl;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +31,8 @@ public class UserServiceTest {
   @Mock private PasswordEncoder passwordEncoder;
 
   @Mock private JwtUtils jwtUtils;
+
+  @Mock private RedisTemplate<String, Object> redisTemplate;
 
   @InjectMocks private UserServiceImpl userService;
 
@@ -87,14 +88,12 @@ public class UserServiceTest {
     when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
-    Map<String, String> fakeTokens = new HashMap<>();
-    fakeTokens.put("accessToken", "fake-access-token");
-    fakeTokens.put("refreshToken", "fake-refresh-token");
+    String fakeTokens = "fake-access-token";
 
     when(jwtUtils.generateTokens(user.getUserId())).thenReturn(fakeTokens);
 
     // When
-    Map<String, String> tokens = userService.signIn(signinDto);
+    String tokens = userService.signIn(signinDto);
 
     // Then
     assertThat(tokens).isEqualTo(fakeTokens);
@@ -139,7 +138,7 @@ public class UserServiceTest {
     when(userRepository.findByUserId(userId)).thenReturn(user);
 
     // No Exception
-    assertDoesNotThrow(() -> userService.Withdraw(userId));
+    assertDoesNotThrow(() -> userService.withdraw(userId));
 
     // is active = false?
     assertThat(user.getActive()).isFalse();
@@ -154,7 +153,7 @@ public class UserServiceTest {
     when(userRepository.findByUserId(userId)).thenReturn(null);
 
     // if user is null, return Error
-    CustomException ex = assertThrows(CustomException.class, () -> userService.Withdraw(userId));
+    CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
     assertEquals(StatusCode.NOT_EXIST_USER, ex.getStatusCode());
 
     verify(userRepository, times(1)).findByUserId(userId);

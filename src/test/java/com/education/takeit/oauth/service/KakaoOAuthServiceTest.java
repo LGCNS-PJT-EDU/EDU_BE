@@ -18,7 +18,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,22 +90,15 @@ class KakaoOAuthServiceTest {
         User.builder().email(email).nickname(nickname).loginType(LoginType.KAKAO).build();
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId()))
-        .thenReturn(
-            Map.of(
-                "accessToken", "new-mock-access-token",
-                "refreshToken", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn("new-mock-access-token");
 
     // when
-    Map<String, String> tokens = kakaoOAuthService.login(loginRequest);
+    String tokens = kakaoOAuthService.login(loginRequest);
 
     // then
     SoftAssertions softly = new SoftAssertions();
 
-    softly.assertThat(tokens).containsKeys("accessToken", "refreshToken");
-    softly.assertThat(tokens.get("accessToken")).isEqualTo("new-mock-access-token");
-    softly.assertThat(tokens.get("refreshToken")).isEqualTo("new-mock-refresh-token");
-
+    softly.assertThat(tokens).isEqualTo("new-mock-access-token");
     softly.assertAll();
   }
 

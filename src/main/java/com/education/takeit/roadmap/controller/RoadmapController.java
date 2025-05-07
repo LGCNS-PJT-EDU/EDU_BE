@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/roadmap")
 @Tag(name = "로드맵", description = "로드맵 관련 API")
 public class RoadmapController {
-    private final RoadmapService roadmapService;
+  private final RoadmapService roadmapService;
 
     @PostMapping("/create")
     @Operation(summary = "진단 결과로 로드맵 요청", description = "게스트일 경우 uuid와 함께 로드맵 반환, 로그인한 사용자일 경우 로드맵 저장 및 반환")
@@ -29,4 +30,10 @@ public class RoadmapController {
     public void saveRoadmap(@RequestHeader(value = "accessToken") String accessToken, @RequestBody Map<String,String> body){
         roadmapService.saveGuestRoadmap(body.get("uuid"), accessToken);
     }
+
+  @GetMapping("/users/{userId}/progress")
+  public ResponseEntity<Integer> getUserProgress(@PathVariable Long userId) {
+    int percentage = roadmapService.getProgressPercentage(userId);
+    return ResponseEntity.ok(percentage);
+  }
 }

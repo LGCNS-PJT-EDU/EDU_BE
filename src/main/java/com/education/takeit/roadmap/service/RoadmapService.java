@@ -10,14 +10,13 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -71,11 +70,11 @@ public class RoadmapService {
                 .map(RoadmapRequestDto::answer)
                 .findFirst();
 
-        if (mainTrack.isEmpty()) {
-            throw new IllegalArgumentException("BE, FE 분기 처리 오류");
-        }
+    if (mainTrack.isEmpty()) {
+      throw new IllegalArgumentException("BE, FE 분기 처리 오류");
+    }
 
-        String BEorFE = mainTrack.get();  // BE, FE 정보 저장
+    String BEorFE = mainTrack.get(); // BE, FE 정보 저장
 
         // 필수 과목 추가
         List<Subject> essentialSubjects =   subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
@@ -199,12 +198,13 @@ public class RoadmapService {
             }
         }
 
-        // 중복 제거 및 정렬
-        List<SubjectDto> subjects = resultSubjects.stream()
-                .distinct()
-                .sorted(Comparator.comparingInt(Subject::getBaseSubOrder))
-                .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
-                .collect(Collectors.toList());
+    // 중복 제거 및 정렬
+    List<SubjectDto> subjects =
+        resultSubjects.stream()
+            .distinct()
+            .sorted(Comparator.comparingInt(Subject::getBaseSubOrder))
+            .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
+            .collect(Collectors.toList());
 
         return new RoadmapResponseDto("??", subjects);
     }
@@ -253,4 +253,13 @@ public class RoadmapService {
         saveRoadmap(jwt, subjectIds);
     }
 
+  public int getProgressPercentage(Long userId) {
+    List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
+    if (roadmaps.isEmpty()) return 0;
+
+    long total = roadmaps.size();
+    long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
+
+    return (int) ((double) completed / total * 100);
+  }
 }

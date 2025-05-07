@@ -14,10 +14,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 public class Track {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long trackId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long trackId;
 
-    @Column(nullable = false, unique = true)
-    private String trackNm;
+  @Column(nullable = false, unique = true)
+  private String trackNm;
 }

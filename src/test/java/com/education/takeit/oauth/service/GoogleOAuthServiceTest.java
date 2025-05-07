@@ -17,7 +17,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,22 +75,15 @@ class GoogleOAuthServiceTest {
 
     when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId()))
-        .thenReturn(
-            Map.of(
-                "accessToken", "new-mock-access-token",
-                "refreshToken", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn("new-mock-access-token");
 
     // when
-    Map<String, String> tokens = googleOAuthService.login(loginRequest);
+    String tokens = googleOAuthService.login(loginRequest);
 
     // then
     SoftAssertions softly = new SoftAssertions();
 
-    softly.assertThat(tokens).containsKeys("accessToken", "refreshToken");
-    softly.assertThat(tokens.get("accessToken")).isEqualTo("new-mock-access-token");
-    softly.assertThat(tokens.get("refreshToken")).isEqualTo("new-mock-refresh-token");
-
+    softly.assertThat(tokens).isEqualTo("new-mock-access-token");
     softly.assertAll();
   }
 
