@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void Withdraw(Long userId) {
+  public void withdraw(Long userId) {
     User user = userRepository.findByUserId(userId);
 
     if (user == null) {
