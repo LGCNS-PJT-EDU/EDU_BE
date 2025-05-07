@@ -1,15 +1,21 @@
 package com.education.takeit.roadmap.service;
 
+import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
+import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,6 +25,10 @@ public class RoadmapService {
     private final SubjectRepository subjectRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final long roadmapTime = 1000L * 60 * 30;
+    private final RoadmapManagementRepository roadmapManagementRepository;
+
+    private final JwtUtils jwtUtils;
+    private final RoadmapRepository roadmapRepository;
 
 
     public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers){
@@ -41,6 +51,8 @@ public class RoadmapService {
         }
         else{
             //개인 roadmap 데이터 저장
+            saveRoadmap(flag, roadmapResponseDto);
+
             System.out.println("user roadmap create:" + flag);
 
             return roadmapResponseDto;
@@ -187,6 +199,36 @@ public class RoadmapService {
                 .collect(Collectors.toList());
 
         return new RoadmapResponseDto("??", subjects);
+    }
+
+    public void saveRoadmap(String flag, RoadmapResponseDto roadmapResponseDto) {
+        Long userId = jwtUtils.getUserId(flag);
+
+        RoadmapManagement roadmapManagement =
+                RoadmapManagement.builder()
+                        .roadmapNm("Roadmap")
+                        .roadmapTimestamp(LocalDateTime.now())
+                        .build();
+
+        roadmapManagementRepository.save(roadmapManagement);
+
+        List<SubjectDto> subjects = roadmapResponseDto.subjects();
+
+        int order = 1;
+        for(SubjectDto subjectDto : subjects){
+            Subject subject = subjectRepository.findById(subjectDto.subjectId())
+                    .orElseThrow(() -> new RuntimeException("Subject " + subjectDto.subjectId() + " not found"));
+
+            Roadmap roadmap =
+                    Roadmap.builder()
+                            .userId(userId)
+                            .roadmapManagement(roadmapManagement)
+                            .subject(subject)
+                            .orderSub(order++)
+                            .build();
+
+            roadmapRepository.save(roadmap);
+        }
     }
 
 }
