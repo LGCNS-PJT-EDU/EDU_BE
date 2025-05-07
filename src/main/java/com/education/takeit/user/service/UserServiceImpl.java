@@ -84,7 +84,6 @@ public class UserServiceImpl implements UserService {
     user.changeActivateStatus();
     // Redis에서 리프레시 토큰 삭제
     redisTemplate.delete(userId + "'s refresh token");
-
   }
 
   @Override
