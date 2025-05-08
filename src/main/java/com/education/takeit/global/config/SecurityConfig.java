@@ -3,6 +3,7 @@ package com.education.takeit.global.config;
 import com.education.takeit.global.security.JwtAuthenticationFilter;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.global.security.service.CustomUserDetailService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +61,7 @@ public class SecurityConfig {
                         "/login/**", // 로그인 경로 허용
                         "/api/user/check-email", // 회원가입시 이메일 중복확인
                         "/api/user/reissue", // 토큰 재발급
-                        "/api/auth/**"// 임시 허용
+                        "/api/auth/**" // 임시 허용
                         )
                     .permitAll()
                     .anyRequest()

@@ -10,7 +10,6 @@ import com.education.takeit.roadmap.service.RoadmapService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,19 +23,19 @@ public class RoadmapController {
 
   @PostMapping("/create")
   @Operation(
-          summary = "진단 결과로 로드맵 요청",
-          description = "게스트일 경우 uuid와 함께 로드맵 반환, 로그인한 사용자일 경우 로드맵 저장 및 반환")
+      summary = "진단 결과로 로드맵 요청",
+      description = "게스트일 경우 uuid와 함께 로드맵 반환, 로그인한 사용자일 경우 로드맵 저장 및 반환")
   public RoadmapResponseDto getRoadmap(
-          @RequestHeader(value = "accessToken", required = false) String flag,
-          @RequestBody List<RoadmapRequestDto> answers) {
+      @RequestHeader(value = "accessToken", required = false) String flag,
+      @RequestBody List<RoadmapRequestDto> answers) {
     return roadmapService.roadmapSelect(flag, answers);
   }
 
   @PostMapping("/save")
   @Operation(summary = "회원가입한 사용자의 로드맵 저장 요청", description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장")
   public void saveRoadmap(
-          @RequestHeader(value = "accessToken") String accessToken,
-          @RequestBody Map<String, String> body) {
+      @RequestHeader(value = "accessToken") String accessToken,
+      @RequestBody Map<String, String> body) {
     roadmapService.saveGuestRoadmap(body.get("uuid"), accessToken);
   }
 
@@ -49,9 +48,10 @@ public class RoadmapController {
 
   @PutMapping
   @Operation(summary = "로드맵 수정", description = "사용자가 원하는 대로 로드맵 과목 수정")
-  public ResponseEntity<Message> updateRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                               @RequestBody List<SubjectDto> subjects){
-    Long userId= userDetails.getUserId();
+  public ResponseEntity<Message> updateRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<SubjectDto> subjects) {
+    Long userId = userDetails.getUserId();
     roadmapService.updateRoadmap(userId, subjects);
 
     return ResponseEntity.ok(new Message(StatusCode.OK));
@@ -59,11 +59,12 @@ public class RoadmapController {
 
   @DeleteMapping
   @Operation(summary = "로드맵 삭제", description = "로드맵 삭제")
-  public ResponseEntity<Message> deleteRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails) {{
-  Long userId= userDetails.getUserId();
-  roadmapService.deleteRoadmap(userId);
-  return ResponseEntity.ok(new Message(StatusCode.OK));
-
-  }
+  public ResponseEntity<Message> deleteRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    {
+      Long userId = userDetails.getUserId();
+      roadmapService.deleteRoadmap(userId);
+      return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
   }
 }
