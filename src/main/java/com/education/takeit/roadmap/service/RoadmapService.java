@@ -31,7 +31,6 @@ public class RoadmapService {
   private final ObjectMapper objectMapper;
   private final SubjectRepository subjectRepository;
   private final RedisTemplate<String, String> redisTemplate;
-  private final long roadmapTime = 1000L * 60 * 30;
   private final RoadmapManagementRepository roadmapManagementRepository;
 
   private final JwtUtils jwtUtils;
@@ -372,5 +371,71 @@ public class RoadmapService {
     RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
+  }
+
+  public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
+    Long roadmapId;
+    List<SubjectDto> subjects;
+
+    if (defaultRoadmapType.equals("FE")) {
+      roadmapId = 1L;
+    } else if (defaultRoadmapType.equals("BE")) {
+      roadmapId = 2L;
+    } else {
+      throw new IllegalArgumentException("roadmap type error: " + defaultRoadmapType);
+    }
+
+    List<Roadmap> roadmaps =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
+
+    return roadmaps.stream()
+        .sorted(Comparator.comparing(Roadmap::getOrderSub))
+        .map(
+            r -> {
+              Subject s = r.getSubject();
+              return new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder());
+            })
+        .collect(Collectors.toList());
+  }
+
+  public void saveDefaultRoadmap(String roadmapType, String jwtToken) {
+    Long userId = jwtUtils.getUserId(jwtToken);
+    Long roadmapManagementId = 1L;
+    if (roadmapType.equals("FE")) {
+      roadmapManagementId = 1L;
+    } else if (roadmapType.equals("BE")) {
+      roadmapManagementId = 2L;
+    } else {
+      throw new IllegalArgumentException("roadmap type error: " + roadmapType);
+    }
+
+    List<Roadmap> defaultRoadmapList =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagementId);
+
+    if (defaultRoadmapList.isEmpty()) {
+      throw new IllegalArgumentException("기본 로드맵이 존재하지 않습니다: " + roadmapType);
+    }
+
+    // 새로운 로드맵 관리 정보 생성
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Default " + roadmapType + " Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .build();
+
+    roadmapManagementRepository.save(roadmapManagement);
+
+    int order = 1;
+    for (Roadmap defaultRoadmap : defaultRoadmapList) {
+      Roadmap newRoadmap =
+          Roadmap.builder()
+              .userId(userId)
+              .roadmapManagement(roadmapManagement)
+              .subject(defaultRoadmap.getSubject())
+              .orderSub(order++)
+              .build();
+
+      roadmapRepository.save(newRoadmap);
+    }
   }
 }
