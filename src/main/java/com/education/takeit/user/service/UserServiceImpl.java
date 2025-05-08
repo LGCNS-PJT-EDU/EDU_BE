@@ -8,7 +8,7 @@ import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Map;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Map<String, String> signIn(ReqSigninDto reqSigninDto) {
+  public String signIn(ReqSigninDto reqSigninDto) {
     User user =
         userRepository
             .findByEmail(reqSigninDto.email())
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void Withdraw(Long userId) {
+  public void withdraw(Long userId) {
     User user = userRepository.findByUserId(userId);
 
     if (user == null) {
@@ -82,5 +82,34 @@ public class UserServiceImpl implements UserService {
     }
 
     user.changeActivateStatus();
+    // Redis에서 리프레시 토큰 삭제
+    redisTemplate.delete(userId + "'s refresh token");
+  }
+
+  @Override
+  public String reissueAccessToken(String expiredAccessToken) {
+    Long userId = jwtUtils.getUserId(expiredAccessToken);
+
+    String storedRefreshToken = redisTemplate.opsForValue().get("refresh:" + userId);
+    if (storedRefreshToken == null) {
+      throw new CustomException(StatusCode.UNAUTHORIZED);
+    }
+
+    // 새로운 엑세스토큰 발급
+    return jwtUtils.generateAccessToken(userId);
+  }
+
+  @Override
+  public Long extractUserId(String token) {
+    try {
+      return jwtUtils.getUserId(token);
+    } catch (ExpiredJwtException e) {
+      return Long.parseLong(e.getClaims().getSubject());
+    }
+  }
+
+  @Override
+  public boolean validateRefreshToken(Long userId) {
+    return jwtUtils.validateRefreshToken(userId);
   }
 }

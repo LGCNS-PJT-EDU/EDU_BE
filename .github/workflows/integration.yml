@@ -2,10 +2,8 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - develop
-  pull_request:
-    branches:
+    branches-ignore:
+      - main
       - develop
 
 jobs:
@@ -42,13 +40,18 @@ jobs:
       - name: Apply Spotless Format
         run: ./gradlew spotlessApply
 
-      - name: Commit and Push if Needed
+      - name: Commit and Push if Spotless Made Changes
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git add .
-          git commit -m "chore: apply spotless formatting" || echo "No changes"
-          git push origin HEAD:${{ github.ref_name }}
+
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "chore: apply spotless formatting"
+            git push origin HEAD:${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Check Google Style Format
         run: ./gradlew spotlessCheck

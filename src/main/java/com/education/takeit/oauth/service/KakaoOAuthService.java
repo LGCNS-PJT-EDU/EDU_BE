@@ -36,7 +36,7 @@ public class KakaoOAuthService implements OAuthService {
    * @return
    */
   @Override
-  public Map<String, String> login(OAuthLoginRequest request) {
+  public String login(OAuthLoginRequest request) {
     /* 토큰 발급을 위한 RestClient 요청*/
     OAuthTokenResponse token = kakaoClient.getToken(request.code());
 

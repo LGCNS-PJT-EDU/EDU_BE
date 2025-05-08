@@ -3,6 +3,7 @@ package com.education.takeit.diagnosis.controller;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
+import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,6 @@ import java.util.List;
 public class DiagnosisController {
 
   private final DiagnosisService diagnosisService;
-
-  private final TestController testController;
 
   /**
    * 진단 문제 GET 요청(전체)
@@ -38,9 +37,10 @@ public class DiagnosisController {
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
-  public ResponseEntity<?> postDiagnosis(@RequestBody List<DiagnosisAnswerRequest> answers) {
-
-    String result = testController.recommendByDiagnosis(answers);
+  public ResponseEntity<RoadmapResponseDto> postDiagnosis(
+          @RequestHeader(value = "accessToken", required = false) String flag,
+          @RequestBody List<DiagnosisAnswerRequest> answers) {
+    RoadmapResponseDto result = diagnosisService.postDiagnosis(flag, answers);
 
     return ResponseEntity.ok(result);
   }
