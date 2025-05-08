@@ -152,7 +152,10 @@ CREATE TABLE IF NOT EXISTS subject(
 CREATE TABLE IF NOT EXISTS roadmap_management(
     roadmap_management_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     roadmap_nm VARCHAR(255),
-    roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    lecture_amount INT,
+    price_level INT,
+    likes_books BOOLEAN
 );
 
 -- roadmap(로드맵) 테이블 생성
