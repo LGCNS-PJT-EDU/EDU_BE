@@ -38,9 +38,10 @@ public class DiagnosisController {
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
   public ResponseEntity<RoadmapResponseDto> postDiagnosis(
-      @RequestHeader(value = "accessToken", required = false) String flag,
+      @RequestHeader(value = "Authorization", required = false) String flag,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
-    RoadmapResponseDto result = diagnosisService.postDiagnosis(flag, answers);
+    String accessToken = flag.replace("Bearer ", "");
+    RoadmapResponseDto result = diagnosisService.postDiagnosis(accessToken, answers);
 
     return ResponseEntity.ok(result);
   }

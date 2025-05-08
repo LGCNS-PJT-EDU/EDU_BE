@@ -74,4 +74,14 @@ public class RoadmapController {
     List<SubjectDto> defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
     return ResponseEntity.ok(defaultRoadmap);
   }
+
+  @PostMapping("/default")
+  @Operation(summary = "기본 로드맵을 사용자에게 저장", description = "기본 로드맵을 사용자에게 할당")
+  public ResponseEntity<Message> saveDefaultRoadmap(
+          @RequestParam("roadmap") String defaultRoadmapType,
+          @RequestHeader("Authorization") String authorizationHeader) {
+    String accessToken = authorizationHeader.replace("Bearer ", "");
+    roadmapService.saveDefaultRoadmap(defaultRoadmapType, accessToken);
+    return ResponseEntity.ok(new Message(StatusCode.OK));
+  }
 }
