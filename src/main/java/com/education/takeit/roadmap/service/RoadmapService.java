@@ -9,6 +9,7 @@ import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
+
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
@@ -29,10 +30,10 @@ public class RoadmapService {
   private final SubjectRepository subjectRepository;
   private final RedisTemplate<String, String> redisTemplate;
   private final long roadmapTime = 1000L * 60 * 30;
-  private final RoadmapManagementRepository roadmapManagementRepository;
 
   private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
+  private final RoadmapManagementRepository roadmapManagementRepository;
 
   public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers) {
 
