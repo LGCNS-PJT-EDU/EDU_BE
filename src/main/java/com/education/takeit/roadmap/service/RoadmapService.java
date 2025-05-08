@@ -1,15 +1,24 @@
 package com.education.takeit.roadmap.service;
 
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,13 +27,49 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RoadmapService {
   private final SubjectRepository subjectRepository;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final long roadmapTime = 1000L * 60 * 30;
+  private final RoadmapManagementRepository roadmapManagementRepository;
+
+  private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
-  private final RedisTemplate<Object, Object> redisTemplate;
 
-  public RoadmapResponseDto getRoadmap(List<RoadmapRequestDto> answers) {
-    List<Subject> resultSubjects = new ArrayList<>();
+  public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers) {
 
-    // BE, FE 정보 처리
+    RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
+
+    if (flag == null) {
+      // uuid 생성
+      String guestUuid = UUID.randomUUID().toString();
+
+      String subjectIds =
+          roadmapResponseDto.subjects().stream()
+              .map(subject -> subject.subjectId().toString())
+              .collect(Collectors.joining(","));
+
+      redisTemplate.opsForValue().set(guestUuid, subjectIds, Duration.ofMinutes(15));
+
+      System.out.println("guest roadmap create:" + guestUuid);
+
+      return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+    } else {
+      // 개인 roadmap 데이터 저장
+      List<Long> subjectIds =
+          roadmapResponseDto.subjects().stream()
+              .map(SubjectDto::subjectId)
+              .collect(Collectors.toList());
+
+      saveRoadmap(flag, subjectIds);
+
+      System.out.println("user roadmap create:" + flag);
+
+      return roadmapResponseDto;
+    }
+  }
+
+  public RoadmapResponseDto createRoadmap(List<RoadmapRequestDto> answers) {
+
+    // BE, FE 분기
     Optional<String> mainTrack =
         answers.stream()
             .filter(a -> a.questionId() == 1)
@@ -39,29 +84,33 @@ public class RoadmapService {
 
     // 필수 과목 추가
     List<Subject> essentialSubjects = subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
-    resultSubjects.addAll(essentialSubjects);
+    List<Subject> resultSubjects = new ArrayList<>(essentialSubjects);
 
     // 조건별 과목 처리
     int flag = 0;
     for (RoadmapRequestDto answer : answers) {
       if (answer.questionId() == 5) {
-        if (answer.answer().equals("React")) {
-          subjectRepository.findById(10L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(11L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(12L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(22L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(23L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(24L).ifPresent(resultSubjects::add);
-        } else if (answer.answer().equals("Vue")) {
-          subjectRepository.findById(13L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(14L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(25L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(26L).ifPresent(resultSubjects::add);
-        } else if (answer.answer().equals("Angular")) {
-          subjectRepository.findById(15L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(16L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(27L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+        switch (answer.answer()) {
+          case "React" -> {
+            subjectRepository.findById(10L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(11L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(12L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(22L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(23L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(24L).ifPresent(resultSubjects::add);
+          }
+          case "Vue" -> {
+            subjectRepository.findById(13L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(14L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(25L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(26L).ifPresent(resultSubjects::add);
+          }
+          case "Angular" -> {
+            subjectRepository.findById(15L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(16L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(27L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(28L).ifPresent(resultSubjects::add);
+          }
         }
       }
       if (answer.questionId() == 6 && answer.answer().equals("Y")) {
@@ -85,26 +134,32 @@ public class RoadmapService {
         subjectRepository.findById(34L).ifPresent(resultSubjects::add);
       }
       if (answer.questionId() == 11) {
-        if (answer.answer().equals("Java/Spring")) {
-          subjectRepository.findById(39L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(46L).ifPresent(resultSubjects::add);
-          flag = 1;
-        } else if (answer.answer().equals("Python/Flask")) {
-          subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(49L).ifPresent(resultSubjects::add);
-          flag = 2;
-        } else if (answer.answer().equals("Python/Django")) {
-          subjectRepository.findById(40L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(48L).ifPresent(resultSubjects::add);
-          flag = 3;
-        } else if (answer.answer().equals("Js/Node")) {
-          subjectRepository.findById(41L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(47L).ifPresent(resultSubjects::add);
-          flag = 4;
-        } else if (answer.answer().equals("Kotlin/Spring")) {
-          subjectRepository.findById(42L).ifPresent(resultSubjects::add);
-          subjectRepository.findById(50L).ifPresent(resultSubjects::add);
-          flag = 5;
+        switch (answer.answer()) {
+          case "Java/Spring" -> {
+            subjectRepository.findById(39L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(46L).ifPresent(resultSubjects::add);
+            flag = 1;
+          }
+          case "Python/Flask" -> {
+            subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(49L).ifPresent(resultSubjects::add);
+            flag = 2;
+          }
+          case "Python/Django" -> {
+            subjectRepository.findById(40L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(48L).ifPresent(resultSubjects::add);
+            flag = 3;
+          }
+          case "Js/Node" -> {
+            subjectRepository.findById(41L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(47L).ifPresent(resultSubjects::add);
+            flag = 4;
+          }
+          case "Kotlin/Spring" -> {
+            subjectRepository.findById(42L).ifPresent(resultSubjects::add);
+            subjectRepository.findById(50L).ifPresent(resultSubjects::add);
+            flag = 5;
+          }
         }
       }
       if (answer.questionId() == 12 && answer.answer().equals("Y")) {
@@ -149,18 +204,50 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    // 5. UUID 생성 및 Redis 저장
-    String uuid = UUID.randomUUID().toString();
-    String key = "roadmap:" + uuid;
+    return new RoadmapResponseDto("??", subjects);
+  }
 
-    // JSON 직렬화 또는 간단한 리스트 저장 예시 (여기선 ID 리스트 저장)
-    String subjectIds =
-        resultSubjects.stream().map(s -> s.getSubId().toString()).collect(Collectors.joining(","));
+  public void saveRoadmap(String flag, List<Long> subjectIds) {
+    Long userId = jwtUtils.getUserId(flag);
 
-    redisTemplate.opsForValue().set(key, subjectIds, Duration.ofMinutes(30));
-    System.out.println("Redis 저장 키: " + key);
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .build();
 
-    return new RoadmapResponseDto(uuid, subjects);
+    roadmapManagementRepository.save(roadmapManagement);
+
+    int order = 1;
+    for (Long subjectId : subjectIds) {
+      Subject subject =
+          subjectRepository
+              .findById(subjectId)
+              .orElseThrow(() -> new RuntimeException("Subject " + subjectId + " not found"));
+
+      Roadmap roadmap =
+          Roadmap.builder()
+              .userId(userId)
+              .roadmapManagement(roadmapManagement)
+              .subject(subject)
+              .orderSub(order++)
+              .build();
+
+      roadmapRepository.save(roadmap);
+    }
+  }
+
+  public void saveGuestRoadmap(String uuid, String jwt) {
+
+    String redisSubjects = redisTemplate.opsForValue().get(uuid);
+
+    if (redisSubjects == null) {
+      throw new IllegalArgumentException("Not found roadmap UUID: " + uuid);
+    }
+
+    List<Long> subjectIds = Arrays.stream(redisSubjects.split(",")).map(Long::parseLong).toList();
+
+    saveRoadmap(jwt, subjectIds);
   }
 
   public int getProgressPercentage(Long userId) {
@@ -171,5 +258,64 @@ public class RoadmapService {
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
 
     return (int) ((double) completed / total * 100);
+  }
+
+  public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
+    List<Roadmap> existingRoadmaps = roadmapRepository.findAllByUserId(userId);
+
+    if (existingRoadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+    RoadmapManagement roadmapManagement = existingRoadmaps.get(0).getRoadmapManagement();
+    roadmapManagement.setRoadmapTimestamp(LocalDateTime.now());
+    roadmapManagementRepository.save(roadmapManagement);
+
+    Map<Long, Roadmap> existingMap = existingRoadmaps.stream()
+            .collect(Collectors.toMap(roadmap-> roadmap.getSubject().getSubId(), roadmap -> roadmap,
+                    (existing, replacement) -> replacement ));
+    List<Roadmap> toSave = new ArrayList<>();
+    Set<Long> updatedSubjectIds = new HashSet<>();
+
+
+    for (SubjectDto dto:subjects){
+      Long subjectId = dto.subjectId();
+      int order =  dto.subjectOrder();
+      updatedSubjectIds.add(subjectId);
+
+      Roadmap roadmap = existingMap.get(subjectId);
+      if(roadmap != null){ // 이미 있는 과목이면
+        roadmap.setOrderSub(order); // 순서만 업데이트
+      }else{ // 새로 추가할 과목이면 생성
+          Subject subject = subjectRepository.findById(subjectId)
+                  .orElseThrow(()-> new EntityNotFoundException("해당 과목 없음:" + subjectId));
+          roadmap = Roadmap.builder()
+                  .userId(userId)
+                  .subject(subject)
+                  .orderSub(order)
+                  .roadmapManagement(roadmapManagement)
+                  .isComplete(false)
+                  .build();
+
+      }
+      toSave.add(roadmap);
+    }
+    // 기존에는 있었는데 수정 사항에 없는 과목은 삭제
+    List<Roadmap> toDelete = existingRoadmaps.stream()
+            .filter(roadmap -> !updatedSubjectIds.contains(roadmap.getSubject().getSubId()))
+            .collect(Collectors.toList());
+    roadmapRepository.deleteAll(toDelete);
+    roadmapRepository.saveAll(toSave);
+
+  }
+
+  @Transactional
+  public void deleteRoadmap(Long userId){
+    List<Roadmap> roadmaps =  roadmapRepository.findAllByUserId(userId);
+    if (roadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+    RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
+    roadmapRepository.deleteAll(roadmaps);
+    roadmapManagementRepository.delete(roadmapManagement);
   }
 }
