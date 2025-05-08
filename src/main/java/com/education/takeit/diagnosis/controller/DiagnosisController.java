@@ -5,11 +5,10 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,14 +31,15 @@ public class DiagnosisController {
 
   /**
    * 진단 결과 POST 요청
+   *
    * @param answers
    * @return
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
   public ResponseEntity<RoadmapResponseDto> postDiagnosis(
-          @RequestHeader(value = "accessToken", required = false) String flag,
-          @RequestBody List<DiagnosisAnswerRequest> answers) {
+      @RequestHeader(value = "accessToken", required = false) String flag,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
     RoadmapResponseDto result = diagnosisService.postDiagnosis(flag, answers);
 
     return ResponseEntity.ok(result);
