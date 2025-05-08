@@ -1,9 +1,10 @@
-name: CI Pipeline
+name: CodeStyleCheck
 
 on:
   push:
-    branches:
+    branches-ignore:
       - main
+      - develop
 
 jobs:
   ci:
@@ -36,28 +37,27 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
+      - name: Apply Spotless Format
+        run: ./gradlew spotlessApply
+
+      - name: Commit and Push if Spotless Made Changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "chore: apply spotless formatting"
+            git push origin HEAD:${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Check Google Style Format
+        run: ./gradlew spotlessCheck
+
       - name: Build & Run Tests
         run: ./gradlew test
 
       - name: Build Application
         run: ./gradlew clean build -x test
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2 # GitHub에서 제공하는 공식 액션을 사용한다는 뜻. aws-actions/configure-aws-credentials는 AWS CLI 인증을 설정
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr # 이 스텝의 출력값에 이름을 붙여주는 것.
-        uses: aws-actions/amazon-ecr-login@v1 # 또 다른 공식 액션을 사용한다는 뜻. ECR에 도커 로그인 명령을 대신 실행
-
-      - name: Build, Tag, and Push Docker image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: 'latest'
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
