@@ -1,12 +1,13 @@
 package com.education.takeit.diagnosis.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "diagnosis")
@@ -18,25 +19,25 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 public class Diagnosis {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long diagnosisId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long diagnosisId;
 
-  @Column(nullable = false, columnDefinition = "TEXT")
-  private String question;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String question;
 
-  @Column(nullable = false, length = 50)
-  private String questionType;
+    @Column(nullable = false, length = 50)
+    private String questionType;
 
-  @CreatedDate
-  @Column(name = "created_dt", updatable = false)
-  private LocalDateTime createdDt;
+    @CreatedDate
+    @Column(name = "created_dt", updatable = false)
+    private LocalDateTime createdDt;
 
-  @Builder.Default
-  @OneToMany(
-      mappedBy = "diagnosis",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private List<Choice> choices = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "diagnosis",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
+    private List<Choice> choices = new ArrayList<>();
 }
