@@ -54,8 +54,12 @@ public class RoadmapService {
       try {
         String answersJson = objectMapper.writeValueAsString(answers); // answers → JSON으로 변환
 
-        redisTemplate.opsForValue().set("guest:" + guestUuid + ":subjects", subjectIds, Duration.ofMinutes(15));
-        redisTemplate.opsForValue().set("guest:" + guestUuid + ":answers", answersJson, Duration.ofMinutes(15));
+        redisTemplate
+            .opsForValue()
+            .set("guest:" + guestUuid + ":subjects", subjectIds, Duration.ofMinutes(15));
+        redisTemplate
+            .opsForValue()
+            .set("guest:" + guestUuid + ":answers", answersJson, Duration.ofMinutes(15));
 
       } catch (JsonProcessingException e) {
         throw new RuntimeException("answers 직렬화 실패", e);
@@ -71,8 +75,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-
-      saveRoadmap(flag, subjectIds,answers);
+      saveRoadmap(flag, subjectIds, answers);
 
       System.out.println("user roadmap create:" + flag);
 
@@ -220,10 +223,11 @@ public class RoadmapService {
     return new RoadmapResponseDto("??", subjects);
   }
 
-  public void saveRoadmap(String flag, List<Long> subjectIds,List<DiagnosisAnswerRequest> answers) {
+  public void saveRoadmap(
+      String flag, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
     Long userId = jwtUtils.getUserId(flag);
 
-    Integer lectureAmount= null;
+    Integer lectureAmount = null;
     Integer priceLevel = null;
     Boolean likesBooks = null;
 
@@ -239,15 +243,14 @@ public class RoadmapService {
       }
     }
 
-
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
-                .roadmapNm("Roadmap")
-                .roadmapTimestamp(LocalDateTime.now())
-                .lectureAmount(lectureAmount)
-                .priceLevel(priceLevel)
-                .likesBooks(likesBooks)
-                .build();
+            .roadmapNm("Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .lectureAmount(lectureAmount)
+            .priceLevel(priceLevel)
+            .likesBooks(likesBooks)
+            .build();
 
     roadmapManagementRepository.save(roadmapManagement);
 
@@ -279,17 +282,14 @@ public class RoadmapService {
     }
 
     // subjectIds 문자열 → List<Long> 로 변환
-    List<Long> subjectIds = Arrays.stream(redisSubjects.split(","))
-            .map(Long::parseLong)
-            .toList();
+    List<Long> subjectIds = Arrays.stream(redisSubjects.split(",")).map(Long::parseLong).toList();
 
-    //JSON을 List<DiagnosisAnswerRequest>로 바꿔주기
+    // JSON을 List<DiagnosisAnswerRequest>로 바꿔주기
     List<DiagnosisAnswerRequest> answers;
     try {
-      answers = objectMapper.readValue(
-              redisAnswersJson,
-              new TypeReference<List<DiagnosisAnswerRequest>>() {}
-      );
+      answers =
+          objectMapper.readValue(
+              redisAnswersJson, new TypeReference<List<DiagnosisAnswerRequest>>() {});
     } catch (JsonProcessingException e) {
       throw new RuntimeException("answers 역직렬화 실패", e);
     }
@@ -299,7 +299,6 @@ public class RoadmapService {
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
   }
-
 
   public int getProgressPercentage(Long userId) {
     List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
