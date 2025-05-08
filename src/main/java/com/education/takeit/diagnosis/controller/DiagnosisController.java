@@ -16,33 +16,34 @@ import java.util.List;
 @RequestMapping("/api/diagnosis")
 public class DiagnosisController {
 
-    private final DiagnosisService diagnosisService;
+  private final DiagnosisService diagnosisService;
 
-    /**
-     * 진단 문제 GET 요청(전체)
-     *
-     * @return
-     */
-    @GetMapping
-    @Operation(summary = "진단문제 리스트 요청", description = "진단문제 GET API")
-    public ResponseEntity<GroupedDiagnosisResponse> findAllDiagnosis() {
-        GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
-        return ResponseEntity.ok(result);
-    }
+  /**
+   * 진단 문제 GET 요청(전체)
+   *
+   * @return
+   */
+  @GetMapping
+  @Operation(summary = "진단문제 리스트 요청", description = "진단문제 GET API")
+  public ResponseEntity<GroupedDiagnosisResponse> findAllDiagnosis() {
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
+    return ResponseEntity.ok(result);
+  }
 
-    /**
-     * 진단 결과 POST 요청
-     *
-     * @param answers
-     * @return
-     */
-    @PostMapping
-    @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
-    public ResponseEntity<RoadmapResponseDto> recommendRoadmapByDiagnosis(
-            @RequestHeader(value = "accessToken", required = false) String flag,
-            @RequestBody List<DiagnosisAnswerRequest> answers) {
-        RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(flag, answers);
+  /**
+   * 진단 결과 POST 요청
+   *
+   * @param answers
+   * @return
+   */
+  @PostMapping
+  @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
+  public ResponseEntity<RoadmapResponseDto> recommendRoadmapByDiagnosis(
+      @RequestHeader(value = "Authorization", required = false) String flag,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
+    String accessToken = flag.replace("Bearer ", "");
+    RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(accessToken, answers);
 
-        return ResponseEntity.ok(result);
-    }
+    return ResponseEntity.ok(result);
+  }
 }
