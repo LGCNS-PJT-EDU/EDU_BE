@@ -28,8 +28,8 @@ public class PreExamService {
                         .choice3("<body>")
                         .choice4("<doctype>")
                         .answerNum(1)
-                        .unitNum(1)
-                        .unitName("기본 구조와 시맨틱 태그")
+                        .chapterNum(1)
+                        .chapterName("기본 구조와 시맨틱 태그")
                         .difficulty("하")
                         .build(),
 
@@ -40,8 +40,8 @@ public class PreExamService {
                         .choice3("<meta>")
                         .choice4("<section>")
                         .answerNum(4)
-                        .unitNum(1)
-                        .unitName("기본 구조와 시맨틱 태그")
+                        .chapterNum(1)
+                        .chapterName("기본 구조와 시맨틱 태그")
                         .difficulty("하")
                         .build(),
 
@@ -52,8 +52,8 @@ public class PreExamService {
                         .choice3("<li>")
                         .choice4("<br>")
                         .answerNum(1)
-                        .unitNum(2)
-                        .unitName("텍스트 & 목록 요소")
+                        .chapterNum(2)
+                        .chapterName("텍스트 & 목록 요소")
                         .difficulty("하")
                         .build(),
 
@@ -64,8 +64,8 @@ public class PreExamService {
                         .choice3("<dl>")
                         .choice4("<list>")
                         .answerNum(1)
-                        .unitNum(2)
-                        .unitName("텍스트 & 목록 요소")
+                        .chapterNum(2)
+                        .chapterName("텍스트 & 목록 요소")
                         .difficulty("중")
                         .build(),
 
@@ -76,8 +76,8 @@ public class PreExamService {
                         .choice3("CSS 클래스 설정")
                         .choice4("SEO 제외 요청")
                         .answerNum(1)
-                        .unitNum(3)
-                        .unitName("이미지·멀티미디어 & IFrame")
+                        .chapterNum(3)
+                        .chapterName("이미지·멀티미디어 & IFrame")
                         .difficulty("중")
                         .build(),
 
@@ -88,8 +88,8 @@ public class PreExamService {
                         .choice3("반복 재생")
                         .choice4("음소거 재생")
                         .answerNum(1)
-                        .unitNum(3)
-                        .unitName("이미지·멀티미디어 & IFrame")
+                        .chapterNum(3)
+                        .chapterName("이미지·멀티미디어 & IFrame")
                         .difficulty("하")
                         .build(),
 
@@ -100,8 +100,8 @@ public class PreExamService {
                         .choice3("url")
                         .choice4("search")
                         .answerNum(1)
-                        .unitNum(4)
-                        .unitName("폼 & 입력 요소")
+                        .chapterNum(4)
+                        .chapterName("폼 & 입력 요소")
                         .difficulty("중")
                         .build(),
 
@@ -112,8 +112,8 @@ public class PreExamService {
                         .choice3("value")
                         .choice4("for")
                         .answerNum(1)
-                        .unitNum(4)
-                        .unitName("폼 & 입력 요소")
+                        .chapterNum(4)
+                        .chapterName("폼 & 입력 요소")
                         .difficulty("하")
                         .build(),
 
@@ -124,8 +124,8 @@ public class PreExamService {
                         .choice3("<td>")
                         .choice4("<tbody>")
                         .answerNum(1)
-                        .unitNum(5)
-                        .unitName("테이블·메타데이터 & 접근성")
+                        .chapterNum(5)
+                        .chapterName("테이블·메타데이터 & 접근성")
                         .difficulty("중")
                         .build(),
 
@@ -136,8 +136,8 @@ public class PreExamService {
                         .choice3("<caption>")
                         .choice4("<colgroup>")
                         .answerNum(1)
-                        .unitNum(5)
-                        .unitName("테이블·메타데이터 & 접근성")
+                        .chapterNum(5)
+                        .chapterName("테이블·메타데이터 & 접근성")
                         .difficulty("중")
                         .build()
         );
