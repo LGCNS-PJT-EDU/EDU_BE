@@ -12,6 +12,9 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
@@ -25,9 +28,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RoadmapService {
+  private final ObjectMapper objectMapper;
   private final SubjectRepository subjectRepository;
   private final RedisTemplate<String, String> redisTemplate;
-  private final long roadmapTime = 1000L * 60 * 30;
   private final RoadmapManagementRepository roadmapManagementRepository;
 
   private final JwtUtils jwtUtils;
@@ -41,16 +44,29 @@ public class RoadmapService {
       // uuid 생성
       String guestUuid = UUID.randomUUID().toString();
 
+      // SubjecIds 저장
       String subjectIds =
           roadmapResponseDto.subjects().stream()
               .map(subject -> subject.subjectId().toString())
               .collect(Collectors.joining(","));
+      // 공통질문 2~4 응답 레디스에 저장
+      try {
+        String answersJson = objectMapper.writeValueAsString(answers); // answers → JSON으로 변환
 
-      redisTemplate.opsForValue().set(guestUuid, subjectIds, Duration.ofMinutes(15));
+        redisTemplate
+            .opsForValue()
+            .set("guest:" + guestUuid + ":subjects", subjectIds, Duration.ofMinutes(15));
+        redisTemplate
+            .opsForValue()
+            .set("guest:" + guestUuid + ":answers", answersJson, Duration.ofMinutes(15));
 
-      System.out.println("guest roadmap create:" + guestUuid);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException("answers 직렬화 실패", e);
+      }
 
+      System.out.println("guest roadmap create: " + guestUuid);
       return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+
     } else {
       // 개인 roadmap 데이터 저장
       List<Long> subjectIds =
@@ -58,7 +74,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(flag, subjectIds);
+      saveRoadmap(flag, subjectIds, answers);
 
       System.out.println("user roadmap create:" + flag);
 
@@ -206,13 +222,33 @@ public class RoadmapService {
     return new RoadmapResponseDto("??", subjects);
   }
 
-  public void saveRoadmap(String flag, List<Long> subjectIds) {
+  public void saveRoadmap(
+      String flag, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
     Long userId = jwtUtils.getUserId(flag);
+
+    Integer lectureAmount = null;
+    Integer priceLevel = null;
+    Boolean likesBooks = null;
+
+    for (DiagnosisAnswerRequest answer : answers) {
+      long questionId = answer.questionId();
+
+      if (questionId == 2) {
+        lectureAmount = Integer.parseInt(answer.answer());
+      } else if (questionId == 3) {
+        priceLevel = Integer.parseInt(answer.answer());
+      } else if (questionId == 4) {
+        likesBooks = answer.answer().equals("Y"); // Y: true, N: false
+      }
+    }
 
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
             .roadmapNm("Roadmap")
             .roadmapTimestamp(LocalDateTime.now())
+            .lectureAmount(lectureAmount)
+            .priceLevel(priceLevel)
+            .likesBooks(likesBooks)
             .build();
 
     roadmapManagementRepository.save(roadmapManagement);
@@ -237,16 +273,30 @@ public class RoadmapService {
   }
 
   public void saveGuestRoadmap(String uuid, String jwt) {
+    String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
+    String redisAnswersJson = redisTemplate.opsForValue().get("guest:" + uuid + ":answers");
 
-    String redisSubjects = redisTemplate.opsForValue().get(uuid);
-
-    if (redisSubjects == null) {
-      throw new IllegalArgumentException("Not found roadmap UUID: " + uuid);
+    if (redisSubjects == null || redisAnswersJson == null) {
+      throw new IllegalArgumentException("해당 게스트의 로드맵 데이터가 존재하지 않습니다 Guest UUID: " + uuid);
     }
 
+    // subjectIds 문자열 → List<Long> 로 변환
     List<Long> subjectIds = Arrays.stream(redisSubjects.split(",")).map(Long::parseLong).toList();
 
-    saveRoadmap(jwt, subjectIds);
+    // JSON을 List<DiagnosisAnswerRequest>로 바꿔주기
+    List<DiagnosisAnswerRequest> answers;
+    try {
+      answers =
+          objectMapper.readValue(
+              redisAnswersJson, new TypeReference<List<DiagnosisAnswerRequest>>() {});
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("answers 역직렬화 실패", e);
+    }
+
+    saveRoadmap(jwt, subjectIds, answers);
+
+    redisTemplate.delete("guest:" + uuid + ":subjects");
+    redisTemplate.delete("guest:" + uuid + ":answers");
   }
 
   public int getProgressPercentage(Long userId) {
@@ -321,5 +371,71 @@ public class RoadmapService {
     RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
+  }
+
+  public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
+    Long roadmapId;
+    List<SubjectDto> subjects;
+
+    if (defaultRoadmapType.equals("FE")) {
+      roadmapId = 1L;
+    } else if (defaultRoadmapType.equals("BE")) {
+      roadmapId = 2L;
+    } else {
+      throw new IllegalArgumentException("roadmap type error: " + defaultRoadmapType);
+    }
+
+    List<Roadmap> roadmaps =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
+
+    return roadmaps.stream()
+        .sorted(Comparator.comparing(Roadmap::getOrderSub))
+        .map(
+            r -> {
+              Subject s = r.getSubject();
+              return new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder());
+            })
+        .collect(Collectors.toList());
+  }
+
+  public void saveDefaultRoadmap(String roadmapType, String jwtToken) {
+    Long userId = jwtUtils.getUserId(jwtToken);
+    Long roadmapManagementId = 1L;
+    if (roadmapType.equals("FE")) {
+      roadmapManagementId = 1L;
+    } else if (roadmapType.equals("BE")) {
+      roadmapManagementId = 2L;
+    } else {
+      throw new IllegalArgumentException("roadmap type error: " + roadmapType);
+    }
+
+    List<Roadmap> defaultRoadmapList =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagementId);
+
+    if (defaultRoadmapList.isEmpty()) {
+      throw new IllegalArgumentException("기본 로드맵이 존재하지 않습니다: " + roadmapType);
+    }
+
+    // 새로운 로드맵 관리 정보 생성
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Default " + roadmapType + " Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .build();
+
+    roadmapManagementRepository.save(roadmapManagement);
+
+    int order = 1;
+    for (Roadmap defaultRoadmap : defaultRoadmapList) {
+      Roadmap newRoadmap =
+          Roadmap.builder()
+              .userId(userId)
+              .roadmapManagement(roadmapManagement)
+              .subject(defaultRoadmap.getSubject())
+              .orderSub(order++)
+              .build();
+
+      roadmapRepository.save(newRoadmap);
+    }
   }
 }
