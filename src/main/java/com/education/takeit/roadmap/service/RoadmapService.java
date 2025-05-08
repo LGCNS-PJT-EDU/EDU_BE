@@ -1,9 +1,9 @@
 package com.education.takeit.roadmap.service;
 
+import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.roadmap.dto.RoadmapRequestDto;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
@@ -33,7 +33,7 @@ public class RoadmapService {
   private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
 
-  public RoadmapResponseDto roadmapSelect(String flag, List<RoadmapRequestDto> answers) {
+  public RoadmapResponseDto roadmapSelect(String flag, List<DiagnosisAnswerRequest> answers) {
 
     RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
 
@@ -66,13 +66,13 @@ public class RoadmapService {
     }
   }
 
-  public RoadmapResponseDto createRoadmap(List<RoadmapRequestDto> answers) {
+  public RoadmapResponseDto createRoadmap(List<DiagnosisAnswerRequest> answers) {
 
     // BE, FE 분기
     Optional<String> mainTrack =
         answers.stream()
             .filter(a -> a.questionId() == 1)
-            .map(RoadmapRequestDto::answer)
+            .map(DiagnosisAnswerRequest::answer)
             .findFirst();
 
     if (mainTrack.isEmpty()) {
@@ -87,7 +87,7 @@ public class RoadmapService {
 
     // 조건별 과목 처리
     int flag = 0;
-    for (RoadmapRequestDto answer : answers) {
+    for (DiagnosisAnswerRequest answer : answers) {
       if (answer.questionId() == 5) {
         switch (answer.answer()) {
           case "React" -> {
