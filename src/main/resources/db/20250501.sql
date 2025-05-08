@@ -130,14 +130,14 @@ DROP TABLE IF EXISTS track;
 
 
 -- track(과정) 테이블 생성
-CREATE TABLE IF NOT EXISTS track(
+CREATE TABLE track(
     track_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     track_nm VARCHAR(255) NOT NULL,
     UNIQUE KEY uk_track (track_nm)
 );
 
 -- subject(과목) 테이블 생성
-CREATE TABLE IF NOT EXISTS subject(
+CREATE TABLE subject(
     sub_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     sub_nm VARCHAR(255) NOT NULL,
     sub_type VARCHAR(50) NOT NULL,
@@ -149,14 +149,14 @@ CREATE TABLE IF NOT EXISTS subject(
 );
 
 -- roadmap_management(로드맵 관리) 테이블 생성
-CREATE TABLE IF NOT EXISTS roadmap_management(
+CREATE TABLE roadmap_management(
     roadmap_management_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     roadmap_nm VARCHAR(255),
     roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- roadmap(로드맵) 테이블 생성
-CREATE TABLE IF NOT EXISTS roadmap(
+CREATE TABLE roadmap(
     roadmap_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     order_sub INT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS roadmap(
 );
 
 -- track(과정) 정보 주입
-INSERT IGNORE INTO track (track_id, track_nm) VALUES
+INSERT INTO track (track_id, track_nm) VALUES
     (1, '기초지식'),
     (2, 'VCS'),
     (3, 'HTTP 통신 및 상태 동기화 고도화'),
@@ -206,7 +206,7 @@ INSERT IGNORE INTO track (track_id, track_nm) VALUES
     (34, 'Flask Advanced');
 
 -- subject(과목) 정보 주입
-INSERT IGNORE INTO subject (sub_id, sub_nm, track_id, sub_type, sub_essential, base_sub_order, sub_overview) VALUES
+INSERT INTO subject (sub_id, sub_nm, track_id, sub_type, sub_essential, base_sub_order, sub_overview) VALUES
     (1, 'HTML', 1, 'FE', 'Y', 1, 'HTML이란? 웹페이지의 뼈대!웹사이트에서 내용을 담당해요.예를 들면, 제목, 글, 버튼, 이미지, 표 같은 걸 HTML로 만들어줍니다.마치 건물의 설계도 같다고 생각하면 돼요. 벽이 어디 있는지, 문은 어디 있는지 알려주는 거죠.'),
     (2, 'CSS', 1, 'FE', 'Y', 2, 'CSS란? 웹페이지에 스타일을 입히는 도구!색깔, 크기, 글꼴, 위치 같은 디자인 요소를 조절해요.예를 들면, 글자의 색을 바꾸거나 버튼의 모양을 다듬고,이미지 간 간격을 조정하고 배경 색을 설정할 수 있어요.마치 집 안을 꾸미는 인테리어처럼,보는 사람이 더 편하고 예쁘게 느낄 수 있도록 만드는 역할을 해요.'),
     (3, 'JavaScript', 1, 'FE', 'Y', 3, 'JavaScript란? 웹페이지를 움직이게 하는 도구!클릭, 입력, 스크롤 같은 사용자 행동에 반응하게 만들어요.예를 들면, 버튼을 누르면 팝업이 뜨거나,입력한 정보를 검사하고, 이미지가 자동으로 바뀌는 기능을 만들 수 있어요.마치 리모컨을 눌렀을 때 TV가 반응하듯,웹페이지에 동작과 반응을 더해주는 역할을 해요.'),
@@ -271,8 +271,6 @@ INSERT IGNORE INTO subject (sub_id, sub_nm, track_id, sub_type, sub_essential, b
 -- users, roadmap, roadmap_management 테이블 초기화
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE users;
-TRUNCATE TABLE roadmap;
-TRUNCATE TABLE roadmap_management;
 SET FOREIGN_KEY_CHECKS = 1;
 
 

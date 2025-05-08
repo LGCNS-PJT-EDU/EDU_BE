@@ -322,4 +322,29 @@ public class RoadmapService {
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
   }
+
+  public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType){
+    Long roadmapId;
+    List<SubjectDto> subjects;
+
+    if(defaultRoadmapType.equals("FE")){
+      roadmapId = 1L;
+    }
+    else if(defaultRoadmapType.equals("BE")){
+      roadmapId = 2L;
+    }
+    else{
+      throw new IllegalArgumentException("roadmap type error: " + defaultRoadmapType);
+    }
+
+    List<Roadmap> roadmaps = roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
+
+    return roadmaps.stream()
+            .sorted(Comparator.comparing(Roadmap::getOrderSub))
+            .map(r -> {
+              Subject s = r.getSubject();
+              return new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder());
+            })
+            .collect(Collectors.toList());
+  }
 }
