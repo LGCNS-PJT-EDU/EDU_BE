@@ -93,3 +93,5 @@ Breaking Point 가 있을 때
 * [Gitmoji](https://gitmoji.dev/)를 이용하여 Type을 대신하기도 합니다.
 
 ---
+[GitHub For Jira 커밋 연동 자동화](https://velog.io/@tyo1012/LG-CNS-AM-Inspire-Camp-1%EA%B8%B0-%EC%B5%9C%EC%A2%85-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-5.-GitHub-For-Jira-%EC%BB%A4%EB%B0%8B-%EC%97%B0%EB%8F%99-%EC%9E%90%EB%8F%99%ED%99%94)
+[DB 마이그레이션 설정](https://velog.io/@tyo1012/LG-CNS-AM-Inspire-Camp-1%EA%B8%B0-%EC%B5%9C%EC%A2%85-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-7.-DB-%EB%A7%88%EC%9D%B4%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%85%98-%EC%84%A4%EC%A0%95)

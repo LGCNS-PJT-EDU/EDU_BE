@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# 1) 현재 브랜치명 추출
+BRANCH="$(git symbolic-ref --short HEAD)"
+
+# 2) 브랜치에 JIRA 키가 있으면 커밋 메시지 형식 검증
+if [[ "$BRANCH" =~ ([A-Z]+-[0-9]+) ]]; then
+  MSG="$(<"$1")"
+  PAT="^([A-Z]+-[0-9]+) (feat|fix|docs|style|refactor|test|chore)(\(.+\))?:.{1,72}"
+  if ! [[ "$MSG" =~ $PAT ]]; then
+    echo -e "\n❌ Commit Message Error!"
+    echo "   EX: 'PROJECT-123 feat: 메시지 제목'"
+    exit 1
+  fi
+fi
+
+# 3) JIRA 키 없는 브랜치는 검증 없이 통과
+exit 0

@@ -2,6 +2,19 @@ spring:
   application:
     name: takeit
 
+  config:
+    import: optional:file:.env[.properties]
+
+  profiles:
+    active: dev
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+
 management:
   endpoints:
     web:
@@ -9,6 +22,7 @@ management:
         include:
           - health
           - info
+
   endpoint:
     health:
       show-details: always
