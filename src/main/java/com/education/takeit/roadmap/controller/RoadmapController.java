@@ -50,9 +50,10 @@ public class RoadmapController {
 
   @PutMapping
   @Operation(summary = "로드맵 수정", description = "사용자가 원하는 대로 로드맵 과목 수정")
-  public ResponseEntity<Message> updateRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                               @RequestBody List<SubjectDto> subjects){
-    Long userId= userDetails.getUserId();
+  public ResponseEntity<Message> updateRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<SubjectDto> subjects) {
+    Long userId = userDetails.getUserId();
     roadmapService.updateRoadmap(userId, subjects);
 
     return ResponseEntity.ok(new Message(StatusCode.OK));
@@ -60,11 +61,12 @@ public class RoadmapController {
 
   @DeleteMapping
   @Operation(summary = "로드맵 삭제", description = "로드맵 삭제")
-  public ResponseEntity<Message> deleteRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails) {{
-  Long userId= userDetails.getUserId();
-  roadmapService.deleteRoadmap(userId);
-  return ResponseEntity.ok(new Message(StatusCode.OK));
-
-  }
+  public ResponseEntity<Message> deleteRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    {
+      Long userId = userDetails.getUserId();
+      roadmapService.deleteRoadmap(userId);
+      return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
   }
 }
