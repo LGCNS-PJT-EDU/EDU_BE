@@ -1,6 +1,8 @@
 package com.education.takeit.roadmap.service;
 
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.roadmap.dto.RoadmapResponseDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
@@ -10,6 +12,8 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -253,5 +257,69 @@ public class RoadmapService {
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
 
     return (int) ((double) completed / total * 100);
+  }
+
+  public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
+    List<Roadmap> existingRoadmaps = roadmapRepository.findAllByUserId(userId);
+
+    if (existingRoadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+    RoadmapManagement roadmapManagement = existingRoadmaps.get(0).getRoadmapManagement();
+    roadmapManagement.setRoadmapTimestamp(LocalDateTime.now());
+    roadmapManagementRepository.save(roadmapManagement);
+
+    Map<Long, Roadmap> existingMap =
+        existingRoadmaps.stream()
+            .collect(
+                Collectors.toMap(
+                    roadmap -> roadmap.getSubject().getSubId(),
+                    roadmap -> roadmap,
+                    (existing, replacement) -> replacement));
+    List<Roadmap> toSave = new ArrayList<>();
+    Set<Long> updatedSubjectIds = new HashSet<>();
+
+    for (SubjectDto dto : subjects) {
+      Long subjectId = dto.subjectId();
+      int order = dto.subjectOrder();
+      updatedSubjectIds.add(subjectId);
+
+      Roadmap roadmap = existingMap.get(subjectId);
+      if (roadmap != null) { // 이미 있는 과목이면
+        roadmap.setOrderSub(order); // 순서만 업데이트
+      } else { // 새로 추가할 과목이면 생성
+        Subject subject =
+            subjectRepository
+                .findById(subjectId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 과목 없음:" + subjectId));
+        roadmap =
+            Roadmap.builder()
+                .userId(userId)
+                .subject(subject)
+                .orderSub(order)
+                .roadmapManagement(roadmapManagement)
+                .isComplete(false)
+                .build();
+      }
+      toSave.add(roadmap);
+    }
+    // 기존에는 있었는데 수정 사항에 없는 과목은 삭제
+    List<Roadmap> toDelete =
+        existingRoadmaps.stream()
+            .filter(roadmap -> !updatedSubjectIds.contains(roadmap.getSubject().getSubId()))
+            .collect(Collectors.toList());
+    roadmapRepository.deleteAll(toDelete);
+    roadmapRepository.saveAll(toSave);
+  }
+
+  @Transactional
+  public void deleteRoadmap(Long userId) {
+    List<Roadmap> roadmaps = roadmapRepository.findAllByUserId(userId);
+    if (roadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+    RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
+    roadmapRepository.deleteAll(roadmaps);
+    roadmapManagementRepository.delete(roadmapManagement);
   }
 }
