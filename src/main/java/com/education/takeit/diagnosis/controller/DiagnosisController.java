@@ -29,7 +29,7 @@ public class DiagnosisController {
         GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
         return ResponseEntity.ok(result);
     }
-
+    
     /**
      * 진단 결과 POST 요청
      *
@@ -39,9 +39,10 @@ public class DiagnosisController {
     @PostMapping
     @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
     public ResponseEntity<RoadmapResponseDto> recommendRoadmapByDiagnosis(
-            @RequestHeader(value = "accessToken", required = false) String flag,
+            @RequestHeader(value = "Authorization", required = false) String flag,
             @RequestBody List<DiagnosisAnswerRequest> answers) {
-        RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(flag, answers);
+        String accessToken = flag.replace("Bearer ", "");
+        RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(accessToken, answers);
 
         return ResponseEntity.ok(result);
     }
