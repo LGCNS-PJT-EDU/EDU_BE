@@ -3,11 +3,11 @@ package com.education.takeit.exam.dto;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ExamResponse {
+public class ExamResDto {
+  private int questionId;
   private String question;
   private String choice1;
   private String choice2;
