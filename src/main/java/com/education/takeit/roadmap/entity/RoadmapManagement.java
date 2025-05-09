@@ -26,11 +26,11 @@ public class RoadmapManagement {
       columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
   private LocalDateTime roadmapTimestamp;
 
-  @Column(name = "lecture_amount")
-  private Integer lectureAmount; // 응답 (0 ~ 4)
+  @Enumerated(EnumType.STRING)
+  private LectureAmount lectureAmount;
 
-  @Column(name = "price_level")
-  private Integer priceLevel; // 응답 (0 ~ 5)
+  @Enumerated(EnumType.STRING)
+  private PriceLevel priceLevel;
 
   @Column(name = "likes_books")
   private Boolean likesBooks; // Y: true, N: false
