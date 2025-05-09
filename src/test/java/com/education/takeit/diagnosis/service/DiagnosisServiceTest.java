@@ -8,7 +8,7 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.entity.Choice;
 import com.education.takeit.diagnosis.entity.Diagnosis;
 import com.education.takeit.diagnosis.repository.DiagnosisRepository;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.service.RoadmapService;
 import java.util.List;
@@ -94,6 +94,7 @@ class DiagnosisServiceTest {
   void recommendRoadmapByDiagnosis() {
     // given
     String flag = "dummyAccessToken";
+    Long userId = 1L;
     List<DiagnosisAnswerRequest> answers =
         List.of(
             new DiagnosisAnswerRequest(1L, "BE"),
@@ -106,8 +107,8 @@ class DiagnosisServiceTest {
             new DiagnosisAnswerRequest(14L, "Y"),
             new DiagnosisAnswerRequest(15L, "N"));
 
-    RoadmapResponseDto roadmap =
-        new RoadmapResponseDto(
+    RoadmapSaveResDto roadmap =
+        new RoadmapSaveResDto(
             UUID.fromString("cc6d893c-637f-44ce-9a82-69c7137b3a81").toString(),
             List.of(
                 new SubjectDto(35L, "리눅스 명령어", 1),
@@ -121,13 +122,13 @@ class DiagnosisServiceTest {
                 new SubjectDto(49L, "Flask", 15),
                 new SubjectDto(57L, "Django 운영 & 배포", 23)));
 
-    when(roadmapService.roadmapSelect(flag, answers)).thenReturn(roadmap);
+    when(roadmapService.selectRoadmap(userId, answers)).thenReturn(roadmap);
 
     // when
-    RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(flag, answers);
+    RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
     // then
-    assertThat(result.roadmapId().toString()).isEqualTo("cc6d893c-637f-44ce-9a82-69c7137b3a81");
+    assertThat(result.uuid().toString()).isEqualTo("cc6d893c-637f-44ce-9a82-69c7137b3a81");
     assertThat(result.subjects()).hasSize(10);
     assertThat(result.subjects().get(0).subjectName()).isEqualTo("리눅스 명령어");
   }
