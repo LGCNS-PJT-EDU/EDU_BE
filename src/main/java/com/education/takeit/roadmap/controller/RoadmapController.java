@@ -34,7 +34,7 @@ public class RoadmapController {
   @PostMapping("/save")
   @Operation(summary = "회원가입한 사용자의 로드맵 저장 요청", description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장")
   public ResponseEntity<Message> saveRoadmap(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
+          @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody Map<String, String> body) {
     System.out.println(userDetails);
     Long userId = userDetails.getUserId();
