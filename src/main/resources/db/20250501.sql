@@ -165,7 +165,7 @@ CREATE TABLE roadmap(
     user_id BIGINT NOT NULL,
     sub_id BIGINT NOT NULL,
     roadmap_management_id BIGINT NOT NULL,
-    is_completed BOOLEAN NOT NULL DEFAULT FALSE,
+    is_complete BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_roadmap_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_roadmap_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
     CONSTRAINT fk_roadmap_roadmap_management FOREIGN KEY (roadmap_management_id) REFERENCES roadmap_management(roadmap_management_id)
@@ -285,7 +285,7 @@ INSERT INTO users(user_id, is_active, email, login_type, nickname) VALUES
 INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm) VALUES
     (1, 'FE_DEFAULT_ROADMAP');
 
-INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_completed) VALUES
+INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_complete) VALUES
     (1, 1, 1, 1, 1, 0),
     (2, 2, 1, 2, 1, 0),
     (3, 3, 1, 3, 1, 0),
@@ -318,7 +318,7 @@ INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_i
 INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm) VALUES
     (2, 'BE_DEFAULT_ROADMAP');
 
-INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_completed) VALUES
+INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_complete) VALUES
     (27, 1, 1, 35, 2, 0),
     (28, 2, 1, 36, 2, 0),
     (29, 3, 1, 37, 2, 0),
