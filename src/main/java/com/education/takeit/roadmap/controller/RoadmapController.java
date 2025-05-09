@@ -33,10 +33,13 @@ public class RoadmapController {
 
   @PostMapping("/save")
   @Operation(summary = "회원가입한 사용자의 로드맵 저장 요청", description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장")
-  public void saveRoadmap(
-      @RequestHeader(value = "accessToken") String accessToken,
+  public ResponseEntity<Message> saveRoadmap(
+          @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody Map<String, String> body) {
-    roadmapService.saveGuestRoadmap(body.get("uuid"), accessToken);
+    System.out.println(userDetails);
+    Long userId = userDetails.getUserId();
+    roadmapService.saveGuestRoadmap(body.get("uuid"), userId);
+    return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
   @GetMapping("/users/{userId}/progress")
@@ -80,9 +83,9 @@ public class RoadmapController {
   @Operation(summary = "기본 로드맵을 사용자에게 저장", description = "기본 로드맵을 사용자에게 할당")
   public ResponseEntity<Message> saveDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType,
-      @RequestHeader("Authorization") String authorizationHeader) {
-    String accessToken = authorizationHeader.replace("Bearer ", "");
-    roadmapService.saveDefaultRoadmap(defaultRoadmapType, accessToken);
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long userId = userDetails.getUserId();
+    roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 }

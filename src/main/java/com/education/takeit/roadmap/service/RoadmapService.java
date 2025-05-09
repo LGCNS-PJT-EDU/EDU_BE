@@ -3,8 +3,7 @@ package com.education.takeit.roadmap.service;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.RoadmapManagement;
@@ -32,21 +31,19 @@ public class RoadmapService {
   private final SubjectRepository subjectRepository;
   private final RedisTemplate<String, String> redisTemplate;
   private final RoadmapManagementRepository roadmapManagementRepository;
-
-  private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
 
-  public RoadmapResponseDto roadmapSelect(String flag, List<DiagnosisAnswerRequest> answers) {
+  public RoadmapSaveResDto selectRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
 
-    RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
+    RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
 
-    if (flag == null) {
+    if (userId == null) {
       // uuid 생성
       String guestUuid = UUID.randomUUID().toString();
 
       // SubjecIds 저장
       String subjectIds =
-          roadmapResponseDto.subjects().stream()
+          roadmapSaveResDto.subjects().stream()
               .map(subject -> subject.subjectId().toString())
               .collect(Collectors.joining(","));
       // 공통질문 2~4 응답 레디스에 저장
@@ -65,24 +62,22 @@ public class RoadmapService {
       }
 
       System.out.println("guest roadmap create: " + guestUuid);
-      return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+      return new RoadmapSaveResDto(guestUuid, roadmapSaveResDto.subjects());
 
     } else {
       // 개인 roadmap 데이터 저장
       List<Long> subjectIds =
-          roadmapResponseDto.subjects().stream()
+          roadmapSaveResDto.subjects().stream()
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(flag, subjectIds, answers);
+      saveRoadmap(userId, subjectIds, answers);
 
-      System.out.println("user roadmap create:" + flag);
-
-      return roadmapResponseDto;
+      return roadmapSaveResDto;
     }
   }
 
-  public RoadmapResponseDto createRoadmap(List<DiagnosisAnswerRequest> answers) {
+  public RoadmapSaveResDto createRoadmap(List<DiagnosisAnswerRequest> answers) {
 
     // BE, FE 분기
     Optional<String> mainTrack =
@@ -92,7 +87,7 @@ public class RoadmapService {
             .findFirst();
 
     if (mainTrack.isEmpty()) {
-      throw new IllegalArgumentException("BE, FE 분기 처리 오류");
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
     }
 
     String BEorFE = mainTrack.get(); // BE, FE 정보 저장
@@ -187,19 +182,6 @@ public class RoadmapService {
         if (flag == 1) {
           subjectRepository.findById(51L).ifPresent(resultSubjects::add);
         } else if (flag == 2) {
-          subjectRepository.findById(57L).ifPresent(resultSubjects::add);
-        } else if (flag == 3) {
-          subjectRepository.findById(55L).ifPresent(resultSubjects::add);
-        } else if (flag == 4) {
-          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
-        } else if (flag == 5) {
-          subjectRepository.findById(51L).ifPresent(resultSubjects::add);
-        }
-      }
-      if (answer.questionId() == 15 && answer.answer().equals("Y")) {
-        if (flag == 1) {
-          subjectRepository.findById(52L).ifPresent(resultSubjects::add);
-        } else if (flag == 2) {
           subjectRepository.findById(58L).ifPresent(resultSubjects::add);
         } else if (flag == 3) {
           subjectRepository.findById(56L).ifPresent(resultSubjects::add);
@@ -207,6 +189,19 @@ public class RoadmapService {
           subjectRepository.findById(54L).ifPresent(resultSubjects::add);
         } else if (flag == 5) {
           subjectRepository.findById(52L).ifPresent(resultSubjects::add);
+        }
+      }
+      if (answer.questionId() == 15 && answer.answer().equals("Y")) {
+        if (flag == 1) {
+          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
+        } else if (flag == 2) {
+          subjectRepository.findById(59L).ifPresent(resultSubjects::add);
+        } else if (flag == 3) {
+          subjectRepository.findById(57L).ifPresent(resultSubjects::add);
+        } else if (flag == 4) {
+          subjectRepository.findById(55L).ifPresent(resultSubjects::add);
+        } else if (flag == 5) {
+          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
         }
       }
     }
@@ -219,12 +214,11 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    return new RoadmapResponseDto("??", subjects);
+    return new RoadmapSaveResDto("사용자는 uuid가 없어요", subjects);
   }
 
   public void saveRoadmap(
-      String flag, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
-    Long userId = jwtUtils.getUserId(flag);
+      Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
     Integer lectureAmount = null;
     Integer priceLevel = null;
@@ -272,12 +266,12 @@ public class RoadmapService {
     }
   }
 
-  public void saveGuestRoadmap(String uuid, String jwt) {
+  public void saveGuestRoadmap(String uuid, Long userId) {
     String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
     String redisAnswersJson = redisTemplate.opsForValue().get("guest:" + uuid + ":answers");
 
     if (redisSubjects == null || redisAnswersJson == null) {
-      throw new IllegalArgumentException("해당 게스트의 로드맵 데이터가 존재하지 않습니다 Guest UUID: " + uuid);
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
 
     // subjectIds 문자열 → List<Long> 로 변환
@@ -293,7 +287,7 @@ public class RoadmapService {
       throw new RuntimeException("answers 역직렬화 실패", e);
     }
 
-    saveRoadmap(jwt, subjectIds, answers);
+    saveRoadmap(userId, subjectIds, answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
@@ -374,7 +368,7 @@ public class RoadmapService {
   }
 
   public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
-    Long roadmapId;
+    long roadmapId;
     List<SubjectDto> subjects;
 
     if (defaultRoadmapType.equals("FE")) {
@@ -382,7 +376,7 @@ public class RoadmapService {
     } else if (defaultRoadmapType.equals("BE")) {
       roadmapId = 2L;
     } else {
-      throw new IllegalArgumentException("roadmap type error: " + defaultRoadmapType);
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
     }
 
     List<Roadmap> roadmaps =
@@ -398,22 +392,21 @@ public class RoadmapService {
         .collect(Collectors.toList());
   }
 
-  public void saveDefaultRoadmap(String roadmapType, String jwtToken) {
-    Long userId = jwtUtils.getUserId(jwtToken);
-    Long roadmapManagementId = 1L;
+  public void saveDefaultRoadmap(String roadmapType, Long userId) {
+    long roadmapManagementId;
     if (roadmapType.equals("FE")) {
       roadmapManagementId = 1L;
     } else if (roadmapType.equals("BE")) {
       roadmapManagementId = 2L;
     } else {
-      throw new IllegalArgumentException("roadmap type error: " + roadmapType);
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
     }
 
     List<Roadmap> defaultRoadmapList =
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagementId);
 
     if (defaultRoadmapList.isEmpty()) {
-      throw new IllegalArgumentException("기본 로드맵이 존재하지 않습니다: " + roadmapType);
+      throw new CustomException(StatusCode.DEFAULT_ROADMAP_NOT_FOUND);
     }
 
     // 새로운 로드맵 관리 정보 생성
