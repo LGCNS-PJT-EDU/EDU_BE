@@ -153,8 +153,8 @@ CREATE TABLE roadmap_management(
     roadmap_management_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     roadmap_nm VARCHAR(255),
     roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    lecture_amount INT,
-    price_level INT,
+    lecture_amount VARCHAR(255),
+    price_level VARCHAR(255),
     likes_books BOOLEAN
 );
 

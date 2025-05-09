@@ -5,9 +5,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
-import com.education.takeit.roadmap.entity.Roadmap;
-import com.education.takeit.roadmap.entity.RoadmapManagement;
-import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
@@ -220,19 +218,22 @@ public class RoadmapService {
   public void saveRoadmap(
       Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
-    Integer lectureAmount = null;
-    Integer priceLevel = null;
+    LectureAmount lectureAmount = null;
+    PriceLevel priceLevel = null;
     Boolean likesBooks = null;
 
     for (DiagnosisAnswerRequest answer : answers) {
       long questionId = answer.questionId();
+      String value = answer.answer();
 
       if (questionId == 2) {
-        lectureAmount = Integer.parseInt(answer.answer());
+        int idx = Integer.parseInt(value);
+        lectureAmount = LectureAmount.values()[idx];
       } else if (questionId == 3) {
-        priceLevel = Integer.parseInt(answer.answer());
+        int idx = Integer.parseInt(value);
+        priceLevel = PriceLevel.values()[idx];
       } else if (questionId == 4) {
-        likesBooks = answer.answer().equals("Y"); // Y: true, N: false
+        likesBooks = value.equals("Y");
       }
     }
 
