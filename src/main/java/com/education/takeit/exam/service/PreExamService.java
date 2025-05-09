@@ -1,12 +1,11 @@
 package com.education.takeit.exam.service;
 
 import com.education.takeit.exam.dto.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -166,7 +165,7 @@ public class PreExamService {
       // log.warn("FastAPI 통신 실패: {}", e.getMessage());
       // fallback 처리 가능
     }
-    //submitCnt update 필요
+    // submitCnt update 필요
     return new ExamResultDto(userId, subject, chapters, answers);
   }
 
