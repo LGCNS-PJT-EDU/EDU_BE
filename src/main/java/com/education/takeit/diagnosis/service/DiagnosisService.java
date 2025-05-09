@@ -6,7 +6,7 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.repository.DiagnosisRepository;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.service.RoadmapService;
 import java.util.List;
 import java.util.Map;
@@ -72,15 +72,15 @@ public class DiagnosisService {
   /**
    * 진단 결과 => 로드맵 반환 메소드
    *
-   * @param flag
+   * @param userId
    * @param answers
    * @return 진단 결과 => 로드맵
    */
-  public RoadmapResponseDto recommendRoadmapByDiagnosis(
-      String flag, List<DiagnosisAnswerRequest> answers) {
+  public RoadmapSaveResDto recommendRoadmapByDiagnosis(
+      Long userId, List<DiagnosisAnswerRequest> answers) {
     if (answers == null || answers.isEmpty()) {
       throw new CustomException(StatusCode.INVALID_DIAGNOSIS_ANSWER);
     }
-    return roadmapService.roadmapSelect(flag, answers);
+    return roadmapService.selectRoadmap(userId, answers);
   }
 }
