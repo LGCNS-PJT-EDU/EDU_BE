@@ -17,7 +17,9 @@ public enum StatusCode {
   UNAUTHORIZED(401, "만료된 토큰입니다.", HttpStatus.UNAUTHORIZED),
   ROADMAP_NOT_FOUND(404, "사용자의 로드맵이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   DIAGNOSIS_NOT_FOUND(404, "진단 문항이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
-  INVALID_DIAGNOSIS_ANSWER(400, "진단 응답이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
+  INVALID_DIAGNOSIS_ANSWER(400, "진단 응답이 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
+  ROADMAP_TYPE_NOT_FOUND(400, "잘못된 로드맵 생성 요청입니다.", HttpStatus.BAD_REQUEST),
+  DEFAULT_ROADMAP_NOT_FOUND(400, "기본 로드맵이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
 
   private final int statusCode;
   private final String message;
