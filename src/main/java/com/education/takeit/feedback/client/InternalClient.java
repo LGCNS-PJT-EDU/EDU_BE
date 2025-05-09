@@ -1,6 +1,6 @@
 package com.education.takeit.feedback.client;
 
-import com.education.takeit.feedback.dto.FeedbackResponse;
+import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import java.util.Arrays;
@@ -18,12 +18,12 @@ public class InternalClient {
 
   private final RestClient restClient;
 
-  public List<FeedbackResponse> getFeedback(String userId) {
+  public List<FeedbackResponseDto> getFeedback(String userId) {
     // FastAPI측 URI: /feedback?userId={userId}
     // FastAPI측 Method: GET
     // FastAPI측 Return: 항상 [] or [ {feedback1}, {feedback2} ] 중 하나 -> FastAPI 서버에 요청이 전송된다면 반환 시 오류가
     // 발생한 것이 아니면 204 No Content는 반환되지 않음(반환 데이터가 Null이 아님)
-    FeedbackResponse[] arr =
+    FeedbackResponseDto[] arr =
         restClient
             .get()
             .uri("http://localhost:8000/feedback?userId={userId}", userId)
@@ -40,7 +40,7 @@ public class InternalClient {
                 (request, response) -> {
                   throw new CustomException(StatusCode.CONNECTION_SUCCESS_BUT_FETCH_FAILED);
                 })
-            .body(FeedbackResponse[].class);
+            .body(FeedbackResponseDto[].class);
 
     Objects.requireNonNull(arr);
     return Arrays.asList(arr);

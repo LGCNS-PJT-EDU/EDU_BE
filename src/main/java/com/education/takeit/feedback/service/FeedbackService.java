@@ -1,7 +1,7 @@
 package com.education.takeit.feedback.service;
 
 import com.education.takeit.feedback.client.InternalClient;
-import com.education.takeit.feedback.dto.FeedbackResponse;
+import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class FeedbackService {
 
   private final InternalClient aiClient;
 
-  public List<FeedbackResponse> findFeedback(String userId) {
+  public List<FeedbackResponseDto> findFeedback(String userId) {
     return aiClient.getFeedback(userId);
   }
 }
