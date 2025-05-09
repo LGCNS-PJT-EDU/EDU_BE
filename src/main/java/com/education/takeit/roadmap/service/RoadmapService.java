@@ -433,23 +433,24 @@ public class RoadmapService {
     }
   }
 
- public RoadmapFindResDto findUserRoadmap(Long userId) {
+  public RoadmapFindResDto findUserRoadmap(Long userId) {
 
     List<Roadmap> userRoadmaps = roadmapRepository.findAllByUserId(userId);
     if (userRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
 
-    List<SubjectDto> subjects = userRoadmaps.stream()
+    List<SubjectDto> subjects =
+        userRoadmaps.stream()
             .sorted(Comparator.comparing(Roadmap::getOrderSub))
-            .map(r -> new SubjectDto(
-                    r.getSubject().getSubId(),
-                    r.getSubject().getSubNm(),
-                    r.getOrderSub()))
+            .map(
+                r ->
+                    new SubjectDto(
+                        r.getSubject().getSubId(), r.getSubject().getSubNm(), r.getOrderSub()))
             .toList();
 
     String roadmapName = userRoadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
 
     return new RoadmapFindResDto(subjects, roadmapName);
- }
+  }
 }

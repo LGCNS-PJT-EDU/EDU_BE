@@ -5,7 +5,6 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
-import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.service.RoadmapService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -94,7 +93,7 @@ public class RoadmapController {
   @GetMapping
   @Operation(summary = "사용자 로드맵 제공", description = "사용자 로드맵을 제공")
   public ResponseEntity<RoadmapFindResDto> findUserRoadmap(
-          @AuthenticationPrincipal CustomUserDetails userDetails){
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     RoadmapFindResDto userRoadmap = roadmapService.findUserRoadmap(userId);
     return ResponseEntity.ok(userRoadmap);
