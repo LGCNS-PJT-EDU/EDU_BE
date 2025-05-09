@@ -23,6 +23,7 @@ public enum StatusCode {
   CONNECTION_FAILED(502, "피드백 서버에 접속할 수 없습니다.", HttpStatus.BAD_GATEWAY),
   CONNECTION_SUCCESS_BUT_FETCH_FAILED(204, "피드백 서버는 정싱이지만 데이터를 받아올 수 없습니다.", HttpStatus.NO_CONTENT);
 
+
   private final int statusCode;
   private final String message;
   private final HttpStatus httpStatus;
