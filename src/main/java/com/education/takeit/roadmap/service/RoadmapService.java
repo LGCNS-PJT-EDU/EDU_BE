@@ -3,6 +3,7 @@ package com.education.takeit.roadmap.service;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.*;
@@ -370,7 +371,6 @@ public class RoadmapService {
 
   public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
     long roadmapId;
-    List<SubjectDto> subjects;
 
     if (defaultRoadmapType.equals("FE")) {
       roadmapId = 1L;
@@ -394,7 +394,8 @@ public class RoadmapService {
   }
 
   public void saveDefaultRoadmap(String roadmapType, Long userId) {
-    long roadmapManagementId;
+    Long roadmapManagementId;
+
     if (roadmapType.equals("FE")) {
       roadmapManagementId = 1L;
     } else if (roadmapType.equals("BE")) {
@@ -432,4 +433,24 @@ public class RoadmapService {
       roadmapRepository.save(newRoadmap);
     }
   }
+
+ public RoadmapFindResDto findUserRoadmap(Long userId) {
+
+    List<Roadmap> userRoadmaps = roadmapRepository.findAllByUserId(userId);
+    if (userRoadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+
+    List<SubjectDto> subjects = userRoadmaps.stream()
+            .sorted(Comparator.comparing(Roadmap::getOrderSub))
+            .map(r -> new SubjectDto(
+                    r.getSubject().getSubId(),
+                    r.getSubject().getSubNm(),
+                    r.getOrderSub()))
+            .toList();
+
+    String roadmapName = userRoadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
+
+    return new RoadmapFindResDto(subjects, roadmapName);
+ }
 }
