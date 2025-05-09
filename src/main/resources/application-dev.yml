@@ -24,12 +24,12 @@ spring:
       name: takeit
       password: takeit
 
-  redis:
-    host: ${SPRING_REDIS_HOST:redis}
-    port: ${SPRING_REDIS_PORT:6379}
-
   cache:
     type: redis
+  data:
+    redis:
+      port: ${SPRING_REDIS_PORT:redis}
+      host: ${SPRING_REDIS_HOST:6379}
 
 oauth:
   kakao:
