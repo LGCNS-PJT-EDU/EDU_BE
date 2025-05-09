@@ -24,8 +24,8 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단문제 리스트 요청", description = "진단문제 GET API")
-  public ResponseEntity<GroupedDiagnosisResponse> getDiagnosis() {
-    GroupedDiagnosisResponse result = diagnosisService.getDiagnosis();
+  public ResponseEntity<GroupedDiagnosisResponse> findAllDiagnosis() {
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
     return ResponseEntity.ok(result);
   }
 
@@ -37,11 +37,14 @@ public class DiagnosisController {
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
-  public ResponseEntity<RoadmapResponseDto> postDiagnosis(
+  public ResponseEntity<RoadmapResponseDto> recommendRoadmapByDiagnosis(
       @RequestHeader(value = "Authorization", required = false) String flag,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
-    String accessToken = flag.replace("Bearer ", "");
-    RoadmapResponseDto result = diagnosisService.postDiagnosis(accessToken, answers);
+    String accessToken = null;
+    if (flag != null && flag.startsWith("Bearer ")) {
+      accessToken = flag.substring("Bearer ".length());
+    }
+    RoadmapResponseDto result = diagnosisService.recommendRoadmapByDiagnosis(accessToken, answers);
 
     return ResponseEntity.ok(result);
   }

@@ -15,7 +15,9 @@ public enum StatusCode {
   MISSING_NAVER_STATE(401, "NAVER STATE 값이 비어있습니다.", HttpStatus.BAD_REQUEST),
   INVALID_TOKEN(401, "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
   UNAUTHORIZED(401, "만료된 토큰입니다.", HttpStatus.UNAUTHORIZED),
-  ROADMAP_NOT_FOUND(404, "사용자의 로드맵이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+  ROADMAP_NOT_FOUND(404, "사용자의 로드맵이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+  DIAGNOSIS_NOT_FOUND(404, "진단 문항이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+  INVALID_DIAGNOSIS_ANSWER(400, "진단 응답이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
 
   private final int statusCode;
   private final String message;
