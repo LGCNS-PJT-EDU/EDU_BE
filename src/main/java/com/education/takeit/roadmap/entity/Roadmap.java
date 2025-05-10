@@ -34,4 +34,10 @@ public class Roadmap {
 
   @Column(nullable = false)
   private boolean isComplete;
+
+  @Column
+  private int preSubmitCount;
+
+  @Column
+  private int postSubmitCount;
 }
