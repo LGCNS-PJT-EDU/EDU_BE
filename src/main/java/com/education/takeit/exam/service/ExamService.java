@@ -9,8 +9,15 @@ import org.springframework.web.client.RestClientException;
 
 @Service
 @RequiredArgsConstructor
-public class PreExamService {
+public class ExamService {
 
+  /**
+   * 사전 평가 문제 조회
+   *
+   * @param userId
+   * @param subjectId
+   * @return
+   */
   public List<ExamResDto> findPreExam(Long userId, Long subjectId) {
     /* Fast API: RestClient */
     try {
@@ -23,6 +30,157 @@ public class PreExamService {
     List<ExamResDto> result = createMock();
 
     return result;
+  }
+
+  /**
+   * 사전 평가 결과 저장
+   *
+   * @param userId
+   * @param examAnswerRes
+   * @return
+   */
+  public ExamResultDto submitPreExam(Long userId, ExamAnswerResDto examAnswerRes) {
+    List<ExamAnswerDto> answers = examAnswerRes.answers();
+    // subject 집계
+    SubjectResultDto subject = calculateSubjectResult(examAnswerRes);
+    // chapter 집계
+    List<ChapterResultDto> chapters = calculateChapterResults(answers);
+
+    ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
+
+    // FAST API 사전평가 결과 전달
+    try {
+      // API 호출
+    } catch (RestClientException e) {
+      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
+      // fallback 처리 가능
+    }
+    // submitCnt update 필요
+    return new ExamResultDto(userId, subject, chapters, answers);
+  }
+
+  /**
+   * 사후 평가 문제 조회
+   *
+   * @param userId
+   * @param subjectId
+   * @return
+   */
+  public List<ExamResDto> findPostExam(Long userId, Long subjectId) {
+    /* Fast API: RestClient */
+    try {
+      // API 호출
+    } catch (RestClientException e) {
+      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
+      // fallback 처리 가능
+    }
+    /* 임시 목 데이터 생성 */
+    List<ExamResDto> result = createMock();
+
+    return result;
+  }
+
+  /**
+   * 사후 평가 결과 저장
+   *
+   * @param userId
+   * @param examAnswerRes
+   * @return
+   */
+  public ExamResultDto submitPostExam(Long userId, ExamAnswerResDto examAnswerRes) {
+    List<ExamAnswerDto> answers = examAnswerRes.answers();
+    // subject 집계
+    SubjectResultDto subject = calculateSubjectResult(examAnswerRes);
+    // chapter 집계
+    List<ChapterResultDto> chapters = calculateChapterResults(answers);
+
+    ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
+
+    // FAST API 사전평가 결과 전달
+    try {
+      // API 호출
+    } catch (RestClientException e) {
+      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
+      // fallback 처리 가능
+    }
+    // submitCnt update 필요
+    return new ExamResultDto(userId, subject, chapters, answers);
+  }
+
+  /**
+   * 과목별 평가 집계
+   *
+   * @param examAnswerRes
+   * @return
+   */
+  private SubjectResultDto calculateSubjectResult(ExamAnswerResDto examAnswerRes) {
+    List<ExamAnswerDto> answers = examAnswerRes.answers();
+    Long subjectId = examAnswerRes.subjectId();
+    String startDate = examAnswerRes.startDate();
+    Long duration = examAnswerRes.duration();
+    int submitCnt = examAnswerRes.submitCnt() + 1;
+    int level = calculateLevel(answers);
+    int cnt = (int) answers.stream().filter(ExamAnswerDto::answerTF).count();
+    int totalCnt = answers.size();
+
+    return new SubjectResultDto(subjectId, startDate, duration, submitCnt, level, cnt, totalCnt);
+  }
+
+  /**
+   * 과목별 진단 레벨 계산
+   *
+   * @param answers
+   * @return
+   */
+  private int calculateLevel(List<ExamAnswerDto> answers) {
+    int score = answers.stream().mapToInt(this::calculateScoreByDifficulty).sum();
+
+    if (score <= 4) return 1;
+    if (score <= 8) return 1;
+    if (score <= 12) return 3;
+    if (score <= 16) return 4;
+    return 5;
+  }
+
+  /**
+   * 진단 레벨 계산을 위한 난이도별 점수 환산
+   *
+   * @param answer
+   * @return
+   */
+  private int calculateScoreByDifficulty(ExamAnswerDto answer) {
+    if (!answer.answerTF()) return 0;
+
+    return switch (answer.difficulty()) {
+      case "하" -> 1;
+      case "중" -> 3;
+      default -> throw new IllegalArgumentException("지원하지 않는 난이도: " + answer.difficulty());
+    };
+  }
+
+  /**
+   * 단원별 평가 집계
+   *
+   * @param answers
+   * @return
+   */
+  private List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> answers) {
+    return answers.stream()
+        .collect(Collectors.groupingBy(ExamAnswerDto::chapterNum))
+        .entrySet()
+        .stream()
+        .map(
+            entry -> {
+              List<ExamAnswerDto> chapterAnswers = entry.getValue();
+              String chapterName = chapterAnswers.getFirst().chapterName();
+              boolean weakness =
+                  chapterAnswers.stream()
+                      .anyMatch(dto -> dto.difficulty().equals("하") && !dto.answerTF());
+              int cnt = (int) chapterAnswers.stream().filter(ExamAnswerDto::answerTF).count();
+              int totalCnt = chapterAnswers.size();
+              return new ChapterResultDto(entry.getKey(), chapterName, weakness, cnt, totalCnt);
+            })
+        .toList();
   }
 
   public List<ExamResDto> createMock() {
@@ -147,77 +305,5 @@ public class PreExamService {
             .chapterName("테이블·메타데이터 & 접근성")
             .difficulty("중")
             .build());
-  }
-
-  public ExamResultDto submitPreExam(Long userId, ExamAnswerResDto examAnswerRes) {
-    List<ExamAnswerDto> answers = examAnswerRes.answers();
-    // subject 집계
-    SubjectResultDto subject = calculateSubjectResult(examAnswerRes);
-    // chapter 집계
-    List<ChapterResultDto> chapters = calculateChapterResults(answers);
-
-    ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
-
-    // FAST API 사전평가 결과 전달
-    try {
-      // API 호출
-    } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
-    }
-    // submitCnt update 필요
-    return new ExamResultDto(userId, subject, chapters, answers);
-  }
-
-  private SubjectResultDto calculateSubjectResult(ExamAnswerResDto examAnswerRes) {
-    List<ExamAnswerDto> answers = examAnswerRes.answers();
-    Long subjectId = examAnswerRes.subjectId();
-    String startDate = examAnswerRes.startDate();
-    Long duration = examAnswerRes.duration();
-    int submitCnt = examAnswerRes.submitCnt() + 1;
-    int level = calculateLevel(answers);
-    int cnt = (int) answers.stream().filter(ExamAnswerDto::answerTF).count();
-    int totalCnt = answers.size();
-
-    return new SubjectResultDto(subjectId, startDate, duration, submitCnt, level, cnt, totalCnt);
-  }
-
-  private int calculateLevel(List<ExamAnswerDto> answers) {
-    int score = answers.stream().mapToInt(this::calculateScoreByDifficulty).sum();
-
-    if (score <= 4) return 1;
-    if (score <= 8) return 1;
-    if (score <= 12) return 3;
-    if (score <= 16) return 4;
-    return 5;
-  }
-
-  private int calculateScoreByDifficulty(ExamAnswerDto answer) {
-    if (!answer.answerTF()) return 0;
-
-    return switch (answer.difficulty()) {
-      case "하" -> 1;
-      case "중" -> 3;
-      default -> throw new IllegalArgumentException("지원하지 않는 난이도: " + answer.difficulty());
-    };
-  }
-
-  private List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> answers) {
-    return answers.stream()
-        .collect(Collectors.groupingBy(ExamAnswerDto::chapterNum))
-        .entrySet()
-        .stream()
-        .map(
-            entry -> {
-              List<ExamAnswerDto> chapterAnswers = entry.getValue();
-              String chapterName = chapterAnswers.getFirst().chapterName();
-              boolean weakness =
-                  chapterAnswers.stream()
-                      .anyMatch(dto -> dto.difficulty().equals("하") && !dto.answerTF());
-              int cnt = (int) chapterAnswers.stream().filter(ExamAnswerDto::answerTF).count();
-              int totalCnt = chapterAnswers.size();
-              return new ChapterResultDto(entry.getKey(), chapterName, weakness, cnt, totalCnt);
-            })
-        .toList();
   }
 }
