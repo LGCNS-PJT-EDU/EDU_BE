@@ -262,6 +262,9 @@ public class RoadmapService {
               .roadmapManagement(roadmapManagement)
               .subject(subject)
               .orderSub(order++)
+              .isComplete(false)
+              .preSubmitCount(0)
+              .postSubmitCount(0)
               .build();
 
       roadmapRepository.save(roadmap);
@@ -345,6 +348,8 @@ public class RoadmapService {
                 .orderSub(order)
                 .roadmapManagement(roadmapManagement)
                 .isComplete(false)
+                .preSubmitCount(0)
+                .postSubmitCount(0)
                 .build();
       }
       toSave.add(roadmap);
@@ -428,6 +433,9 @@ public class RoadmapService {
               .roadmapManagement(roadmapManagement)
               .subject(defaultRoadmap.getSubject())
               .orderSub(order++)
+              .isComplete(false)
+              .postSubmitCount(0)
+              .preSubmitCount(0)
               .build();
 
       roadmapRepository.save(newRoadmap);

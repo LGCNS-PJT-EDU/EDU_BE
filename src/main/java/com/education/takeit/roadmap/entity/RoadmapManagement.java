@@ -19,6 +19,7 @@ public class RoadmapManagement {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long roadmapManagementId;
 
+  @Column(name = "roadmap_nm")
   private String roadmapNm;
 
   @Column(

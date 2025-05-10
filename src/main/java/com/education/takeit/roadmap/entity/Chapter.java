@@ -5,19 +5,26 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "track")
+@Table(name = "chapter")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Track {
+public class Chapter {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long trackId;
+  private Long chapterId;
 
-  @Column(name = "track_nm", nullable = false, unique = true)
-  private String trackNm;
+  @Column(name = "chapter_nm", nullable = false)
+  private String chapterName;
+
+  @Column(name = "chapter_order", nullable = false)
+  private int chapterOrder;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sub_id", nullable = false)
+  private Subject subject;
 }
