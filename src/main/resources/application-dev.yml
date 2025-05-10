@@ -28,8 +28,8 @@ spring:
     type: redis
   data:
     redis:
-      port: ${SPRING_REDIS_PORT:redis}
-      host: ${SPRING_REDIS_HOST:6379}
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
 
 oauth:
   kakao:
