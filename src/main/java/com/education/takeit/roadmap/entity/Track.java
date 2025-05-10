@@ -18,6 +18,6 @@ public class Track {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long trackId;
 
-  @Column(nullable = false, unique = true)
+  @Column(name = "track_nm", nullable = false, unique = true)
   private String trackNm;
 }

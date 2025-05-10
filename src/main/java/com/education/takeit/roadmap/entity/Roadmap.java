@@ -18,10 +18,10 @@ public class Roadmap {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long roadmapId;
 
-  @Column(nullable = false)
+  @Column(name = "order_sub",nullable = false)
   private Integer orderSub;
 
-  @Column(nullable = false)
+  @Column(name = "user_id", nullable = false)
   private Long userId; // 참조용 ID만 저장 (users 테이블과 매핑 필요 시 @ManyToOne 적용)
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -32,12 +32,12 @@ public class Roadmap {
   @JoinColumn(name = "roadmap_management_id", nullable = false)
   private RoadmapManagement roadmapManagement;
 
-  @Column(nullable = false)
+  @Column(name = "is_complete", nullable = false)
   private boolean isComplete;
 
-  @Column
+  @Column(name = "pre_submit_count", nullable = false)
   private int preSubmitCount;
 
-  @Column
+  @Column(name = "post_submit_count", nullable = false)
   private int postSubmitCount;
 }

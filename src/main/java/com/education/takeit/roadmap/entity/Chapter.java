@@ -12,16 +12,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class chapter {
+public class Chapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chapterId;
 
-    @Column(nullable = false)
+    @Column(name = "chapter_nm", nullable = false)
     private String chapterName;
 
-    @Column(nullable = false)
+    @Column(name = "chapter_order", nullable = false)
     private int chapterOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)

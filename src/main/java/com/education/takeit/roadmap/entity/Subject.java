@@ -18,16 +18,16 @@ public class Subject {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long subId;
 
-  @Column(nullable = false)
+  @Column(name = "sub_nm", nullable = false)
   private String subNm;
 
-  @Column(nullable = false)
+  @Column(name = "sub_type", nullable = false)
   private String subType;
 
-  @Column(nullable = false, length = 1)
+  @Column(name = "sub_essential", nullable = false, length = 1)
   private String subEssential;
 
-  @Column(nullable = false)
+  @Column(name = "base_sub_order", nullable = false)
   private Integer baseSubOrder;
 
   @Lob private String subOverview;

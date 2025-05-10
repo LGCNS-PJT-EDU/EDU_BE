@@ -5,7 +5,9 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
+import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.service.RoadmapService;
+import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "로드맵", description = "로드맵 관련 API")
 public class RoadmapController {
   private final RoadmapService roadmapService;
+  private final SubjectService subjectService;
 
   /*  @PostMapping("/create")
   @Operation(
@@ -97,5 +100,15 @@ public class RoadmapController {
     Long userId = userDetails.getUserId();
     RoadmapFindResDto userRoadmap = roadmapService.findUserRoadmap(userId);
     return ResponseEntity.ok(userRoadmap);
+  }
+
+  @GetMapping("/subject")
+  @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공")
+  public ResponseEntity<SubjectFindResDto> findUserRoadmap(
+          @AuthenticationPrincipal CustomUserDetails userDetails,
+          @RequestParam("subjectId") Long subjectId){
+    Long userId = userDetails.getUserId();
+    SubjectFindResDto subjectFindResDto =  subjectService.findUserSubject(userId, subjectId);
+    return ResponseEntity.ok(subjectFindResDto);
   }
 }
