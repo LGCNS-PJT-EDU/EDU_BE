@@ -7,12 +7,11 @@ import com.education.takeit.exam.service.ExamService;
 import com.education.takeit.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/exam")
@@ -65,8 +64,7 @@ public class ExamController {
   @GetMapping("/post")
   @Operation(summary = "사후 평가 문제 리스트 요청", description = "사후평가 문제 GET API")
   public ResponseEntity<List<ExamResDto>> findPostExam(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestParam Long subjectId) {
+      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
     Long userId = userDetails.getUserId();
     List<ExamResDto> result = examService.findPostExam(userId, subjectId);
     return ResponseEntity.ok(result);
