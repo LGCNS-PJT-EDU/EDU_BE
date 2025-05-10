@@ -18,7 +18,7 @@ public class Roadmap {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long roadmapId;
 
-  @Column(name = "order_sub",nullable = false)
+  @Column(name = "order_sub", nullable = false)
   private Integer orderSub;
 
   @Column(name = "user_id", nullable = false)

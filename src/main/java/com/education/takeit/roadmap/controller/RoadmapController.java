@@ -105,10 +105,10 @@ public class RoadmapController {
   @GetMapping("/subject")
   @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공")
   public ResponseEntity<SubjectFindResDto> findUserRoadmap(
-          @AuthenticationPrincipal CustomUserDetails userDetails,
-          @RequestParam("subjectId") Long subjectId){
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestParam("subjectId") Long subjectId) {
     Long userId = userDetails.getUserId();
-    SubjectFindResDto subjectFindResDto =  subjectService.findUserSubject(userId, subjectId);
+    SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, subjectId);
     return ResponseEntity.ok(subjectFindResDto);
   }
 }

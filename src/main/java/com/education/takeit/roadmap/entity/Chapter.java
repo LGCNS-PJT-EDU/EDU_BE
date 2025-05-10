@@ -14,17 +14,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 public class Chapter {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chapterId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long chapterId;
 
-    @Column(name = "chapter_nm", nullable = false)
-    private String chapterName;
+  @Column(name = "chapter_nm", nullable = false)
+  private String chapterName;
 
-    @Column(name = "chapter_order", nullable = false)
-    private int chapterOrder;
+  @Column(name = "chapter_order", nullable = false)
+  private int chapterOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sub_id", nullable = false)
-    private Subject subject;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sub_id", nullable = false)
+  private Subject subject;
 }
