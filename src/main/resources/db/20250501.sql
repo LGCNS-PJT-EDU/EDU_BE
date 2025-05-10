@@ -1,3 +1,16 @@
+-- users 테이블 삭제
+DROP TABLE IF EXISTS users;
+
+-- users 테이블 생성
+CREATE TABLE users (
+  user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  nickname VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
+  login_type VARCHAR(50) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
 -- diagnosis, choice 테이블 삭제
 DROP TABLE IF EXISTS choice;
 DROP TABLE IF EXISTS diagnosis;
@@ -125,9 +138,10 @@ INSERT INTO choice (diagnosis_id, choice_num, choice, value) VALUES
 -- roadmap, roadmap_management, subject, track 테이블 삭제
 DROP TABLE IF EXISTS roadmap;
 DROP TABLE IF EXISTS roadmap_management;
+DROP TABLE IF EXISTS chapter;
 DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS track;
-DROP TABLE IF EXISTS chapter;
+
 
 
 -- track(과정) 테이블 생성
@@ -579,12 +593,6 @@ INSERT INTO chapter (chapter_id, chapter_nm, chapter_order, sub_id) VALUES
        (293, '환경 설정 (.env, Flask.config)', 3, 59),
        (294, 'CI/CD (GitHub Actions, DockerHub)', 4, 59),
        (295, '정적파일 & 모니터링 (S3, logging, Sentry, Prometheus)', 5, 59);
-
--- users, roadmap, roadmap_management 테이블 초기화
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE users;
-SET FOREIGN_KEY_CHECKS = 1;
-
 
 -- 로드맵 주입용 더미 user
 INSERT INTO users(user_id, is_active, email, login_type, nickname) VALUES
