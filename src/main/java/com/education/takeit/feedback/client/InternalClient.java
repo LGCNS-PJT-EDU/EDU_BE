@@ -19,14 +19,17 @@ public class InternalClient {
   private final RestClient restClient;
 
   public List<FeedbackResponseDto> getFeedback(String userId) {
-    // FastAPI측 URI: /feedback?userId={userId}
-    // FastAPI측 Method: GET
-    // FastAPI측 Return: 항상 [] or [ {feedback1}, {feedback2} ] 중 하나 -> FastAPI 서버에 요청이 전송된다면 반환 시 오류가
-    // 발생한 것이 아니면 204 No Content는 반환되지 않음(반환 데이터가 Null이 아님)
+    /*
+        Spring Boot 측 URI: /api/feedback/retrieve?userId={userId}
+        FastAPI측 URI: /api/feedback?userId={userId}
+        FastAPI측 Method: GET
+        FastAPI측 Return: 항상 [] or [ {feedback1}, {feedback2} ] 중 하나
+        -> FastAPI 서버에 요청이 전송된다면 반환 시 오류가 발생하지 않는다면 항상 Null은 발생하지 않는다
+     */
     FeedbackResponseDto[] arr =
         restClient
             .get()
-            .uri("http://localhost:8000/feedback?userId={userId}", userId)
+            .uri("http://localhost:8000/api/feedback?userId={userId}", userId)
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             // Mono 사용 시 Publisher 사용 안함 오류 발생하므로 주의
@@ -35,14 +38,8 @@ public class InternalClient {
                 (request, response) -> {
                   throw new CustomException(StatusCode.CONNECTION_FAILED);
                 })
-            .onStatus(
-                status -> status.value() == HttpStatus.NO_CONTENT.value(),
-                (request, response) -> {
-                  throw new CustomException(StatusCode.CONNECTION_SUCCESS_BUT_FETCH_FAILED);
-                })
             .body(FeedbackResponseDto[].class);
 
-    Objects.requireNonNull(arr);
     return Arrays.asList(arr);
   }
 }
