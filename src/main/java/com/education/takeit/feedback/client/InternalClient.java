@@ -18,11 +18,11 @@ public class InternalClient {
 
   public List<FeedbackResponseDto> getFeedback(String userId) {
     /*
-        FastAPI측 URI: /feedback?userId={userId}
-        FastAPI측 Method: GET
-        FastAPI측 Return: 항상 [] or [ {feedback1}, {feedback2} ] 중 하나
-        -> FastAPI 서버에 요청이 전송된다면 반환 시 오류가 발생한 것이 아니면 항상 빈 배열이나 내용이 있는 배열이 반환됨
-     */
+       FastAPI측 URI: /feedback?userId={userId}
+       FastAPI측 Method: GET
+       FastAPI측 Return: 항상 [] or [ {feedback1}, {feedback2} ] 중 하나
+       -> FastAPI 서버에 요청이 전송된다면 반환 시 오류가 발생한 것이 아니면 항상 빈 배열이나 내용이 있는 배열이 반환됨
+    */
     FeedbackResponseDto[] arr =
         restClient
             .get()
