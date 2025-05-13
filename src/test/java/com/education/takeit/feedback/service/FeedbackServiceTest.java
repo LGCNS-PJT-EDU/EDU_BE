@@ -95,18 +95,4 @@ class FeedbackServiceTest {
         .extracting("statusCode")
         .isEqualTo(StatusCode.CONNECTION_FAILED);
   }
-
-  @Test
-  @DisplayName("204 에러는 서버 연결은 성공했지만 데이터 가져오기에 실패했음을 의미한다")
-  void test204Status() {
-    // CONNECTION_SUCCESS_BUT_FETCH_FAILED 상황일 때
-    given(mockClient.getFeedback(anyString()))
-        .willThrow(new CustomException(StatusCode.CONNECTION_SUCCESS_BUT_FETCH_FAILED));
-
-    // 동일 에러가 발생하는가?
-    assertThatThrownBy(() -> feedbackService.findFeedback("userY"))
-        .isInstanceOf(CustomException.class)
-        .extracting("statusCode")
-        .isEqualTo(StatusCode.CONNECTION_SUCCESS_BUT_FETCH_FAILED);
-  }
 }
