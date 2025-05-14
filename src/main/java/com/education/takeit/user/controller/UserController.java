@@ -9,6 +9,7 @@ import com.education.takeit.user.dto.ReqSignupDto;
 import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UserController {
 
   @PostMapping("/signup")
   @Operation(summary = "회원가입", description = "자체 서비스 회원가입 API")
-  public ResponseEntity<Message> signUp(@RequestBody ReqSignupDto reqSignupDto) {
+  public ResponseEntity<Message> signUp(@Valid @RequestBody ReqSignupDto reqSignupDto) {
     userService.signUp(reqSignupDto);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }

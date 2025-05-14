@@ -8,7 +8,7 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.entity.Choice;
 import com.education.takeit.diagnosis.entity.Diagnosis;
 import com.education.takeit.diagnosis.repository.DiagnosisRepository;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.service.RoadmapService;
 import java.util.List;
@@ -31,7 +31,7 @@ class DiagnosisServiceTest {
 
   @Test
   @DisplayName("getDiagnosis() → COMMON, FE, BE 타입에 따라 그룹핑되어 반환된다.")
-  void getDiagnosis() {
+  void findAllDiagnosis() {
     // given
     Diagnosis common =
         Diagnosis.builder()
@@ -77,7 +77,7 @@ class DiagnosisServiceTest {
     when(diagnosisRepository.findAllWithChoices()).thenReturn(List.of(common, fe, be));
 
     // when
-    GroupedDiagnosisResponse result = diagnosisService.getDiagnosis();
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
 
     // then
     assertThat(result.COMMON()).hasSize(1);
@@ -91,9 +91,10 @@ class DiagnosisServiceTest {
 
   @Test
   @DisplayName("postDiagnosis() → 진단 결과 기반 추천 로드맵 반환")
-  void postDiagnosis() {
+  void recommendRoadmapByDiagnosis() {
     // given
     String flag = "dummyAccessToken";
+    Long userId = 1L;
     List<DiagnosisAnswerRequest> answers =
         List.of(
             new DiagnosisAnswerRequest(1L, "BE"),
@@ -106,8 +107,8 @@ class DiagnosisServiceTest {
             new DiagnosisAnswerRequest(14L, "Y"),
             new DiagnosisAnswerRequest(15L, "N"));
 
-    RoadmapResponseDto roadmap =
-        new RoadmapResponseDto(
+    RoadmapSaveResDto roadmap =
+        new RoadmapSaveResDto(
             UUID.fromString("cc6d893c-637f-44ce-9a82-69c7137b3a81").toString(),
             List.of(
                 new SubjectDto(35L, "리눅스 명령어", 1),
@@ -121,13 +122,13 @@ class DiagnosisServiceTest {
                 new SubjectDto(49L, "Flask", 15),
                 new SubjectDto(57L, "Django 운영 & 배포", 23)));
 
-    when(roadmapService.roadmapSelect(flag, answers)).thenReturn(roadmap);
+    when(roadmapService.selectRoadmap(userId, answers)).thenReturn(roadmap);
 
     // when
-    RoadmapResponseDto result = diagnosisService.postDiagnosis(flag, answers);
+    RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
     // then
-    assertThat(result.roadmapId().toString()).isEqualTo("cc6d893c-637f-44ce-9a82-69c7137b3a81");
+    assertThat(result.uuid().toString()).isEqualTo("cc6d893c-637f-44ce-9a82-69c7137b3a81");
     assertThat(result.subjects()).hasSize(10);
     assertThat(result.subjects().get(0).subjectName()).isEqualTo("리눅스 명령어");
   }

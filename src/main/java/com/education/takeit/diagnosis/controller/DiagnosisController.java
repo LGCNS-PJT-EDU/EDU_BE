@@ -3,11 +3,13 @@ package com.education.takeit.diagnosis.controller;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.global.security.CustomUserDetails;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,8 +26,8 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단문제 리스트 요청", description = "진단문제 GET API")
-  public ResponseEntity<GroupedDiagnosisResponse> getDiagnosis() {
-    GroupedDiagnosisResponse result = diagnosisService.getDiagnosis();
+  public ResponseEntity<GroupedDiagnosisResponse> findAllDiagnosis() {
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
     return ResponseEntity.ok(result);
   }
 
@@ -37,10 +39,11 @@ public class DiagnosisController {
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 POST API")
-  public ResponseEntity<RoadmapResponseDto> postDiagnosis(
-      @RequestHeader(value = "accessToken", required = false) String flag,
+  public ResponseEntity<RoadmapSaveResDto> recommendRoadmapByDiagnosis(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
-    RoadmapResponseDto result = diagnosisService.postDiagnosis(flag, answers);
+    Long userId = (userDetails != null) ? userDetails.getUserId() : null;
+    RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
     return ResponseEntity.ok(result);
   }

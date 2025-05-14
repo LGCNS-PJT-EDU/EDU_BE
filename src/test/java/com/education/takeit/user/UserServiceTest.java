@@ -135,7 +135,7 @@ public class UserServiceTest {
     Long userId = 1L;
 
     // When active = true
-    when(userRepository.findByUserId(userId)).thenReturn(user);
+    when(userRepository.findByUserId(userId)).thenReturn(Optional.of(user));
 
     // No Exception
     assertDoesNotThrow(() -> userService.withdraw(userId));
@@ -150,7 +150,7 @@ public class UserServiceTest {
     Long userId = 2L;
 
     // When user not exist
-    when(userRepository.findByUserId(userId)).thenReturn(null);
+    when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
     // if user is null, return Error
     CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));

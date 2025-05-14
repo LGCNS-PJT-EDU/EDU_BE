@@ -3,15 +3,16 @@ package com.education.takeit.roadmap.service;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.roadmap.dto.RoadmapResponseDto;
+import com.education.takeit.roadmap.dto.MyPageResDto;
+import com.education.takeit.roadmap.dto.RoadmapFindResDto;
+import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
-import com.education.takeit.roadmap.entity.Roadmap;
-import com.education.takeit.roadmap.entity.RoadmapManagement;
-import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,23 +32,21 @@ public class RoadmapService {
   private final ObjectMapper objectMapper;
   private final SubjectRepository subjectRepository;
   private final RedisTemplate<String, String> redisTemplate;
-  private final long roadmapTime = 1000L * 60 * 30;
   private final RoadmapManagementRepository roadmapManagementRepository;
-
-  private final JwtUtils jwtUtils;
   private final RoadmapRepository roadmapRepository;
+  private final UserRepository userRepository;
 
-  public RoadmapResponseDto roadmapSelect(String flag, List<DiagnosisAnswerRequest> answers) {
+  public RoadmapSaveResDto selectRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
 
-    RoadmapResponseDto roadmapResponseDto = createRoadmap(answers);
+    RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
 
-    if (flag == null) {
+    if (userId == null) {
       // uuid 생성
       String guestUuid = UUID.randomUUID().toString();
 
       // SubjecIds 저장
       String subjectIds =
-          roadmapResponseDto.subjects().stream()
+          roadmapSaveResDto.subjects().stream()
               .map(subject -> subject.subjectId().toString())
               .collect(Collectors.joining(","));
       // 공통질문 2~4 응답 레디스에 저장
@@ -66,24 +65,22 @@ public class RoadmapService {
       }
 
       System.out.println("guest roadmap create: " + guestUuid);
-      return new RoadmapResponseDto(guestUuid, roadmapResponseDto.subjects());
+      return new RoadmapSaveResDto(guestUuid, roadmapSaveResDto.subjects());
 
     } else {
       // 개인 roadmap 데이터 저장
       List<Long> subjectIds =
-          roadmapResponseDto.subjects().stream()
+          roadmapSaveResDto.subjects().stream()
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(flag, subjectIds, answers);
+      saveRoadmap(userId, subjectIds, answers);
 
-      System.out.println("user roadmap create:" + flag);
-
-      return roadmapResponseDto;
+      return roadmapSaveResDto;
     }
   }
 
-  public RoadmapResponseDto createRoadmap(List<DiagnosisAnswerRequest> answers) {
+  public RoadmapSaveResDto createRoadmap(List<DiagnosisAnswerRequest> answers) {
 
     // BE, FE 분기
     Optional<String> mainTrack =
@@ -93,7 +90,7 @@ public class RoadmapService {
             .findFirst();
 
     if (mainTrack.isEmpty()) {
-      throw new IllegalArgumentException("BE, FE 분기 처리 오류");
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
     }
 
     String BEorFE = mainTrack.get(); // BE, FE 정보 저장
@@ -188,19 +185,6 @@ public class RoadmapService {
         if (flag == 1) {
           subjectRepository.findById(51L).ifPresent(resultSubjects::add);
         } else if (flag == 2) {
-          subjectRepository.findById(57L).ifPresent(resultSubjects::add);
-        } else if (flag == 3) {
-          subjectRepository.findById(55L).ifPresent(resultSubjects::add);
-        } else if (flag == 4) {
-          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
-        } else if (flag == 5) {
-          subjectRepository.findById(51L).ifPresent(resultSubjects::add);
-        }
-      }
-      if (answer.questionId() == 15 && answer.answer().equals("Y")) {
-        if (flag == 1) {
-          subjectRepository.findById(52L).ifPresent(resultSubjects::add);
-        } else if (flag == 2) {
           subjectRepository.findById(58L).ifPresent(resultSubjects::add);
         } else if (flag == 3) {
           subjectRepository.findById(56L).ifPresent(resultSubjects::add);
@@ -208,6 +192,19 @@ public class RoadmapService {
           subjectRepository.findById(54L).ifPresent(resultSubjects::add);
         } else if (flag == 5) {
           subjectRepository.findById(52L).ifPresent(resultSubjects::add);
+        }
+      }
+      if (answer.questionId() == 15 && answer.answer().equals("Y")) {
+        if (flag == 1) {
+          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
+        } else if (flag == 2) {
+          subjectRepository.findById(59L).ifPresent(resultSubjects::add);
+        } else if (flag == 3) {
+          subjectRepository.findById(57L).ifPresent(resultSubjects::add);
+        } else if (flag == 4) {
+          subjectRepository.findById(55L).ifPresent(resultSubjects::add);
+        } else if (flag == 5) {
+          subjectRepository.findById(53L).ifPresent(resultSubjects::add);
         }
       }
     }
@@ -220,26 +217,28 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    return new RoadmapResponseDto("??", subjects);
+    return new RoadmapSaveResDto("사용자는 uuid가 없어요", subjects);
   }
 
   public void saveRoadmap(
-      String flag, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
-    Long userId = jwtUtils.getUserId(flag);
+      Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
-    Integer lectureAmount = null;
-    Integer priceLevel = null;
+    LectureAmount lectureAmount = null;
+    PriceLevel priceLevel = null;
     Boolean likesBooks = null;
 
     for (DiagnosisAnswerRequest answer : answers) {
       long questionId = answer.questionId();
+      String value = answer.answer();
 
       if (questionId == 2) {
-        lectureAmount = Integer.parseInt(answer.answer());
+        int idx = Integer.parseInt(value);
+        lectureAmount = LectureAmount.values()[idx];
       } else if (questionId == 3) {
-        priceLevel = Integer.parseInt(answer.answer());
+        int idx = Integer.parseInt(value);
+        priceLevel = PriceLevel.values()[idx];
       } else if (questionId == 4) {
-        likesBooks = answer.answer().equals("Y"); // Y: true, N: false
+        likesBooks = value.equals("Y");
       }
     }
 
@@ -267,18 +266,21 @@ public class RoadmapService {
               .roadmapManagement(roadmapManagement)
               .subject(subject)
               .orderSub(order++)
+              .isComplete(false)
+              .preSubmitCount(0)
+              .postSubmitCount(0)
               .build();
 
       roadmapRepository.save(roadmap);
     }
   }
 
-  public void saveGuestRoadmap(String uuid, String jwt) {
+  public void saveGuestRoadmap(String uuid, Long userId) {
     String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
     String redisAnswersJson = redisTemplate.opsForValue().get("guest:" + uuid + ":answers");
 
     if (redisSubjects == null || redisAnswersJson == null) {
-      throw new IllegalArgumentException("해당 게스트의 로드맵 데이터가 존재하지 않습니다 Guest UUID: " + uuid);
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
 
     // subjectIds 문자열 → List<Long> 로 변환
@@ -294,20 +296,27 @@ public class RoadmapService {
       throw new RuntimeException("answers 역직렬화 실패", e);
     }
 
-    saveRoadmap(jwt, subjectIds, answers);
+    saveRoadmap(userId, subjectIds, answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
   }
 
-  public int getProgressPercentage(Long userId) {
+  public MyPageResDto getProgressPercentage(Long userId) {
+    User user =
+        userRepository
+            .findByUserId(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+
     List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
-    if (roadmaps.isEmpty()) return 0;
+    if (roadmaps.isEmpty()) return new MyPageResDto(user.getNickname(), 0);
 
     long total = roadmaps.size();
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
 
-    return (int) ((double) completed / total * 100);
+    int percent = (int) ((double) completed / total * 100);
+
+    return new MyPageResDto(user.getNickname(), percent);
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
@@ -350,6 +359,8 @@ public class RoadmapService {
                 .orderSub(order)
                 .roadmapManagement(roadmapManagement)
                 .isComplete(false)
+                .preSubmitCount(0)
+                .postSubmitCount(0)
                 .build();
       }
       toSave.add(roadmap);
@@ -372,5 +383,94 @@ public class RoadmapService {
     RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
+  }
+
+  public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
+    long roadmapId;
+
+    if (defaultRoadmapType.equals("FE")) {
+      roadmapId = 1L;
+    } else if (defaultRoadmapType.equals("BE")) {
+      roadmapId = 2L;
+    } else {
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
+    }
+
+    List<Roadmap> roadmaps =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
+
+    return roadmaps.stream()
+        .sorted(Comparator.comparing(Roadmap::getOrderSub))
+        .map(
+            r -> {
+              Subject s = r.getSubject();
+              return new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder());
+            })
+        .collect(Collectors.toList());
+  }
+
+  public void saveDefaultRoadmap(String roadmapType, Long userId) {
+    Long roadmapManagementId;
+
+    if (roadmapType.equals("FE")) {
+      roadmapManagementId = 1L;
+    } else if (roadmapType.equals("BE")) {
+      roadmapManagementId = 2L;
+    } else {
+      throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
+    }
+
+    List<Roadmap> defaultRoadmapList =
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagementId);
+
+    if (defaultRoadmapList.isEmpty()) {
+      throw new CustomException(StatusCode.DEFAULT_ROADMAP_NOT_FOUND);
+    }
+
+    // 새로운 로드맵 관리 정보 생성
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Default " + roadmapType + " Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .build();
+
+    roadmapManagementRepository.save(roadmapManagement);
+
+    int order = 1;
+    for (Roadmap defaultRoadmap : defaultRoadmapList) {
+      Roadmap newRoadmap =
+          Roadmap.builder()
+              .userId(userId)
+              .roadmapManagement(roadmapManagement)
+              .subject(defaultRoadmap.getSubject())
+              .orderSub(order++)
+              .isComplete(false)
+              .postSubmitCount(0)
+              .preSubmitCount(0)
+              .build();
+
+      roadmapRepository.save(newRoadmap);
+    }
+  }
+
+  public RoadmapFindResDto findUserRoadmap(Long userId) {
+
+    List<Roadmap> userRoadmaps = roadmapRepository.findAllByUserId(userId);
+    if (userRoadmaps.isEmpty()) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+
+    List<SubjectDto> subjects =
+        userRoadmaps.stream()
+            .sorted(Comparator.comparing(Roadmap::getOrderSub))
+            .map(
+                r ->
+                    new SubjectDto(
+                        r.getSubject().getSubId(), r.getSubject().getSubNm(), r.getOrderSub()))
+            .toList();
+
+    String roadmapName = userRoadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
+
+    return new RoadmapFindResDto(subjects, roadmapName);
   }
 }
