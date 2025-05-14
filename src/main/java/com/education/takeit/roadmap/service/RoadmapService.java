@@ -3,6 +3,7 @@ package com.education.takeit.roadmap.service;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.roadmap.dto.MyPageResDto;
 import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
@@ -10,6 +11,8 @@ import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +34,7 @@ public class RoadmapService {
   private final RedisTemplate<String, String> redisTemplate;
   private final RoadmapManagementRepository roadmapManagementRepository;
   private final RoadmapRepository roadmapRepository;
+  private final UserRepository userRepository;
 
   public RoadmapSaveResDto selectRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
 
@@ -298,14 +302,19 @@ public class RoadmapService {
     redisTemplate.delete("guest:" + uuid + ":answers");
   }
 
-  public int getProgressPercentage(Long userId) {
+  public MyPageResDto getProgressPercentage(Long userId) {
+    User user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+
     List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
-    if (roadmaps.isEmpty()) return 0;
+    if (roadmaps.isEmpty()) return new MyPageResDto(user.getNickname(), 0);
 
     long total = roadmaps.size();
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
 
-    return (int) ((double) completed / total * 100);
+    int percent = (int) ((double) completed/total * 100);
+
+    return new MyPageResDto(user.getNickname(), percent);
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
