@@ -21,6 +21,6 @@ spec:
     spec:
       containers:
         - name: spring-container
-          image: 754874159206.dkr.ecr.ap-northeast-2.amazonaws.com/takeit/spring:1.0.0
+          image: 754874159206.dkr.ecr.ap-northeast-2.amazonaws.com/takeit/spring:latest
           ports:
             - containerPort: 9800
