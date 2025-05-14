@@ -3,6 +3,7 @@ package com.education.takeit.roadmap.controller;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
+import com.education.takeit.roadmap.dto.MyPageResDto;
 import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
@@ -46,11 +47,11 @@ public class RoadmapController {
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
-  @GetMapping("/users/{userId}/progress")
+  @GetMapping("/{userId}/progress")
   @Operation(summary = "마이페이지에서 로드맵 진척도 조회", description = "전체 과목 중 이수한 과목 수 백분율로 계산해서 반환")
-  public ResponseEntity<Integer> getUserProgress(@PathVariable Long userId) {
-    int percentage = roadmapService.getProgressPercentage(userId);
-    return ResponseEntity.ok(percentage);
+  public ResponseEntity<MyPageResDto> getUserProgress(@PathVariable Long userId) {
+    MyPageResDto response = roadmapService.getProgressPercentage(userId);
+    return ResponseEntity.ok(response);
   }
 
   @PutMapping
