@@ -303,7 +303,9 @@ public class RoadmapService {
   }
 
   public MyPageResDto getProgressPercentage(Long userId) {
-    User user = userRepository.findByUserId(userId)
+    User user =
+        userRepository
+            .findByUserId(userId)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
     List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
@@ -312,7 +314,7 @@ public class RoadmapService {
     long total = roadmaps.size();
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
 
-    int percent = (int) ((double) completed/total * 100);
+    int percent = (int) ((double) completed / total * 100);
 
     return new MyPageResDto(user.getNickname(), percent);
   }

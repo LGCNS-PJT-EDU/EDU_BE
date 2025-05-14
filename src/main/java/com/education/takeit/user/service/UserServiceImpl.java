@@ -78,7 +78,9 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void withdraw(Long userId) {
-    User user = userRepository.findByUserId(userId)
+    User user =
+        userRepository
+            .findByUserId(userId)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
     if (user == null) {
