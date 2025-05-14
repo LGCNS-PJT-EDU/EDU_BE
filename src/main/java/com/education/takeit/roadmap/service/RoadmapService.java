@@ -65,7 +65,8 @@ public class RoadmapService {
       }
 
       System.out.println("guest roadmap create: " + guestUuid);
-      return new RoadmapSaveResDto(guestUuid, roadmapSaveResDto.subjects());
+      return new RoadmapSaveResDto(
+          guestUuid, roadmapSaveResDto.userLocationSubjectId(), roadmapSaveResDto.subjects());
 
     } else {
       // 개인 roadmap 데이터 저장
@@ -98,6 +99,13 @@ public class RoadmapService {
     // 필수 과목 추가
     List<Subject> essentialSubjects = subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
     List<Subject> resultSubjects = new ArrayList<>(essentialSubjects);
+
+    Long defaultLocationSubjectId = 0L;
+    if (BEorFE.equals("FE")) {
+      defaultLocationSubjectId = 1L;
+    } else if (BEorFE.equals("BE")) {
+      defaultLocationSubjectId = 35L;
+    }
 
     // 조건별 과목 처리
     int flag = 0;
@@ -217,7 +225,7 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    return new RoadmapSaveResDto("사용자는 uuid가 없어요", subjects);
+    return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
   }
 
   public void saveRoadmap(
@@ -325,7 +333,7 @@ public class RoadmapService {
     if (existingRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
-    RoadmapManagement roadmapManagement = existingRoadmaps.get(0).getRoadmapManagement();
+    RoadmapManagement roadmapManagement = existingRoadmaps.getFirst().getRoadmapManagement();
     roadmapManagement.setRoadmapTimestamp(LocalDateTime.now());
     roadmapManagementRepository.save(roadmapManagement);
 
@@ -380,7 +388,7 @@ public class RoadmapService {
     if (roadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
-    RoadmapManagement roadmapManagement = roadmaps.get(0).getRoadmapManagement();
+    RoadmapManagement roadmapManagement = roadmaps.getFirst().getRoadmapManagement();
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
   }
@@ -410,7 +418,7 @@ public class RoadmapService {
   }
 
   public void saveDefaultRoadmap(String roadmapType, Long userId) {
-    Long roadmapManagementId;
+    Long roadmapManagementId = 0L;
 
     if (roadmapType.equals("FE")) {
       roadmapManagementId = 1L;
@@ -460,6 +468,8 @@ public class RoadmapService {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
 
+    Long userLocationSubjectId = findUserLocationRoadmap(userRoadmaps);
+
     List<SubjectDto> subjects =
         userRoadmaps.stream()
             .sorted(Comparator.comparing(Roadmap::getOrderSub))
@@ -471,6 +481,15 @@ public class RoadmapService {
 
     String roadmapName = userRoadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
 
-    return new RoadmapFindResDto(subjects, roadmapName);
+    return new RoadmapFindResDto(subjects, roadmapName, userLocationSubjectId);
+  }
+
+  public Long findUserLocationRoadmap(List<Roadmap> roadmaps) {
+    return roadmaps.stream()
+        .sorted(Comparator.comparing(Roadmap::getOrderSub))
+        .filter(r -> !r.isComplete())
+        .map(r -> r.getSubject().getSubId())
+        .findFirst()
+        .orElse(null);
   }
 }
