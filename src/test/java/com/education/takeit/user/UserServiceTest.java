@@ -152,7 +152,6 @@ public class UserServiceTest {
     // When user not exist
     when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-
     // if user is null, return Error
     CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
     assertEquals(StatusCode.NOT_EXIST_USER, ex.getStatusCode());
