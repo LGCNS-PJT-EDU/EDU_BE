@@ -20,7 +20,7 @@ public enum StatusCode {
   INVALID_DIAGNOSIS_ANSWER(400, "진단 응답이 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
   ROADMAP_TYPE_NOT_FOUND(400, "잘못된 로드맵 생성 요청입니다.", HttpStatus.BAD_REQUEST),
   DEFAULT_ROADMAP_NOT_FOUND(400, "기본 로드맵이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
-  CONNECTION_FAILED(502, "피드백 서버에 접속할 수 없습니다.", HttpStatus.BAD_GATEWAY),
+  CONNECTION_FAILED(502, "서버에 접속할 수 없습니다.", HttpStatus.BAD_GATEWAY),
   SUBJECT_NOT_FOUND(400, "과목 정보를 불러올 수 없습니다", HttpStatus.NOT_FOUND);
 
   private final int statusCode;
