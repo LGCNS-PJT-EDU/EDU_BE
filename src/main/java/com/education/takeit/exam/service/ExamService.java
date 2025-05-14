@@ -1,12 +1,9 @@
 package com.education.takeit.exam.service;
 
+import com.education.takeit.exam.client.ExamClient;
 import com.education.takeit.exam.dto.*;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.education.takeit.exam.client.ExamClient;
-import com.education.takeit.global.dto.StatusCode;
-import com.education.takeit.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
