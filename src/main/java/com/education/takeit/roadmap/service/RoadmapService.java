@@ -468,7 +468,8 @@ public class RoadmapService {
       roadmapRepository.save(newRoadmap);
     }
 
-    return new RoadmapSaveResDto("user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType));
+    return new RoadmapSaveResDto(
+        "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType));
   }
 
   public RoadmapFindResDto findUserRoadmap(Long userId) {
@@ -503,15 +504,15 @@ public class RoadmapService {
         .orElse(null);
   }
 
-  public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers){
+  public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
     deleteRoadmap(userId);
 
     RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
 
     List<Long> subjectIds =
-            roadmapSaveResDto.subjects().stream()
-                    .map(SubjectDto::subjectId)
-                    .collect(Collectors.toList());
+        roadmapSaveResDto.subjects().stream()
+            .map(SubjectDto::subjectId)
+            .collect(Collectors.toList());
 
     saveRoadmap(userId, subjectIds, answers);
 
