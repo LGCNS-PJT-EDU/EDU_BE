@@ -84,12 +84,12 @@ public class RoadmapController {
 
   @PostMapping("/default")
   @Operation(summary = "기본 로드맵을 사용자에게 저장", description = "기본 로드맵을 사용자에게 할당")
-  public ResponseEntity<Message> saveDefaultRoadmap(
+  public ResponseEntity<RoadmapSaveResDto> saveDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
-    roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 
   @GetMapping
