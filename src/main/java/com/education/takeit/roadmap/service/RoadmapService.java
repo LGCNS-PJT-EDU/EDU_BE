@@ -418,6 +418,11 @@ public class RoadmapService {
   }
 
   public void saveDefaultRoadmap(String roadmapType, Long userId) {
+
+    if (roadmapRepository.findByUserId(userId) != null) {
+      deleteRoadmap(userId);
+    }
+
     Long roadmapManagementId = 0L;
 
     if (roadmapType.equals("FE")) {
@@ -491,5 +496,20 @@ public class RoadmapService {
         .map(r -> r.getSubject().getSubId())
         .findFirst()
         .orElse(null);
+  }
+
+  public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers){
+    deleteRoadmap(userId);
+
+    RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
+
+    List<Long> subjectIds =
+            roadmapSaveResDto.subjects().stream()
+                    .map(SubjectDto::subjectId)
+                    .collect(Collectors.toList());
+
+    saveRoadmap(userId, subjectIds, answers);
+
+    return roadmapSaveResDto;
   }
 }
