@@ -1,12 +1,10 @@
 package com.education.takeit.roadmap.controller;
 
+import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
-import com.education.takeit.roadmap.dto.MyPageResDto;
-import com.education.takeit.roadmap.dto.RoadmapFindResDto;
-import com.education.takeit.roadmap.dto.SubjectDto;
-import com.education.takeit.roadmap.dto.SubjectFindResDto;
+import com.education.takeit.roadmap.dto.*;
 import com.education.takeit.roadmap.service.RoadmapService;
 import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,12 +84,13 @@ public class RoadmapController {
 
   @PostMapping("/default")
   @Operation(summary = "기본 로드맵을 사용자에게 저장", description = "기본 로드맵을 사용자에게 할당")
-  public ResponseEntity<Message> saveDefaultRoadmap(
+  public ResponseEntity<RoadmapSaveResDto> saveDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
-    roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    RoadmapSaveResDto roadmapSaveResDto =
+        roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 
   @GetMapping
@@ -111,5 +110,15 @@ public class RoadmapController {
     Long userId = userDetails.getUserId();
     SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, subjectId);
     return ResponseEntity.ok(subjectFindResDto);
+  }
+
+  @PostMapping("renew")
+  @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공")
+  public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
+    Long userId = userDetails.getUserId();
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 }

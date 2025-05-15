@@ -39,6 +39,7 @@ public class RoadmapCreateTest {
     RoadmapSaveResDto roadmapSaveResDto =
         new RoadmapSaveResDto(
             "사용자는 uuid가 없어요",
+            0L,
             List.of(
                 new SubjectDto(1L, "HTML", 1),
                 new SubjectDto(2L, "CSS", 2),
@@ -95,6 +96,7 @@ public class RoadmapCreateTest {
     RoadmapSaveResDto roadmapSaveResDto =
         new RoadmapSaveResDto(
             UUID.fromString("50e8efb9-ef44-41dd-bef7-257ffc760736").toString(),
+            0L,
             List.of(
                 new SubjectDto(1L, "HTML", 1),
                 new SubjectDto(2L, "CSS", 2),

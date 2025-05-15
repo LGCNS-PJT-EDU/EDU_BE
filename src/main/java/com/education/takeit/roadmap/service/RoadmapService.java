@@ -417,13 +417,21 @@ public class RoadmapService {
         .collect(Collectors.toList());
   }
 
-  public void saveDefaultRoadmap(String roadmapType, Long userId) {
+  public RoadmapSaveResDto saveDefaultRoadmap(String roadmapType, Long userId) {
+
+    if (roadmapRepository.findByUserId(userId) != null) {
+      deleteRoadmap(userId);
+    }
+
     Long roadmapManagementId = 0L;
+    Long userLocationSubjectId = 0L;
 
     if (roadmapType.equals("FE")) {
       roadmapManagementId = 1L;
+      userLocationSubjectId = 1L;
     } else if (roadmapType.equals("BE")) {
       roadmapManagementId = 2L;
+      userLocationSubjectId = 35L;
     } else {
       throw new CustomException(StatusCode.ROADMAP_TYPE_NOT_FOUND);
     }
@@ -459,6 +467,9 @@ public class RoadmapService {
 
       roadmapRepository.save(newRoadmap);
     }
+
+    return new RoadmapSaveResDto(
+        "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType));
   }
 
   public RoadmapFindResDto findUserRoadmap(Long userId) {
@@ -491,5 +502,20 @@ public class RoadmapService {
         .map(r -> r.getSubject().getSubId())
         .findFirst()
         .orElse(null);
+  }
+
+  public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
+    deleteRoadmap(userId);
+
+    RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
+
+    List<Long> subjectIds =
+        roadmapSaveResDto.subjects().stream()
+            .map(SubjectDto::subjectId)
+            .collect(Collectors.toList());
+
+    saveRoadmap(userId, subjectIds, answers);
+
+    return roadmapSaveResDto;
   }
 }
