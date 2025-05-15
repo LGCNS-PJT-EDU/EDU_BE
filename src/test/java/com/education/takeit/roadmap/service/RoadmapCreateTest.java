@@ -39,7 +39,11 @@ public class RoadmapCreateTest {
     RoadmapSaveResDto roadmapSaveResDto =
         new RoadmapSaveResDto(
             "사용자는 uuid가 없어요",
+<<<<<<< HEAD
             1L,
+=======
+            0L,
+>>>>>>> develop
             List.of(
                 new SubjectDto(1L, "HTML", 1),
                 new SubjectDto(2L, "CSS", 2),
