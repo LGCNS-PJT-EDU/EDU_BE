@@ -1,8 +1,5 @@
 package com.education.takeit.diagnosis.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.entity.Choice;
@@ -11,14 +8,18 @@ import com.education.takeit.diagnosis.repository.DiagnosisRepository;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.service.RoadmapService;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DiagnosisServiceTest {
@@ -110,6 +111,7 @@ class DiagnosisServiceTest {
     RoadmapSaveResDto roadmap =
         new RoadmapSaveResDto(
             UUID.fromString("cc6d893c-637f-44ce-9a82-69c7137b3a81").toString(),
+            1L,
             List.of(
                 new SubjectDto(35L, "리눅스 명령어", 1),
                 new SubjectDto(36L, "HTTP, HTTPS, DNS, TCP/IP 기본 개념", 2),

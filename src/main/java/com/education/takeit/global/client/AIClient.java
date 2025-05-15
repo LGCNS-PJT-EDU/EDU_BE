@@ -1,0 +1,66 @@
+package com.education.takeit.global.client;
+
+import com.education.takeit.exam.dto.ExamResDto;
+import com.education.takeit.feedback.dto.FeedbackResponseDto;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
+import java.util.Arrays;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+@Slf4j
+@RequiredArgsConstructor
+@Component
+public class AIClient {
+
+  @Value("${fastapi.base-url}")
+  private String baseUrl;
+
+  private final RestClient restClient;
+
+  /** 사용자 피드백 조회 */
+  public List<FeedbackResponseDto> getFeedback(String userId) {
+    return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
+  }
+
+  /** 사전 평가 문제 조회 */
+  public List<ExamResDto> getPreExam(Long userId, Long subjectId) {
+    return getForList(
+        "/api/pre/subject?user_id={userId}&subject_id={subjectId}",
+        ExamResDto[].class,
+        userId,
+        subjectId);
+  }
+
+  /** 사후 평가 문제 조회 */
+  public List<ExamResDto> getPostExam(Long userId, Long subjectId) {
+    return getForList(
+        "/api/post/subject?user_id={userId}&subject_id={subjectId}",
+        ExamResDto[].class,
+        userId,
+        subjectId);
+  }
+
+  private <T> List<T> getForList(String uri, Class<T[]> responseType, Object... uriVariables) {
+    T[] response =
+        restClient
+            .get()
+            .uri(baseUrl + uri, uriVariables)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .onStatus(
+                status -> !status.is2xxSuccessful(),
+                (req, res) -> {
+                  log.warn("FastAPI 실패: 상태코드 = {}", res.getStatusCode());
+                  throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
+                })
+            .body(responseType);
+
+    return Arrays.asList(response);
+  }
+}

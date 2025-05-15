@@ -1,18 +1,22 @@
 package com.education.takeit.exam.service;
 
-import com.education.takeit.exam.client.ExamClient;
 import com.education.takeit.exam.dto.*;
+import com.education.takeit.global.client.AIClient;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExamService {
 
-  private final ExamClient aiClient;
+  private final AIClient aiClient;
 
   /**
    * 사전 평가 문제 조회
@@ -22,7 +26,12 @@ public class ExamService {
    * @return
    */
   public List<ExamResDto> findPreExam(Long userId, Long subjectId) {
-    return aiClient.getPreExam(userId, subjectId);
+    /* Fast API: RestClient */
+    List<ExamResDto> result = aiClient.getPreExam(userId, subjectId);
+    if (result.isEmpty()) {
+      throw new CustomException(StatusCode.EMPTY_RESULT);
+    }
+    return result;
   }
 
   /**
@@ -61,15 +70,10 @@ public class ExamService {
    */
   public List<ExamResDto> findPostExam(Long userId, Long subjectId) {
     /* Fast API: RestClient */
-    try {
-      // API 호출
-    } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
+    List<ExamResDto> result = aiClient.getPostExam(userId, subjectId);
+    if (result.isEmpty()) {
+      throw new CustomException(StatusCode.EMPTY_RESULT);
     }
-    /* 임시 목 데이터 생성 */
-    List<ExamResDto> result = createMock();
-
     return result;
   }
 
