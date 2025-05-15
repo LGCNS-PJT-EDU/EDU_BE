@@ -32,6 +32,13 @@ jobs:
           echo "NAVER_SECRET=${{ secrets.NAVER_SECRET }}" >> $GITHUB_ENV
           echo "NAVER_REDIRECT_URI=${{ secrets.NAVER_REDIRECT_URI }}" >> $GITHUB_ENV
           echo "NAVER_USER_INFO_URI=${{ secrets.NAVER_USER_INFO_URI }}" >> $GITHUB_ENV
+          echo "SPRING_REDIS_HOST=${{ secrets.SPRING_REDIS_HOST }}" >> $GITHUB_ENV
+          echo "SPRING_REDIS_PORT=${{ secrets.SPRING_REDIS_PORT }}" >> $GITHUB_ENV
+          echo "MYSQL_ENDPOINT=${{ secrets.MYSQL_ENDPOINT }}" >> $GITHUB_ENV
+          echo "MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}" >> $GITHUB_ENV
+          echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> $GITHUB_ENV
+          echo "MYSQL_NAME=${{ secrets.MYSQL_NAME }}" >> $GITHUB_ENV
+          echo "FAST_API_URI=${{ secrets.FAST_API_URI }}" >> $GITHUB_ENV
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
