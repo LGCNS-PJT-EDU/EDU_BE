@@ -1,12 +1,13 @@
 package com.education.takeit.feedback.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
-import com.education.takeit.feedback.client.InternalClient;
 import com.education.takeit.feedback.dto.FeedbackDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.feedback.dto.InfoDto;
+import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
 
-  @Mock private InternalClient mockClient;
+  @Mock private AIClient mockClient;
 
   @InjectMocks private FeedbackService feedbackService;
 

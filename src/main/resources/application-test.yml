@@ -12,3 +12,6 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: false
+
+fastapi:
+  base-url: ${FAST_API_URI}

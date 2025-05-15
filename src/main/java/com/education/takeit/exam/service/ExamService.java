@@ -1,15 +1,22 @@
 package com.education.takeit.exam.service;
 
 import com.education.takeit.exam.dto.*;
+import com.education.takeit.global.client.AIClient;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExamService {
+
+  private final AIClient aiClient;
 
   /**
    * 사전 평가 문제 조회
@@ -20,15 +27,10 @@ public class ExamService {
    */
   public List<ExamResDto> findPreExam(Long userId, Long subjectId) {
     /* Fast API: RestClient */
-    try {
-      // API 호출
-    } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
+    List<ExamResDto> result = aiClient.getPreExam(userId, subjectId);
+    if (result.isEmpty()) {
+      throw new CustomException(StatusCode.EMPTY_RESULT);
     }
-    /* 임시 목 데이터 생성 */
-    List<ExamResDto> result = createMock();
-
     return result;
   }
 
@@ -68,15 +70,10 @@ public class ExamService {
    */
   public List<ExamResDto> findPostExam(Long userId, Long subjectId) {
     /* Fast API: RestClient */
-    try {
-      // API 호출
-    } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
+    List<ExamResDto> result = aiClient.getPostExam(userId, subjectId);
+    if (result.isEmpty()) {
+      throw new CustomException(StatusCode.EMPTY_RESULT);
     }
-    /* 임시 목 데이터 생성 */
-    List<ExamResDto> result = createMock();
-
     return result;
   }
 
@@ -186,7 +183,7 @@ public class ExamService {
   public List<ExamResDto> createMock() {
     return List.of(
         ExamResDto.builder()
-            .questionId(1)
+            .questionId(1L)
             .question("HTML 문서의 최상위 루트 요소는 무엇인가?")
             .choice1("<html>")
             .choice2("<head>")
@@ -198,7 +195,7 @@ public class ExamService {
             .difficulty("하")
             .build(),
         ExamResDto.builder()
-            .questionId(2)
+            .questionId(2L)
             .question("head 요소 안에 넣을 수 없는 태그는?")
             .choice1("<title>")
             .choice2("<link>")
@@ -210,7 +207,7 @@ public class ExamService {
             .difficulty("하")
             .build(),
         ExamResDto.builder()
-            .questionId(3)
+            .questionId(3L)
             .question("단락을 나타내는 대표적인 블록 요소는?")
             .choice1("<p>")
             .choice2("<span>")
@@ -222,7 +219,7 @@ public class ExamService {
             .difficulty("하")
             .build(),
         ExamResDto.builder()
-            .questionId(4)
+            .questionId(4L)
             .question("순서 없는 목록을 나타내는 태그는?")
             .choice1("<ul>")
             .choice2("<ol>")
@@ -234,7 +231,7 @@ public class ExamService {
             .difficulty("중")
             .build(),
         ExamResDto.builder()
-            .questionId(5)
+            .questionId(5L)
             .question("img 태그의 alt 속성은 어떤 용도인가?")
             .choice1("접근성을 위한 대체 텍스트 제공")
             .choice2("이미지 크기 자동 지정")
@@ -246,7 +243,7 @@ public class ExamService {
             .difficulty("중")
             .build(),
         ExamResDto.builder()
-            .questionId(6)
+            .questionId(6L)
             .question("video 태그에서 controls 속성의 역할은?")
             .choice1("재생 버튼 등을 사용자에게 표시")
             .choice2("자동 재생")
@@ -258,7 +255,7 @@ public class ExamService {
             .difficulty("하")
             .build(),
         ExamResDto.builder()
-            .questionId(7)
+            .questionId(7L)
             .question("폼에서 사용자의 이메일 형식을 검증하려면 어떤 input 타입을 써야 하는가?")
             .choice1("email")
             .choice2("text")
@@ -270,7 +267,7 @@ public class ExamService {
             .difficulty("중")
             .build(),
         ExamResDto.builder()
-            .questionId(8)
+            .questionId(8L)
             .question("서로 배타적인 Radio 버튼을 그룹화하려면 동일한 속성은?")
             .choice1("name")
             .choice2("id")
@@ -282,7 +279,7 @@ public class ExamService {
             .difficulty("하")
             .build(),
         ExamResDto.builder()
-            .questionId(9)
+            .questionId(9L)
             .question("HTML 테이블에서 한 행을 나타내는 요소는?")
             .choice1("<tr>")
             .choice2("<th>")
@@ -294,7 +291,7 @@ public class ExamService {
             .difficulty("중")
             .build(),
         ExamResDto.builder()
-            .questionId(10)
+            .questionId(10L)
             .question("표의 열 제목을 나타내는 시맨틱 태그는?")
             .choice1("<th>")
             .choice2("<td>")

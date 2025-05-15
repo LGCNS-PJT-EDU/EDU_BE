@@ -110,6 +110,7 @@ class DiagnosisServiceTest {
     RoadmapSaveResDto roadmap =
         new RoadmapSaveResDto(
             UUID.fromString("cc6d893c-637f-44ce-9a82-69c7137b3a81").toString(),
+            1L,
             List.of(
                 new SubjectDto(35L, "리눅스 명령어", 1),
                 new SubjectDto(36L, "HTTP, HTTPS, DNS, TCP/IP 기본 개념", 2),
