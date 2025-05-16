@@ -254,6 +254,7 @@ public class RoadmapService {
         RoadmapManagement.builder()
             .roadmapNm("Roadmap")
             .roadmapTimestamp(LocalDateTime.now())
+            .userId(userId)
             .lectureAmount(lectureAmount)
             .priceLevel(priceLevel)
             .likesBooks(likesBooks)
@@ -278,7 +279,6 @@ public class RoadmapService {
 
       Roadmap roadmap =
           Roadmap.builder()
-              .userId(userId)
               .roadmapManagement(roadmapManagement)
               .subject(subject)
               .orderSub(order++)
@@ -325,8 +325,10 @@ public class RoadmapService {
             .findByUserId(userId)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
-    List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
-    if (roadmaps.isEmpty()) return new MyPageResDto(user.getNickname(), 0);
+    RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    if (roadmapManagement == null) return new MyPageResDto(user.getNickname(), 0);
+
+    List<Roadmap> roadmaps = roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagement.getRoadmapManagementId());
 
     long total = roadmaps.size();
     long completed = roadmaps.stream().filter(Roadmap::isComplete).count();
@@ -337,12 +339,15 @@ public class RoadmapService {
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
-    List<Roadmap> existingRoadmaps = roadmapRepository.findByUserId(userId);
+
+    RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    List<Roadmap> existingRoadmaps = roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagement.getRoadmapManagementId());
+
 
     if (existingRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
-    RoadmapManagement roadmapManagement = existingRoadmaps.getFirst().getRoadmapManagement();
+
     roadmapManagement.setRoadmapTimestamp(LocalDateTime.now());
     roadmapManagementRepository.save(roadmapManagement);
 
@@ -371,7 +376,6 @@ public class RoadmapService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 과목 없음:" + subjectId));
         roadmap =
             Roadmap.builder()
-                .userId(userId)
                 .subject(subject)
                 .orderSub(order)
                 .roadmapManagement(roadmapManagement)
@@ -393,11 +397,11 @@ public class RoadmapService {
 
   @Transactional
   public void deleteRoadmap(Long userId) {
-    List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
+    RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    List<Roadmap> roadmaps = roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapManagement.getRoadmapManagementId());
     if (roadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
-    RoadmapManagement roadmapManagement = roadmaps.getFirst().getRoadmapManagement();
     roadmapRepository.deleteAll(roadmaps);
     roadmapManagementRepository.delete(roadmapManagement);
   }
@@ -428,7 +432,7 @@ public class RoadmapService {
 
   public RoadmapSaveResDto saveDefaultRoadmap(String roadmapType, Long userId) {
 
-    if (roadmapRepository.findByUserId(userId) != null) {
+    if (roadmapManagementRepository.findByUserId(userId) != null) {
       deleteRoadmap(userId);
     }
 
@@ -457,6 +461,7 @@ public class RoadmapService {
         RoadmapManagement.builder()
             .roadmapNm("Default " + roadmapType + " Roadmap")
             .roadmapTimestamp(LocalDateTime.now())
+            .userId(userId)
             .build();
 
     roadmapManagementRepository.save(roadmapManagement);
@@ -465,7 +470,6 @@ public class RoadmapService {
     for (Roadmap defaultRoadmap : defaultRoadmapList) {
       Roadmap newRoadmap =
           Roadmap.builder()
-              .userId(userId)
               .roadmapManagement(roadmapManagement)
               .subject(defaultRoadmap.getSubject())
               .orderSub(order++)
@@ -483,7 +487,9 @@ public class RoadmapService {
 
   public RoadmapFindResDto findUserRoadmap(Long userId) {
 
-    List<Roadmap> userRoadmaps = roadmapRepository.findByUserId(userId);
+    RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    List<Roadmap> userRoadmaps = roadmapRepository.findByRoadmapManagement_RoadmapManagementId(userId);
+
     if (userRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }

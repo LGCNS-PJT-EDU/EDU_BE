@@ -170,21 +170,21 @@ CREATE TABLE roadmap_management(
     roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     lecture_amount VARCHAR(255),
     price_level VARCHAR(255),
-    likes_books BOOLEAN
+    user_id BIGINT NOT NULL,
+    likes_books BOOLEAN,
+    CONSTRAINT fk_roadmap_management_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- roadmap(로드맵) 테이블 생성
 CREATE TABLE roadmap(
     roadmap_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     order_sub INT NOT NULL,
-    user_id BIGINT NOT NULL,
     sub_id BIGINT NOT NULL,
     roadmap_management_id BIGINT NOT NULL,
     is_complete BOOLEAN NOT NULL DEFAULT FALSE,
     pre_submit_count INT NOT NULL,
     post_submit_count INT NOT NULL,
     level INT NOT NULL DEFAULT 0,
-    CONSTRAINT fk_roadmap_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_roadmap_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
     CONSTRAINT fk_roadmap_roadmap_management FOREIGN KEY (roadmap_management_id) REFERENCES roadmap_management(roadmap_management_id)
 );
@@ -600,51 +600,51 @@ INSERT INTO users(user_id, is_active, email, login_type, nickname) VALUES
     (1, 1, 'user@user.com', 'LOCAL', 'user');
 
 -- 프론트엔드 기본 로드맵 주입
-INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm) VALUES
-    (1, 'FE_DEFAULT_ROADMAP');
+INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm, user_id) VALUES
+    (1, 'FE_DEFAULT_ROADMAP', 1);
 
-INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_complete, pre_submit_count, post_submit_count) VALUES
-    (1, 1, 1, 1, 1, 0, 0, 0),
-    (2, 2, 1, 2, 1, 0, 0, 0),
-    (3, 3, 1, 3, 1, 0, 0, 0),
-    (4, 4, 1, 4, 1, 0, 0, 0),
-    (5, 5, 1, 5, 1, 0, 0, 0),
-    (6, 6, 1, 6, 1, 0, 0, 0),
-    (7, 7, 1, 7, 1, 0, 0, 0),
-    (8, 8, 1, 8, 1, 0, 0, 0),
-    (9, 9, 1, 9, 1, 0, 0, 0),
-    (10, 10, 1, 10, 1, 0, 0, 0),
-    (11, 11, 1, 11, 1, 0, 0, 0),
-    (12, 12, 1, 12, 1, 0, 0, 0),
-    (13, 13, 1, 17, 1, 0, 0, 0),
-    (14, 14, 1, 18, 1, 0, 0, 0),
-    (15, 15, 1, 19, 1, 0, 0, 0),
-    (16, 16, 1, 20, 1, 0, 0, 0),
-    (17, 17, 1, 21, 1, 0, 0, 0),
-    (18, 18, 1, 22, 1, 0, 0, 0),
-    (19, 19, 1, 23, 1, 0, 0, 0),
-    (20, 20, 1, 24, 1, 0, 0, 0),
-    (21, 21, 1, 29, 1, 0, 0, 0),
-    (22, 22, 1, 30, 1, 0, 0, 0),
-    (23, 23, 1, 31, 1, 0, 0, 0),
-    (24, 24, 1, 32, 1, 0, 0, 0),
-    (25, 25, 1, 33, 1, 0, 0, 0),
-    (26, 26, 1, 34, 1, 0, 0, 0);
+INSERT INTO roadmap(roadmap_id, order_sub, sub_id, roadmap_management_id, is_complete, pre_submit_count, post_submit_count) VALUES
+    (1, 1, 1, 1, 0, 0, 0),
+    (2, 2, 2, 1, 0, 0, 0),
+    (3, 3, 3, 1, 0, 0, 0),
+    (4, 4, 4, 1, 0, 0, 0),
+    (5, 5, 5, 1, 0, 0, 0),
+    (6, 6, 6, 1, 0, 0, 0),
+    (7, 7, 7, 1, 0, 0, 0),
+    (8, 8, 8, 1, 0, 0, 0),
+    (9, 9, 9, 1, 0, 0, 0),
+    (10, 10, 10, 1, 0, 0, 0),
+    (11, 11, 11, 1, 0, 0, 0),
+    (12, 12, 12, 1, 0, 0, 0),
+    (13, 13, 17, 1, 0, 0, 0),
+    (14, 14, 18, 1, 0, 0, 0),
+    (15, 15, 19, 1, 0, 0, 0),
+    (16, 16, 20, 1, 0, 0, 0),
+    (17, 17, 21, 1, 0, 0, 0),
+    (18, 18, 22, 1, 0, 0, 0),
+    (19, 19, 23, 1, 0, 0, 0),
+    (20, 20, 24, 1, 0, 0, 0),
+    (21, 21, 29, 1, 0, 0, 0),
+    (22, 22, 30, 1, 0, 0, 0),
+    (23, 23, 31, 1, 0, 0, 0),
+    (24, 24, 32, 1, 0, 0, 0),
+    (25, 25, 33, 1, 0, 0, 0),
+    (26, 26, 34, 1, 0, 0, 0);
 
 
 -- 백엔드 기본 로드맵 주입
-INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm) VALUES
-    (2, 'BE_DEFAULT_ROADMAP');
+INSERT INTO roadmap_management(roadmap_management_id, roadmap_nm, user_id) VALUES
+    (2, 'BE_DEFAULT_ROADMAP', 1);
 
-INSERT INTO roadmap(roadmap_id, order_sub, user_id, sub_id, roadmap_management_id, is_complete, pre_submit_count, post_submit_count) VALUES
-    (27, 1, 1, 35, 2, 0, 0, 0),
-    (28, 2, 1, 36, 2, 0, 0, 0),
-    (29, 3, 1, 37, 2, 0, 0, 0),
-    (30, 4, 1, 38, 2, 0, 0, 0),
-    (31, 5, 1, 39, 2, 0, 0, 0),
-    (32, 6, 1, 43, 2, 0, 0, 0),
-    (33, 7, 1, 44, 2, 0, 0, 0),
-    (34, 8, 1, 45, 2, 0, 0, 0),
-    (35, 9, 1, 46, 2, 0, 0, 0),
-    (36, 10, 1, 51, 2, 0, 0, 0),
-    (37, 11, 1, 53, 2, 0, 0, 0);
+INSERT INTO roadmap(roadmap_id, order_sub, sub_id, roadmap_management_id, is_complete, pre_submit_count, post_submit_count) VALUES
+    (27, 1, 35, 2, 0, 0, 0),
+    (28, 2, 36, 2, 0, 0, 0),
+    (29, 3, 37, 2, 0, 0, 0),
+    (30, 4, 38, 2, 0, 0, 0),
+    (31, 5, 39, 2, 0, 0, 0),
+    (32, 6, 43, 2, 0, 0, 0),
+    (33, 7, 44, 2, 0, 0, 0),
+    (34, 8, 45, 2, 0, 0, 0),
+    (35, 9, 46, 2, 0, 0, 0),
+    (36, 10, 51, 2, 0, 0, 0),
+    (37, 11, 53, 2, 0, 0, 0);

@@ -6,8 +6,10 @@ import com.education.takeit.roadmap.dto.ChapterFindDto;
 import com.education.takeit.roadmap.dto.RecommendContentsFindDto;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.ChapterRepository;
+import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ public class SubjectService {
   private final SubjectRepository subjectRepository;
   private final ChapterRepository chapterRepository;
   private final RoadmapRepository roadmapRepository;
+  private final RoadmapManagementRepository roadmapManagementRepository;
 
   public List<RecommendContentsFindDto> findRecommendContents() {
     RecommendContentsFindDto dummy1 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url1", "동영상");
@@ -47,8 +50,8 @@ public class SubjectService {
             .map(ch -> new ChapterFindDto(ch.getChapterName(), ch.getChapterOrder()))
             .toList();
 
-    // 사용자의 과목과 관련된 정보 조회
-    Roadmap userRoadmap = roadmapRepository.findByUserIdAndSubject_SubId(userId, subjectId);
+    RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    Roadmap userRoadmap = roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
 
     // 추천 컨텐츠 받아오기(임시)
     List<RecommendContentsFindDto> recommendContents = findRecommendContents();
