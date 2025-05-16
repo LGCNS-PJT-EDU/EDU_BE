@@ -8,13 +8,12 @@ import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -61,11 +60,11 @@ public class ExamService {
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
 
     // FAST API 사전평가 결과 전달
-//    try {
-//      aiClient.postPreExam(userId, result);
-//    } catch (RestClientException e) {
-//      log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
-//    }
+    //    try {
+    //      aiClient.postPreExam(userId, result);
+    //    } catch (RestClientException e) {
+    //      log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
+    //    }
     roadmap.setLevel(subject.level());
     roadmap.setPreSubmitCount(roadmap.getPreSubmitCount() + 1);
 
@@ -146,7 +145,8 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  private SubjectResultDto calculateSubjectResultForPost(Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
+  private SubjectResultDto calculateSubjectResultForPost(
+      Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
     Long subjectId = examAnswerRes.subjectId();
     String startDate = examAnswerRes.startDate();
@@ -166,7 +166,10 @@ public class ExamService {
    * @return
    */
   private int calculatePreLevel(List<ExamAnswerDto> answers) {
-    int score = answers.stream().mapToInt(a -> examLevelCalculator.calculateScoreByDifficulty(a, false)).sum();
+    int score =
+        answers.stream()
+            .mapToInt(a -> examLevelCalculator.calculateScoreByDifficulty(a, false))
+            .sum();
 
     if (score <= 4) return 1;
     if (score <= 8) return 2;
@@ -177,13 +180,14 @@ public class ExamService {
 
   /**
    * 과목별 사후 평가 레벨 집계
+   *
    * @param roadmap
    * @param answers
    * @return
    */
   private int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
-      int scorePercent = examLevelCalculator.calculateScorePercent(answers);
-      int levelDelta = examLevelCalculator.calculateLevelDelta(scorePercent);
+    int scorePercent = examLevelCalculator.calculateScorePercent(answers);
+    int levelDelta = examLevelCalculator.calculateLevelDelta(scorePercent);
     return examLevelCalculator.calculateNewLevel(roadmap.getLevel(), levelDelta);
   }
 
@@ -202,9 +206,12 @@ public class ExamService {
             entry -> {
               List<ExamAnswerDto> chapterAnswers = entry.getValue();
               String chapterName = chapterAnswers.getFirst().chapterName();
-              boolean weakness = chapterAnswers.stream()
-                      .anyMatch(dto ->
-                              Difficulty.fromLabel(dto.difficulty()) == Difficulty.EASY && !dto.answerTF());
+              boolean weakness =
+                  chapterAnswers.stream()
+                      .anyMatch(
+                          dto ->
+                              Difficulty.fromLabel(dto.difficulty()) == Difficulty.EASY
+                                  && !dto.answerTF());
               int cnt = (int) chapterAnswers.stream().filter(ExamAnswerDto::answerTF).count();
               int totalCnt = chapterAnswers.size();
               return new ChapterResultDto(entry.getKey(), chapterName, weakness, cnt, totalCnt);

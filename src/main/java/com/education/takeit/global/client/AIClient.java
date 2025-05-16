@@ -5,15 +5,14 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,11 +48,7 @@ public class AIClient {
   }
 
   public void postPreExam(Long userId, ExamResultDto examResultDto) {
-      postForNoContent(
-              "/api/pre/subject?user_id={userId}",
-              examResultDto,
-              userId
-      );
+    postForNoContent("/api/pre/subject?user_id={userId}", examResultDto, userId);
   }
 
   private <T> List<T> getForList(String uri, Class<T[]> responseType, Object... uriVariables) {
@@ -76,17 +71,17 @@ public class AIClient {
 
   private <T> void postForNoContent(String uri, Object body, Object... uriVariables) {
     restClient
-            .post()
-            .uri(baseUrl + uri, uriVariables)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(body)
-            .retrieve()
-            .onStatus(
-                    status -> !status.is2xxSuccessful(),
-                    (req, res) -> {
-                      log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                      throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
-                    }
-            ).toBodilessEntity();
+        .post()
+        .uri(baseUrl + uri, uriVariables)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(body)
+        .retrieve()
+        .onStatus(
+            status -> !status.is2xxSuccessful(),
+            (req, res) -> {
+              log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
+              throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
+            })
+        .toBodilessEntity();
   }
 }
