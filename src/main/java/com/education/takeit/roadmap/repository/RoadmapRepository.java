@@ -1,11 +1,9 @@
 package com.education.takeit.roadmap.repository;
 
 import com.education.takeit.roadmap.entity.Roadmap;
-import java.util.List;
-
 import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
-import org.springframework.data.jpa.repository.EntityGraph;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
