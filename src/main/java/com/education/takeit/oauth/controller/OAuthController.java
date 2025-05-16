@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "OAuth 소셜 로그인", description = "OAuth 소셜 로그인 API")
+@Tag(name = "소셜 로그인", description = "OAuth 소셜 로그인 API")
 public class OAuthController {
 
   private final GoogleOAuthService googleOAuthService;
