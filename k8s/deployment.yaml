@@ -25,6 +25,12 @@ spec:
           ports:
             - containerPort: 9800
           env:
+            # 🔐 FASTAPI
+            - name: FAST_API_URI
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: FAST_API_URI
             # 🔐 MYSQL
             - name: MYSQL_ENDPOINT
               valueFrom:
