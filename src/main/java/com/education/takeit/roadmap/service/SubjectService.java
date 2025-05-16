@@ -31,7 +31,7 @@ public class SubjectService {
   }
 
   public SubjectFindResDto findUserSubject(Long userId, Long subjectId) {
-    if(userId == null){
+    if (userId == null) {
       throw new CustomException(StatusCode.USER_NOT_FOUND);
     }
 

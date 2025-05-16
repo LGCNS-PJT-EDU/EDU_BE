@@ -263,16 +263,16 @@ public class RoadmapService {
 
     List<Subject> subjectList = subjectRepository.findAllById(subjectIds);
 
-  // ID → Subject 매핑
-    Map<Long, Subject> subjectMap = subjectList.stream()
-            .collect(Collectors.toMap(Subject::getSubId, s -> s));
+    // ID → Subject 매핑
+    Map<Long, Subject> subjectMap =
+        subjectList.stream().collect(Collectors.toMap(Subject::getSubId, s -> s));
 
     List<Roadmap> roadmapList = new ArrayList<>();
     int order = 1;
 
     for (Long subjectId : subjectIds) {
       Subject subject = subjectMap.get(subjectId);
-      if(subject == null) {
+      if (subject == null) {
         throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
       }
 

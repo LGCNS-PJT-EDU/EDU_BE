@@ -2,7 +2,6 @@ package com.education.takeit.roadmap.repository;
 
 import com.education.takeit.roadmap.entity.Roadmap;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
