@@ -18,7 +18,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
   NaverProperties.class
 })
 public class TakeitApplication {
-
   public static void main(String[] args) {
     SpringApplication.run(TakeitApplication.class, args);
   }
