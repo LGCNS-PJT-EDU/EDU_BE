@@ -23,14 +23,18 @@ public class SubjectService {
   private final RoadmapRepository roadmapRepository;
 
   public List<RecommendContentsFindDto> findRecommendContents() {
-    RecommendContentsFindDto dummy1 = new RecommendContentsFindDto("HTML 1강", "url1", "동영상");
-    RecommendContentsFindDto dummy2 = new RecommendContentsFindDto("HTML 2강", "url2", "동영상");
-    RecommendContentsFindDto dummy3 = new RecommendContentsFindDto("HTML 3강", "url3", "책");
+    RecommendContentsFindDto dummy1 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url1", "동영상");
+    RecommendContentsFindDto dummy2 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url2", "동영상");
+    RecommendContentsFindDto dummy3 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url3", "책");
 
     return Arrays.asList(dummy1, dummy2, dummy3);
   }
 
   public SubjectFindResDto findUserSubject(Long userId, Long subjectId) {
+    if(userId == null){
+      throw new CustomException(StatusCode.USER_NOT_FOUND);
+    }
+
     // subjectId 로 subject 정보 조회
     Subject subject =
         subjectRepository
