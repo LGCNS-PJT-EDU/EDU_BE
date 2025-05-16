@@ -6,9 +6,8 @@ import com.education.takeit.diagnosis.service.DiagnosisService;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
