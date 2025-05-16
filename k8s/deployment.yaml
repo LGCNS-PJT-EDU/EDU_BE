@@ -29,7 +29,7 @@ spec:
             - name: FAST_API_URI
               valueFrom:
                 secretKeyRef:
-                  name: my-secret
+                  name: spring-secrets
                   key: FAST_API_URI
             # 🔐 MYSQL
             - name: MYSQL_ENDPOINT
