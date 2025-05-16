@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/roadmap")
-@Tag(name = "Roadmap", description = "로드맵 관련 API")
+@Tag(name = "로드맵", description = "로드맵 관련 API")
 public class RoadmapController {
   private final RoadmapService roadmapService;
   private final SubjectService subjectService;
