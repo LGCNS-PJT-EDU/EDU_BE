@@ -1,12 +1,10 @@
 package com.education.takeit.roadmap.controller;
 
+import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
-import com.education.takeit.roadmap.dto.MyPageResDto;
-import com.education.takeit.roadmap.dto.RoadmapFindResDto;
-import com.education.takeit.roadmap.dto.SubjectDto;
-import com.education.takeit.roadmap.dto.SubjectFindResDto;
+import com.education.takeit.roadmap.dto.*;
 import com.education.takeit.roadmap.service.RoadmapService;
 import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/roadmap")
-@Tag(name = "로드맵", description = "로드맵 관련 API")
+@Tag(name = "Roadmap", description = "로드맵 관련 API")
 public class RoadmapController {
   private final RoadmapService roadmapService;
   private final SubjectService subjectService;
@@ -37,7 +35,9 @@ public class RoadmapController {
   }*/
 
   @PostMapping("/save")
-  @Operation(summary = "회원가입한 사용자의 로드맵 저장 요청", description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장")
+  @Operation(
+      summary = "회원가입한 사용자의 로드맵 저장 요청",
+      description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장하는 API")
   public ResponseEntity<Message> saveRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody Map<String, String> body) {
@@ -48,14 +48,14 @@ public class RoadmapController {
   }
 
   @GetMapping("/{userId}/progress")
-  @Operation(summary = "마이페이지에서 로드맵 진척도 조회", description = "전체 과목 중 이수한 과목 수 백분율로 계산해서 반환")
+  @Operation(summary = "마이페이지에서 로드맵 진척도 조회", description = "전체 과목 중 이수한 과목 수 백분율로 계산해서 반환하는 API")
   public ResponseEntity<MyPageResDto> getUserProgress(@PathVariable Long userId) {
     MyPageResDto response = roadmapService.getProgressPercentage(userId);
     return ResponseEntity.ok(response);
   }
 
   @PutMapping
-  @Operation(summary = "로드맵 수정", description = "사용자가 원하는 대로 로드맵 과목 수정")
+  @Operation(summary = "로드맵 수정", description = "사용자가 원하는 대로 로드맵 과목 수정 API")
   public ResponseEntity<Message> updateRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody List<SubjectDto> subjects) {
@@ -66,7 +66,7 @@ public class RoadmapController {
   }
 
   @DeleteMapping
-  @Operation(summary = "로드맵 삭제", description = "로드맵 삭제")
+  @Operation(summary = "로드맵 삭제", description = "로드맵 삭제 API")
   public ResponseEntity<Message> deleteRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     {
@@ -77,7 +77,7 @@ public class RoadmapController {
   }
 
   @GetMapping("/default")
-  @Operation(summary = "기본 로드맵 제공", description = "기본 로드맵을 반환")
+  @Operation(summary = "기본 로드맵 제공", description = "기본 로드맵 제공 API")
   public ResponseEntity<List<SubjectDto>> findDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType) {
     List<SubjectDto> defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
@@ -85,17 +85,18 @@ public class RoadmapController {
   }
 
   @PostMapping("/default")
-  @Operation(summary = "기본 로드맵을 사용자에게 저장", description = "기본 로드맵을 사용자에게 할당")
-  public ResponseEntity<Message> saveDefaultRoadmap(
+  @Operation(summary = "기본 로드맵을 사용자에게 할당", description = "기본 로드맵을 사용자에게 할당하는 API")
+  public ResponseEntity<RoadmapSaveResDto> saveDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
-    roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    RoadmapSaveResDto roadmapSaveResDto =
+        roadmapService.saveDefaultRoadmap(defaultRoadmapType, userId);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 
   @GetMapping
-  @Operation(summary = "사용자 로드맵 제공", description = "사용자 로드맵을 제공")
+  @Operation(summary = "로드맵 제공", description = "로드맵 제공하는 API")
   public ResponseEntity<RoadmapFindResDto> findUserRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
@@ -104,12 +105,22 @@ public class RoadmapController {
   }
 
   @GetMapping("/subject")
-  @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공")
+  @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공하는 API")
   public ResponseEntity<SubjectFindResDto> findUserRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestParam("subjectId") Long subjectId) {
     Long userId = userDetails.getUserId();
     SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, subjectId);
     return ResponseEntity.ok(subjectFindResDto);
+  }
+
+  @PostMapping("renew")
+  @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
+  public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
+    Long userId = userDetails.getUserId();
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 }

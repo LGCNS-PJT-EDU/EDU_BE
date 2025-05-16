@@ -52,3 +52,6 @@ oauth:
     client-secret: ${NAVER_SECRET}
     redirect-uri: ${NAVER_REDIRECT_URI}
     user-info-uri: ${NAVER_USER_INFO_URI}
+
+fastapi:
+  base-url: ${FAST_API_URI}
