@@ -77,7 +77,7 @@ public class SecurityConfig {
     // WebConfig 설정은 Spring MVC 레벨에서의 CORS 처리 담당.
     // 따라서 SpringSecurity도 따로 CORS 설정을 명시해줘야 함.
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    configuration.setAllowedOrigins(List.of("https://takeit.academy"));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
     configuration.setExposedHeaders(List.of("Authorization"));
