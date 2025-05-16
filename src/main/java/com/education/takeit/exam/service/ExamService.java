@@ -58,13 +58,12 @@ public class ExamService {
     List<ChapterResultDto> chapters = calculateChapterResults(answers);
 
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
+    try {
+      aiClient.postPreExam(userId, result);
+    } catch (RestClientException e) {
+      log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
+    }
 
-    // FAST API 사전평가 결과 전달
-    //    try {
-    //      aiClient.postPreExam(userId, result);
-    //    } catch (RestClientException e) {
-    //      log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
-    //    }
     roadmap.setLevel(subject.level());
     roadmap.setPreSubmitCount(roadmap.getPreSubmitCount() + 1);
 
@@ -106,16 +105,15 @@ public class ExamService {
 
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
 
-    // FAST API 사전평가 결과 전달
     try {
-      // API 호출
+      aiClient.postPostExam(userId, result);
     } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
+      log.warn("사후 평가 결과 전송 실패: {}", e.getMessage());
     }
+
     roadmap.setLevel(subject.level()); // 사전 평가
     roadmap.setPostSubmitCount(roadmap.getPostSubmitCount() + 1);
-    roadmap.setComplete(true);
+    if (!roadmap.isComplete()) roadmap.setComplete(true);
 
     return new ExamResultDto(userId, subject, chapters, answers);
   }

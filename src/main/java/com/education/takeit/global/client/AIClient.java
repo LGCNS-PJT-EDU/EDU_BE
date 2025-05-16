@@ -51,6 +51,14 @@ public class AIClient {
     postForNoContent("/api/pre/subject?user_id={userId}", examResultDto, userId);
   }
 
+    public void postPostExam(Long userId, ExamResultDto examResultDto) {
+        postForNoContent(
+                "/api/post/subject?user_id={userId}",
+                examResultDto,
+                userId
+        );
+    }
+
   private <T> List<T> getForList(String uri, Class<T[]> responseType, Object... uriVariables) {
     T[] response =
         restClient
