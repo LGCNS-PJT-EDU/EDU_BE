@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/exam")
 @RequiredArgsConstructor
-@Tag(name = "PreExam", description = "사전 평가와 관련된 API")
+@Tag(name = "평가", description = "사전 평가와 관련된 API")
 public class ExamController {
 
   private final ExamService examService;
