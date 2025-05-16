@@ -1,22 +1,30 @@
 package com.education.takeit.exam.service;
 
 import com.education.takeit.exam.dto.*;
+import com.education.takeit.exam.enums.Difficulty;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ExamService {
 
   private final AIClient aiClient;
+  private final RoadmapRepository roadmapRepository;
+  private final ExamLevelCalculator examLevelCalculator;
 
   /**
    * 사전 평가 문제 조회
@@ -26,7 +34,6 @@ public class ExamService {
    * @return
    */
   public List<ExamResDto> findPreExam(Long userId, Long subjectId) {
-    /* Fast API: RestClient */
     List<ExamResDto> result = aiClient.getPreExam(userId, subjectId);
     if (result.isEmpty()) {
       throw new CustomException(StatusCode.EMPTY_RESULT);
@@ -43,21 +50,25 @@ public class ExamService {
    */
   public ExamResultDto submitPreExam(Long userId, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
-    // subject 집계
-    SubjectResultDto subject = calculateSubjectResult(examAnswerRes);
-    // chapter 집계
+
+    Roadmap roadmap = roadmapRepository.findByRoadmapId(examAnswerRes.roadmapId());
+    if (roadmap == null) {
+      throw new CustomException(StatusCode.NOT_FOUND_ROADMAP);
+    }
+    SubjectResultDto subject = calculateSubjectResultForPre(examAnswerRes);
     List<ChapterResultDto> chapters = calculateChapterResults(answers);
 
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
 
     // FAST API 사전평가 결과 전달
-    try {
-      // API 호출
-    } catch (RestClientException e) {
-      // log.warn("FastAPI 통신 실패: {}", e.getMessage());
-      // fallback 처리 가능
-    }
-    // submitCnt update 필요
+//    try {
+//      aiClient.postPreExam(userId, result);
+//    } catch (RestClientException e) {
+//      log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
+//    }
+    roadmap.setLevel(subject.level());
+    roadmap.setPreSubmitCount(roadmap.getPreSubmitCount() + 1);
+
     return new ExamResultDto(userId, subject, chapters, answers);
   }
 
@@ -69,7 +80,6 @@ public class ExamService {
    * @return
    */
   public List<ExamResDto> findPostExam(Long userId, Long subjectId) {
-    /* Fast API: RestClient */
     List<ExamResDto> result = aiClient.getPostExam(userId, subjectId);
     if (result.isEmpty()) {
       throw new CustomException(StatusCode.EMPTY_RESULT);
@@ -86,9 +96,13 @@ public class ExamService {
    */
   public ExamResultDto submitPostExam(Long userId, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
-    // subject 집계
-    SubjectResultDto subject = calculateSubjectResult(examAnswerRes);
-    // chapter 집계
+
+    Roadmap roadmap = roadmapRepository.findByRoadmapId(examAnswerRes.roadmapId());
+    if (roadmap == null) {
+      throw new CustomException(StatusCode.NOT_FOUND_ROADMAP);
+    }
+
+    SubjectResultDto subject = calculateSubjectResultForPost(roadmap, examAnswerRes);
     List<ChapterResultDto> chapters = calculateChapterResults(answers);
 
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
@@ -100,23 +114,26 @@ public class ExamService {
       // log.warn("FastAPI 통신 실패: {}", e.getMessage());
       // fallback 처리 가능
     }
-    // submitCnt update 필요
+    roadmap.setLevel(subject.level()); // 사전 평가
+    roadmap.setPostSubmitCount(roadmap.getPostSubmitCount() + 1);
+    roadmap.setComplete(true);
+
     return new ExamResultDto(userId, subject, chapters, answers);
   }
 
   /**
-   * 과목별 평가 집계
+   * 과목별 사전 평가 집계
    *
    * @param examAnswerRes
    * @return
    */
-  private SubjectResultDto calculateSubjectResult(ExamAnswerResDto examAnswerRes) {
+  private SubjectResultDto calculateSubjectResultForPre(ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
     Long subjectId = examAnswerRes.subjectId();
     String startDate = examAnswerRes.startDate();
     Long duration = examAnswerRes.duration();
     int submitCnt = examAnswerRes.submitCnt() + 1;
-    int level = calculateLevel(answers);
+    int level = calculatePreLevel(answers);
     int cnt = (int) answers.stream().filter(ExamAnswerDto::answerTF).count();
     int totalCnt = answers.size();
 
@@ -124,45 +141,60 @@ public class ExamService {
   }
 
   /**
-   * 과목별 진단 레벨 계산
+   * 과목별 사후 평가 집계
+   *
+   * @param examAnswerRes
+   * @return
+   */
+  private SubjectResultDto calculateSubjectResultForPost(Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
+    List<ExamAnswerDto> answers = examAnswerRes.answers();
+    Long subjectId = examAnswerRes.subjectId();
+    String startDate = examAnswerRes.startDate();
+    Long duration = examAnswerRes.duration();
+    int submitCnt = examAnswerRes.submitCnt() + 1;
+    int level = calculatePostLevel(roadmap, answers);
+    int cnt = (int) answers.stream().filter(ExamAnswerDto::answerTF).count();
+    int totalCnt = answers.size();
+
+    return new SubjectResultDto(subjectId, startDate, duration, submitCnt, level, cnt, totalCnt);
+  }
+
+  /**
+   * 과목별 사전 평가 레벨 집계
    *
    * @param answers
    * @return
    */
-  private int calculateLevel(List<ExamAnswerDto> answers) {
-    int score = answers.stream().mapToInt(this::calculateScoreByDifficulty).sum();
+  private int calculatePreLevel(List<ExamAnswerDto> answers) {
+    int score = answers.stream().mapToInt(a -> examLevelCalculator.calculateScoreByDifficulty(a, false)).sum();
 
     if (score <= 4) return 1;
-    if (score <= 8) return 1;
+    if (score <= 8) return 2;
     if (score <= 12) return 3;
     if (score <= 16) return 4;
     return 5;
   }
 
   /**
-   * 진단 레벨 계산을 위한 난이도별 점수 환산
-   *
-   * @param answer
+   * 과목별 사후 평가 레벨 집계
+   * @param roadmap
+   * @param answers
    * @return
    */
-  private int calculateScoreByDifficulty(ExamAnswerDto answer) {
-    if (!answer.answerTF()) return 0;
-
-    return switch (answer.difficulty()) {
-      case "하" -> 1;
-      case "중" -> 3;
-      default -> throw new IllegalArgumentException("지원하지 않는 난이도: " + answer.difficulty());
-    };
+  private int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
+      int scorePercent = examLevelCalculator.calculateScorePercent(answers);
+      int levelDelta = examLevelCalculator.calculateLevelDelta(scorePercent);
+    return examLevelCalculator.calculateNewLevel(roadmap.getLevel(), levelDelta);
   }
 
   /**
    * 단원별 평가 집계
    *
-   * @param answers
+   * @param examAnswerRes
    * @return
    */
-  private List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> answers) {
-    return answers.stream()
+  private List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> examAnswerRes) {
+    return examAnswerRes.stream()
         .collect(Collectors.groupingBy(ExamAnswerDto::chapterNum))
         .entrySet()
         .stream()
@@ -170,9 +202,9 @@ public class ExamService {
             entry -> {
               List<ExamAnswerDto> chapterAnswers = entry.getValue();
               String chapterName = chapterAnswers.getFirst().chapterName();
-              boolean weakness =
-                  chapterAnswers.stream()
-                      .anyMatch(dto -> dto.difficulty().equals("하") && !dto.answerTF());
+              boolean weakness = chapterAnswers.stream()
+                      .anyMatch(dto ->
+                              Difficulty.fromLabel(dto.difficulty()) == Difficulty.EASY && !dto.answerTF());
               int cnt = (int) chapterAnswers.stream().filter(ExamAnswerDto::answerTF).count();
               int totalCnt = chapterAnswers.size();
               return new ChapterResultDto(entry.getKey(), chapterName, weakness, cnt, totalCnt);

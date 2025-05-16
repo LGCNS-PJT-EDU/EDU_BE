@@ -40,4 +40,8 @@ public class Roadmap {
 
   @Column(name = "post_submit_count", nullable = false)
   private int postSubmitCount;
+
+  @Builder.Default
+  @Column(name = "level", nullable = false, columnDefinition = "INT DEFAULT 0")
+  private Integer level = 0;
 }

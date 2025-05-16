@@ -183,6 +183,7 @@ CREATE TABLE roadmap(
     is_complete BOOLEAN NOT NULL DEFAULT FALSE,
     pre_submit_count INT NOT NULL,
     post_submit_count INT NOT NULL,
+    level INT NOT NULL DEFAULT 0,
     CONSTRAINT fk_roadmap_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_roadmap_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
     CONSTRAINT fk_roadmap_roadmap_management FOREIGN KEY (roadmap_management_id) REFERENCES roadmap_management(roadmap_management_id)
