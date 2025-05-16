@@ -46,7 +46,7 @@ public class UserController {
   }
 
   @PostMapping("/reissue")
-  @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급")
+  @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
   public ResponseEntity<Message> reissue(
       @RequestHeader("Authorization") String expiredAccessToken) {
     String token = expiredAccessToken.replace("Bearer ", "").trim();
