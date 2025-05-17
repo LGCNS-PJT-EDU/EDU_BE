@@ -55,8 +55,8 @@ public class DiagnosisController {
   @PostMapping("re-diagnosis")
   @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
   public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
-          @AuthenticationPrincipal CustomUserDetails userDetails,
-          @RequestBody List<DiagnosisAnswerRequest> answers) {
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
     Long userId = userDetails.getUserId();
     RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
     return ResponseEntity.ok(roadmapSaveResDto);

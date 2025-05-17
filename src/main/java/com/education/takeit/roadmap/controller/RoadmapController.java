@@ -1,6 +1,5 @@
 package com.education.takeit.roadmap.controller;
 
-import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
@@ -10,7 +9,6 @@ import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,7 +38,7 @@ public class RoadmapController {
       description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장하는 API")
   public ResponseEntity<Message> saveRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestBody GuestRoadmapSaveReqDto request){
+      @RequestBody GuestRoadmapSaveReqDto request) {
     System.out.println(userDetails);
     Long userId = userDetails.getUserId();
     roadmapService.saveGuestRoadmap(request.uuid(), userId);
@@ -49,7 +47,8 @@ public class RoadmapController {
 
   @GetMapping("/progress")
   @Operation(summary = "마이페이지에서 로드맵 진척도 조회", description = "전체 과목 중 이수한 과목 수 백분율로 계산해서 반환하는 API")
-  public ResponseEntity<MyPageResDto> getUserProgress(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<MyPageResDto> getUserProgress(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     MyPageResDto response = roadmapService.getProgressPercentage(userId);
     return ResponseEntity.ok(response);
