@@ -6,7 +6,7 @@ spring:
     import: optional:file:.env[.properties]
 
   profiles:
-    active: local
+    active: dev
 
 springdoc:
   api-docs:

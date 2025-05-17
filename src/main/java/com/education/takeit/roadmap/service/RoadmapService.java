@@ -69,6 +69,11 @@ public class RoadmapService {
           guestUuid, roadmapSaveResDto.userLocationSubjectId(), roadmapSaveResDto.subjects());
 
     } else {
+      RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
+      if(roadmapManagement != null) {
+        throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
+      }
+
       // 개인 roadmap 데이터 저장
       List<Long> subjectIds =
           roadmapSaveResDto.subjects().stream()
