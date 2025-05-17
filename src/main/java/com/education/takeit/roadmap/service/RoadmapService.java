@@ -261,12 +261,20 @@ public class RoadmapService {
 
     roadmapManagementRepository.save(roadmapManagement);
 
+    List<Subject> subjectList = subjectRepository.findAllById(subjectIds);
+
+    // ID → Subject 매핑
+    Map<Long, Subject> subjectMap =
+        subjectList.stream().collect(Collectors.toMap(Subject::getSubId, s -> s));
+
+    List<Roadmap> roadmapList = new ArrayList<>();
     int order = 1;
+
     for (Long subjectId : subjectIds) {
-      Subject subject =
-          subjectRepository
-              .findById(subjectId)
-              .orElseThrow(() -> new RuntimeException("Subject " + subjectId + " not found"));
+      Subject subject = subjectMap.get(subjectId);
+      if (subject == null) {
+        throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
+      }
 
       Roadmap roadmap =
           Roadmap.builder()
@@ -279,8 +287,9 @@ public class RoadmapService {
               .postSubmitCount(0)
               .build();
 
-      roadmapRepository.save(roadmap);
+      roadmapList.add(roadmap);
     }
+    roadmapRepository.saveAll(roadmapList);
   }
 
   public void saveGuestRoadmap(String uuid, Long userId) {
@@ -328,7 +337,7 @@ public class RoadmapService {
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
-    List<Roadmap> existingRoadmaps = roadmapRepository.findAllByUserId(userId);
+    List<Roadmap> existingRoadmaps = roadmapRepository.findByUserId(userId);
 
     if (existingRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
@@ -384,7 +393,7 @@ public class RoadmapService {
 
   @Transactional
   public void deleteRoadmap(Long userId) {
-    List<Roadmap> roadmaps = roadmapRepository.findAllByUserId(userId);
+    List<Roadmap> roadmaps = roadmapRepository.findByUserId(userId);
     if (roadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
@@ -474,7 +483,7 @@ public class RoadmapService {
 
   public RoadmapFindResDto findUserRoadmap(Long userId) {
 
-    List<Roadmap> userRoadmaps = roadmapRepository.findAllByUserId(userId);
+    List<Roadmap> userRoadmaps = roadmapRepository.findByUserId(userId);
     if (userRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
