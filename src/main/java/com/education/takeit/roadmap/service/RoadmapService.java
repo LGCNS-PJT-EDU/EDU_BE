@@ -70,7 +70,7 @@ public class RoadmapService {
 
     } else {
       RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
-      if(roadmapManagement != null) {
+      if (roadmapManagement != null) {
         throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
       }
 

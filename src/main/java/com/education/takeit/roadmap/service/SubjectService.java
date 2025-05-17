@@ -51,10 +51,11 @@ public class SubjectService {
             .toList();
 
     RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
-    if(userRoadmapManagement == null) {
+    if (userRoadmapManagement == null) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
-    Roadmap userRoadmap = roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
+    Roadmap userRoadmap =
+        roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
 
     // 추천 컨텐츠 받아오기(임시)
     List<RecommendContentsFindDto> recommendContents = findRecommendContents();
