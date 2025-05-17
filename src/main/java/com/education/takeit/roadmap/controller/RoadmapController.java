@@ -34,27 +34,28 @@ public class RoadmapController {
     return roadmapService.roadmapSelect(flag, answers);
   }*/
 
-  @PostMapping("/save")
+  @PostMapping("/guest")
   @Operation(
       summary = "회원가입한 사용자의 로드맵 저장 요청",
       description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장하는 API")
   public ResponseEntity<Message> saveRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestBody Map<String, String> body) {
+      @RequestBody GuestRoadmapSaveReqDto request){
     System.out.println(userDetails);
     Long userId = userDetails.getUserId();
-    roadmapService.saveGuestRoadmap(body.get("uuid"), userId);
+    roadmapService.saveGuestRoadmap(request.uuid(), userId);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
-  @GetMapping("/{userId}/progress")
+  @GetMapping("/progress")
   @Operation(summary = "마이페이지에서 로드맵 진척도 조회", description = "전체 과목 중 이수한 과목 수 백분율로 계산해서 반환하는 API")
-  public ResponseEntity<MyPageResDto> getUserProgress(@PathVariable Long userId) {
+  public ResponseEntity<MyPageResDto> getUserProgress(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long userId = userDetails.getUserId();
     MyPageResDto response = roadmapService.getProgressPercentage(userId);
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping
+  @PutMapping("/user")
   @Operation(summary = "로드맵 수정", description = "사용자가 원하는 대로 로드맵 과목 수정 API")
   public ResponseEntity<Message> updateRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -65,7 +66,7 @@ public class RoadmapController {
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
-  @DeleteMapping
+  @DeleteMapping("/user")
   @Operation(summary = "로드맵 삭제", description = "로드맵 삭제 API")
   public ResponseEntity<Message> deleteRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -95,7 +96,7 @@ public class RoadmapController {
     return ResponseEntity.ok(roadmapSaveResDto);
   }
 
-  @GetMapping
+  @GetMapping("/user")
   @Operation(summary = "로드맵 제공", description = "로드맵 제공하는 API")
   public ResponseEntity<RoadmapFindResDto> findUserRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -112,15 +113,5 @@ public class RoadmapController {
     Long userId = userDetails.getUserId();
     SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, subjectId);
     return ResponseEntity.ok(subjectFindResDto);
-  }
-
-  @PostMapping("renew")
-  @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
-  public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestBody List<DiagnosisAnswerRequest> answers) {
-    Long userId = userDetails.getUserId();
-    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
-    return ResponseEntity.ok(roadmapSaveResDto);
   }
 }

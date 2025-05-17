@@ -499,7 +499,7 @@ public class RoadmapService {
 
     RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
     List<Roadmap> userRoadmaps =
-        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(userId);
+        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(userRoadmapManagement.getRoadmapManagementId());
 
     if (userRoadmaps.isEmpty()) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
