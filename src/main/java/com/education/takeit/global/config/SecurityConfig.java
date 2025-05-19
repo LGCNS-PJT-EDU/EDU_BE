@@ -5,6 +5,7 @@ import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.global.security.service.CustomUserDetailService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+  @Value("${client.base-url}")
+  private String baseUrl;
+
   private final String[] swaggerPath = {
     "/swagger-ui/**",
     "/v3/api-docs/**",
@@ -77,7 +82,7 @@ public class SecurityConfig {
     // WebConfig 설정은 Spring MVC 레벨에서의 CORS 처리 담당.
     // 따라서 SpringSecurity도 따로 CORS 설정을 명시해줘야 함.
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("https://takeit.academy"));
+    configuration.setAllowedOrigins(List.of(baseUrl));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
     configuration.setExposedHeaders(List.of("Authorization"));

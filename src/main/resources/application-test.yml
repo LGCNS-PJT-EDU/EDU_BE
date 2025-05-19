@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: test
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
     driver-class-name: org.h2.Driver
@@ -14,4 +17,7 @@ spring:
     enabled: false
 
 fastapi:
-  base-url: ${FAST_API_URI}
+  base-url: ${FAST_API_URL}
+
+client:
+  base-url: ${CLIENT_BASE_URL}
