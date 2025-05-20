@@ -16,7 +16,6 @@ public class Solution {
   private String solutionContent;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("exam_id")
   @JoinColumn(name = "exam_id", nullable = false)
   private Exam exam;
 }

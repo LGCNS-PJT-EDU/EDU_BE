@@ -31,7 +31,6 @@ public class Exam {
   private String option4;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("sub_id")
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
 }
