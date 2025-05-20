@@ -130,3 +130,10 @@ spec:
                 secretKeyRef:
                   name: spring-secrets
                   key: SPRING_REDIS_PORT
+
+            # 🔐 CLIENT_BASE_URL
+            - name: CLIENT_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secrets
+                  key: CLIENT_BASE_URL
