@@ -5,6 +5,7 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
+import com.education.takeit.roadmap.service.RoadmapService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class DiagnosisController {
 
   private final DiagnosisService diagnosisService;
+  private final RoadmapService roadmapService;
 
   /**
    * 진단 문제 GET 요청(전체)
@@ -48,5 +50,15 @@ public class DiagnosisController {
     RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
     return ResponseEntity.ok(result);
+  }
+
+  @PostMapping("re-diagnosis")
+  @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
+  public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody List<DiagnosisAnswerRequest> answers) {
+    Long userId = userDetails.getUserId();
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 }

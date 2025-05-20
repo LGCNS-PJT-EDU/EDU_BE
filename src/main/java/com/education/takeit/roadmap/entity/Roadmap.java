@@ -21,9 +21,6 @@ public class Roadmap {
   @Column(name = "order_sub", nullable = false)
   private Integer orderSub;
 
-  @Column(name = "user_id", nullable = false)
-  private Long userId; // 참조용 ID만 저장 (users 테이블과 매핑 필요 시 @ManyToOne 적용)
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
