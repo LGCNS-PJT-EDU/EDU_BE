@@ -5,12 +5,12 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.solution.dto.SolutionResDto;
 import com.education.takeit.solution.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/api/solution")
@@ -22,7 +22,7 @@ public class SolutionController {
 
   @GetMapping
   @Operation(summary = "사용자의 해설 조회", description = "사용자가 평가 본 모든 내용의 해설을 조회")
-  public ResponseEntity<Message> allSolution(@Parameter Long userId) {
+  public ResponseEntity<Message> allSolution(@RequestParam Long userId) {
     List<SolutionResDto> solutionList = solutionService.findAllUserSolutions(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK, solutionList));
   }
