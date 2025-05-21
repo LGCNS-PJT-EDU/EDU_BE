@@ -2,6 +2,7 @@ spring:
   config:
     activate:
       on-profile: dev
+    import: optional:file:.env.dev.properties
   datasource:
     url: jdbc:mysql://${MYSQL_ENDPOINT}:${MYSQL_PORT}/${MYSQL_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver

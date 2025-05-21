@@ -10,22 +10,22 @@ services:
     networks:
       - edu-network
 
-#  mysql:
-#    image: mysql:8.0
-#    platform: linux/amd64
-#    container_name: mysql
-#    ports:
-#      - "3307:3306"
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root1234
-#      MYSQL_DATABASE: mydb
-#      MYSQL_USER: edu
-#      MYSQL_PASSWORD: edu1234
-#    volumes:
-#      - ./mysql/data:/var/lib/mysql
-#    restart: always
-#    networks:
-#      - edu-network
+  mysql:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: edu
+      MYSQL_PASSWORD: edu1234
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    restart: always
+    networks:
+      - edu-network
 
 networks:
   edu-network:
