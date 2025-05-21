@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 public class TotalContent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long contentId;
+  private Long totalContentId;
 
   @Column(name = "content_title", nullable = false)
   private String contentTitle;
 
-  @Column(name = "content_url", nullable = false)
+  @Column(name = "content_url", nullable = false, columnDefinition = "TEXT")
   private String contentUrl;
 
   @Column(name = "content_type", nullable = false)

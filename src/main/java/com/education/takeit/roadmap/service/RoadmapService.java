@@ -17,7 +17,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,6 +34,7 @@ public class RoadmapService {
   private final RoadmapManagementRepository roadmapManagementRepository;
   private final RoadmapRepository roadmapRepository;
   private final UserRepository userRepository;
+  private final RoadmapTransactionalService roadmapTransactionalService;
 
   public RoadmapSaveResDto selectRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
 
@@ -44,7 +44,7 @@ public class RoadmapService {
       // uuid 생성
       String guestUuid = UUID.randomUUID().toString();
 
-      // SubjecIds 저장
+      // SubjectIds 저장
       String subjectIds =
           roadmapSaveResDto.subjects().stream()
               .map(subject -> subject.subjectId().toString())
@@ -105,7 +105,7 @@ public class RoadmapService {
     List<Subject> essentialSubjects = subjectRepository.findBySubTypeAndSubEssential(BEorFE, "Y");
     List<Subject> resultSubjects = new ArrayList<>(essentialSubjects);
 
-    Long defaultLocationSubjectId = 0L;
+    long defaultLocationSubjectId = 0L;
     if (BEorFE.equals("FE")) {
       defaultLocationSubjectId = 1L;
     } else if (BEorFE.equals("BE")) {
@@ -418,19 +418,6 @@ public class RoadmapService {
     roadmapRepository.saveAll(toSave);
   }
 
-  @Transactional
-  public void deleteRoadmap(Long userId) {
-    RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
-    List<Roadmap> roadmaps =
-        roadmapRepository.findByRoadmapManagement_RoadmapManagementId(
-            roadmapManagement.getRoadmapManagementId());
-    if (roadmaps.isEmpty()) {
-      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
-    }
-    roadmapRepository.deleteAll(roadmaps);
-    roadmapManagementRepository.delete(roadmapManagement);
-  }
-
   public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
     long roadmapId;
 
@@ -458,11 +445,11 @@ public class RoadmapService {
   public RoadmapSaveResDto saveDefaultRoadmap(String roadmapType, Long userId) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
-      deleteRoadmap(userId);
+      roadmapTransactionalService.deleteRoadmap(userId);
     }
 
-    Long roadmapManagementId = 0L;
-    Long userLocationSubjectId = 0L;
+    long roadmapManagementId = 0L;
+    long userLocationSubjectId = 0L;
 
     if (roadmapType.equals("FE")) {
       roadmapManagementId = 1L;
@@ -547,7 +534,7 @@ public class RoadmapService {
   }
 
   public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
-    deleteRoadmap(userId);
+    roadmapTransactionalService.deleteRoadmap(userId);
 
     RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
 

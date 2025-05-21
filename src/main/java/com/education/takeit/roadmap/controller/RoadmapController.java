@@ -5,6 +5,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.*;
 import com.education.takeit.roadmap.service.RoadmapService;
+import com.education.takeit.roadmap.service.RoadmapTransactionalService;
 import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class RoadmapController {
   private final RoadmapService roadmapService;
   private final SubjectService subjectService;
+  private final RoadmapTransactionalService roadmapTransactionalService;
 
   /*  @PostMapping("/create")
   @Operation(
@@ -71,7 +73,7 @@ public class RoadmapController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     {
       Long userId = userDetails.getUserId();
-      roadmapService.deleteRoadmap(userId);
+      roadmapTransactionalService.deleteRoadmap(userId);
       return ResponseEntity.ok(new Message(StatusCode.OK));
     }
   }
