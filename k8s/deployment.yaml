@@ -27,11 +27,11 @@ spec:
             - containerPort: 9800
           env:
             # 🔐 FASTAPI
-            - name: FAST_API_URI
+            - name: FAST_API_URL
               valueFrom:
                 secretKeyRef:
                   name: spring-secrets
-                  key: FAST_API_URI
+                  key: FAST_API_URL
             # 🔐 MYSQL
             - name: MYSQL_ENDPOINT
               valueFrom:
