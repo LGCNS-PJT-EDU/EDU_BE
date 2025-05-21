@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+      on-profile: local
+    import: optional:file:.env.local.properties
   datasource:
     url: jdbc:mysql://localhost:3307/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -53,4 +57,7 @@ oauth:
     user-info-uri: ${NAVER_USER_INFO_URI}
 
 fastapi:
-  base-url: ${FAST_API_URI}
+  base-url: ${FAST_API_URL}
+
+client:
+  base-url: ${CLIENT_BASE_URL}
