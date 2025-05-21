@@ -28,8 +28,8 @@ public enum StatusCode {
   DUPLICATED_ROADMAP_MANAGEMENT(409, "사용자에게 중복된 로드맵 관리 정보가 존재합니다.", HttpStatus.CONFLICT),
   ALREADY_EXIST_ROADMAP(409, "이미 로드맵이 존재합니다.", HttpStatus.CONFLICT),
   UNAUTHORIZED_USER(401, "로그인이 필요한 기능입니다.", HttpStatus.UNAUTHORIZED),
-  NOT_FOUND_SOLUTION(400, "해설이 존재하지 않습니다.", HttpStatus.NOT_FOUND),;
-
+  NOT_FOUND_SOLUTION(400, "해설이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+  ;
 
   private final int statusCode;
   private final String message;
