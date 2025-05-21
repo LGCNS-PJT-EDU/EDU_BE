@@ -1,12 +1,8 @@
 spring:
   application:
     name: takeit
-
-  config:
-    import: optional:file:.env[.properties]
-
   profiles:
-    active: dev
+    active: local
 
 springdoc:
   api-docs:

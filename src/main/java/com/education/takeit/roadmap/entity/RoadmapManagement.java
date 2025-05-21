@@ -23,6 +23,9 @@ public class RoadmapManagement {
   @Column(name = "roadmap_nm")
   private String roadmapNm;
 
+  @Column(name = "user_id", nullable = false)
+  private Long userId;
+
   @UpdateTimestamp
   @Column(name = "roadmap_timestamp")
   private LocalDateTime roadmapTimestamp;
