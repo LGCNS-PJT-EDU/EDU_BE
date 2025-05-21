@@ -3,8 +3,6 @@ spring:
     name: takeit
   profiles:
     active: local
-  config:
-    import: optional:file:.env.${spring.profiles.active}.properties
 
 springdoc:
   api-docs:
