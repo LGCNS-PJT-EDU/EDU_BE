@@ -35,7 +35,7 @@ jobs:
           echo "NAVER_USER_INFO_URI=${{ secrets.NAVER_USER_INFO_URI }}" >> $GITHUB_ENV
           echo "SPRING_REDIS_HOST=${{ secrets.SPRING_REDIS_HOST }}" >> $GITHUB_ENV
           echo "SPRING_REDIS_PORT=${{ secrets.SPRING_REDIS_PORT }}" >> $GITHUB_ENV
-          echo "FAST_API_URI=${{ secrets.FAST_API_URI }}" >> $GITHUB_ENV
+          echo "FAST_API_URI=${{ secrets.FAST_API_URL }}" >> $GITHUB_ENV
           echo "CLIENT_BASE_URL=${{ secrets.CLIENT_BASE_URL }}" >> $GITHUB_ENV
 
       - name: Grant execute permission for Gradle
