@@ -9,6 +9,7 @@ metadata:
     argocd-image-updater.argoproj.io/image-list: 754874159206.dkr.ecr.ap-northeast-2.amazonaws.com/takeit/spring
     argocd-image-updater.argoproj.io/image-update-strategy: name
     argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/allow-tags: '^[a-f0-9]{40}$'
 spec:
   replicas: 1
   selector:
@@ -21,7 +22,7 @@ spec:
     spec:
       containers:
         - name: spring-container
-          image: 754874159206.dkr.ecr.ap-northeast-2.amazonaws.com/takeit/spring:latest
+          image: 754874159206.dkr.ecr.ap-northeast-2.amazonaws.com/takeit/spring:8b9e559e00b1a96cf123cf7aca8af963f983d22c
           ports:
             - containerPort: 9800
           env:
