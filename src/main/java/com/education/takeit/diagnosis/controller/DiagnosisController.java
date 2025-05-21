@@ -3,6 +3,9 @@ package com.education.takeit.diagnosis.controller;
 import com.education.takeit.diagnosis.dto.DiagnosisAnswerRequest;
 import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
+import com.education.takeit.global.dto.Message;
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.service.RoadmapService;
@@ -30,9 +33,9 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단 문제 리스트 요청", description = "진단 문제 GET API")
-  public ResponseEntity<GroupedDiagnosisResponse> findAllDiagnosis() {
+  public ResponseEntity<Message> findAllDiagnosis() {
     GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
-    return ResponseEntity.ok(result);
+    return ResponseEntity.ok(new Message(StatusCode.OK, result));
   }
 
   /**
@@ -43,22 +46,25 @@ public class DiagnosisController {
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 응답 POST API")
-  public ResponseEntity<RoadmapSaveResDto> recommendRoadmapByDiagnosis(
+  public ResponseEntity<Message> recommendRoadmapByDiagnosis(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
-    return ResponseEntity.ok(result);
+    return ResponseEntity.ok(new Message(StatusCode.OK, result));
   }
 
   @PostMapping("re-diagnosis")
   @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
-  public ResponseEntity<RoadmapSaveResDto> saveNewRoadmap(
+  public ResponseEntity<Message> saveNewRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
+    if (userDetails == null) {
+      throw new CustomException(StatusCode.UNAUTHORIZED_USER);
+    }
     Long userId = userDetails.getUserId();
-    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveNewRoadmap(userId, answers);
-    return ResponseEntity.ok(roadmapSaveResDto);
+    RoadmapSaveResDto result = roadmapService.saveNewRoadmap(userId, answers);
+    return ResponseEntity.ok(new Message(StatusCode.OK, result));
   }
 }
