@@ -318,16 +318,16 @@ public class RoadmapService {
       throw new RuntimeException("answers 역직렬화 실패", e);
     }
 
-    //로드맵 반환을 위한 subject List 생성
+    // 로드맵 반환을 위한 subject List 생성
     List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
-    List<SubjectDto> subjectDtos = subjects.stream()
-                    .map(subject -> new SubjectDto(
-                            subject.getSubId(),
-                            subject.getSubNm(),
-                            subject.getBaseSubOrder()
-                    ))
-                    .toList();
+    List<SubjectDto> subjectDtos =
+        subjects.stream()
+            .map(
+                subject ->
+                    new SubjectDto(
+                        subject.getSubId(), subject.getSubNm(), subject.getBaseSubOrder()))
+            .toList();
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
