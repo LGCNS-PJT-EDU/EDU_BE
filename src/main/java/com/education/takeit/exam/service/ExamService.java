@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
@@ -47,7 +48,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  public ExamResultDto submitPreExam(Long userId, ExamAnswerResDto examAnswerRes) {
+  public ResponseEntity<Void> submitPreExam(Long userId, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
 
     Roadmap roadmap = roadmapRepository.findByRoadmapId(examAnswerRes.roadmapId());
@@ -67,7 +68,9 @@ public class ExamService {
     roadmap.setLevel(subject.level());
     roadmap.setPreSubmitCount(roadmap.getPreSubmitCount() + 1);
 
-    return new ExamResultDto(userId, subject, chapters, answers);
+    roadmapRepository.save(roadmap);
+
+    return ResponseEntity.noContent().build();
   }
 
   /**
@@ -92,7 +95,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  public ExamResultDto submitPostExam(Long userId, ExamAnswerResDto examAnswerRes) {
+  public ResponseEntity<Void> submitPostExam(Long userId, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
 
     Roadmap roadmap = roadmapRepository.findByRoadmapId(examAnswerRes.roadmapId());
@@ -115,7 +118,9 @@ public class ExamService {
     roadmap.setPostSubmitCount(roadmap.getPostSubmitCount() + 1);
     if (!roadmap.isComplete()) roadmap.setComplete(true);
 
-    return new ExamResultDto(userId, subject, chapters, answers);
+    roadmapRepository.save(roadmap);
+
+    return ResponseEntity.noContent().build();
   }
 
   /**
