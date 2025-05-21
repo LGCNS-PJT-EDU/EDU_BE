@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "totalContent")
+@Table(name = "total_content")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -33,6 +33,9 @@ public class TotalContent {
   @Enumerated(EnumType.STRING)
   @Column(name = "content_duration", nullable = false)
   private LectureAmount contentDuration;
+
+  @Column(name = "content_level", nullable = false)
+  private String contentLevel;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "content_price", nullable = false)

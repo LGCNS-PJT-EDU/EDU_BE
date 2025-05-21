@@ -36,13 +36,13 @@ public class RoadmapController {
   @Operation(
       summary = "회원가입한 사용자의 로드맵 저장 요청",
       description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장하는 API")
-  public ResponseEntity<Message> saveRoadmap(
+  public ResponseEntity<RoadmapSaveResDto> saveRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody GuestRoadmapSaveReqDto request) {
     System.out.println(userDetails);
     Long userId = userDetails.getUserId();
-    roadmapService.saveGuestRoadmap(request.uuid(), userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveGuestRoadmap(request.uuid(), userId);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 
   @GetMapping("/progress")

@@ -1224,3 +1224,34 @@ INSERT INTO total_content(total_content_id, content_title, content_url, content_
     (546, 'Create an Amazon CloudFront Distribution and Website | Step-by-Step AWS CDN Tutorial for Beginners', 'https://www.youtube.com/watch?v=GUfAQUjA3a0', '동영상', '유튜브', 'HOUR_1', '하', 'FREE', 32),
     (547, 'Amazon CloudFront Developer Guide', 'https://product.kyobobook.co.kr/detail/S000045921004', '책', '교보문고', 'OVER_10', '상', 'BETWEEN_50K_100K', 32),
     (548, 'AWS S3와 CloudFront 연동 끝까지 가보기', 'https://akku-dev.tistory.com/153', '블로그', '블로그', 'HOUR_3', '중', 'FREE', 32);
+
+DROP TABLE IF EXISTS solution;
+DROP TABLE IF EXISTS exam;
+
+CREATE TABLE exam(
+    exam_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    exam_content TEXT NOT NULL,
+    exam_answer INT NOT NULL,
+    exam_level VARCHAR(255) NOT NULL,
+    option1 VARCHAR(255) NOT NULL,
+    option2 VARCHAR(255) NOT NULL,
+    option3 VARCHAR(255) NOT NULL,
+    option4 VARCHAR(255) NOT NULL,
+    sub_id BIGINT NOT NULL,
+    CONSTRAINT fk_exam_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
+);
+
+CREATE TABLE solution(
+    solution_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_answer INT NOT NULL,
+    solution_content TEXT,
+    is_pre BOOLEAN NOT NULL,
+    exam_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_solution_exam FOREIGN KEY (exam_id) REFERENCES exam(exam_id),
+    CONSTRAINT fk_solution_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option2, option3, option4, sub_id) VALUES
+--     (1, 'JSX에서 하나의 컴포넌트가 반환할 수 있는 요소는?', 1, '하', '하나의 부모 요소만 반환해야 한다', '여러 개의 형제 요소를 반환할 수 있다', '모든 요소를 <script> 태그로 감싸야 한다', 'JSX에서는 요소 반환이 필요 없다', 10),
+--     (2, '다음 중 JSX 문법으로 올바른 것은?', 2, '하', '<div class=''container''>', '<div className=''container''>', '<div classname=''container''>', '<div ClassName=''container''>', 10);

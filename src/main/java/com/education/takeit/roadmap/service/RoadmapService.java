@@ -297,7 +297,7 @@ public class RoadmapService {
     roadmapRepository.saveAll(roadmapList);
   }
 
-  public void saveGuestRoadmap(String uuid, Long userId) {
+  public RoadmapSaveResDto saveGuestRoadmap(String uuid, Long userId) {
     String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
     String redisAnswersJson = redisTemplate.opsForValue().get("guest:" + uuid + ":answers");
 
@@ -318,10 +318,25 @@ public class RoadmapService {
       throw new RuntimeException("answers 역직렬화 실패", e);
     }
 
+    //로드맵 반환을 위한 subject List 생성
+    List<Subject> subjects = subjectRepository.findAllById(subjectIds);
+
+    List<SubjectDto> subjectDtos = subjects.stream()
+                    .map(subject -> new SubjectDto(
+                            subject.getSubId(),
+                            subject.getSubNm(),
+                            subject.getBaseSubOrder()
+                    ))
+                    .toList();
+
+    Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
+
     saveRoadmap(userId, subjectIds, answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
+
+    return new RoadmapSaveResDto("uuid로 로드맵 생성 완료", userLocationSubjectId, subjectDtos);
   }
 
   public MyPageResDto getProgressPercentage(Long userId) {
