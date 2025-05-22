@@ -1,18 +1,32 @@
 package com.education.takeit.recommend.service;
 
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import com.education.takeit.recommend.entity.UserContent;
+import com.education.takeit.recommend.repository.TotalContentRepository;
 import com.education.takeit.recommend.repository.UserContentRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
 public class RecommendService {
   private final UserContentRepository userContentRepository;
+  private final TotalContentRepository totalContentRepository;
+  private final UserRepository userRepository;
+  private final SubjectRepository subjectRepository;
+  private final WebClient fastapiWebClient;
 
   public List<UserContentResDto> getUserContent(long userId) {
     List<UserContent> userContents = userContentRepository.findByUserIdWithContent(userId);
@@ -22,6 +36,8 @@ public class RecommendService {
             uc -> {
               TotalContent tc = uc.getTotalContent();
               return new UserContentResDto(
+                      tc.getContentId(),
+                  tc.getSubject().getSubId(),
                   tc.getContentTitle(),
                   tc.getContentUrl(),
                   tc.getContentType(),
@@ -31,4 +47,39 @@ public class RecommendService {
             })
         .collect(Collectors.toList());
   }
-}
+
+//  // 추천 컨텐츠 요청
+//  public Mono<List<UserContentResDto>> fetchAndSaveRecommendation(Long userId, Long subjectId){
+//      return fastapiWebClient.get()
+//              .uri(uriBuilder -> uriBuilder
+//                      .path("/fastapi요청경로")
+//                      .queryParam("userId",userId)
+//                      .queryParam("subjectId",subjectId)
+//                      .build())
+//              .retrieve()
+//              .bodyToFlux(UserContentResDto.class)
+//              .collectList()
+//              .flatMap(list -> saveUserContent(userId, list)
+//                      .thenReturn(list));
+//
+//  }
+//  // DB에 저장
+//    private Mono<Void> saveUserContent(Long userId, List<UserContentResDto> userContentList) {
+//        return Mono.fromRunnable(() -> {
+//            User user = userRepository.findById(userId)
+//                    .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+//
+//            List<UserContent> contentList = userContentList.stream()
+//                    .map(dto -> {
+//                        TotalContent totalContent = totalContentRepository.findById(dto.totalContentId())
+//                                .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
+//                        Subject subject = subjectRepository.findById(dto.subjectId())
+//                                .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+//                        return new UserContent(null, totalContent, subject, user);
+//                    })
+//                    .toList();
+//
+//            userContentRepository.saveAll(contentList);
+//        });
+//    }
+//}

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +27,11 @@ public class RecommendController {
       @RequestParam("userId") Long userId) {
     List<UserContentResDto> contentList = recommendService.getUserContent(userId);
     return ResponseEntity.ok(contentList);
+  }
+
+  @GetMapping
+  public Mono<ResponseEntity<List<UserContentResDto>>> getRecommendation(@RequestParam Long userId, @RequestParam Long subjectId) {
+    return recommendService.fetchAndSaveRecommendation(userId,subjectId)
+            .map(ResponseEntity::ok);
   }
 }
