@@ -5,10 +5,9 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;
 import java.util.List;
-
-import com.education.takeit.recommend.dto.UserContentResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +47,7 @@ public class AIClient {
         userId,
         subjectId);
   }
+
   public void postPreExam(Long userId, ExamResultDto examResultDto) {
     postForNoContent("/api/pre/subject?user_id={userId}", examResultDto, userId);
   }
@@ -91,12 +91,11 @@ public class AIClient {
   }
 
   /** 추천 컨텐츠 요청 */
-  public List<UserContentResDto> getRecommendation(Long userId, Long subjectId){
+  public List<UserContentResDto> getRecommendation(Long userId, Long subjectId) {
     return getForList(
-            "/fastapi요청경로?userId={userId}&subjectId={subjectId}",
-            UserContentResDto[].class,
-            userId,
-            subjectId
-    );
+        "/fastapi요청경로?userId={userId}&subjectId={subjectId}",
+        UserContentResDto[].class,
+        userId,
+        subjectId);
   }
 }
