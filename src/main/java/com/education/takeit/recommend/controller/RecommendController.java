@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,19 +28,15 @@ public class RecommendController {
     return ResponseEntity.ok(contentList);
   }
 
-//  @GetMapping("/contents")
-//  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
-//  public ResponseEntity<List<UserContentResDto>> getrecommendation(
-//          @RequestParam Long userId,
-//          @RequestParam Long subjectId
-//  ){
-//    List<UserContentResDto> recommendationList = recommendService.fetchAndSaveRecommendation(userId, subjectId);
-//    return ResponseEntity.ok(recommendationList);
-//  }
-
-
-
-
-
+  //  @GetMapping("/contents")
+  //  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
+  //  public ResponseEntity<List<UserContentResDto>> getrecommendation(
+  //          @RequestParam Long userId,
+  //          @RequestParam Long subjectId
+  //  ){
+  //    List<UserContentResDto> recommendationList =
+  // recommendService.fetchAndSaveRecommendation(userId, subjectId);
+  //    return ResponseEntity.ok(recommendationList);
+  //  }
 
 }
