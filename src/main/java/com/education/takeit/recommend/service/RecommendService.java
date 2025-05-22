@@ -1,5 +1,6 @@
 package com.education.takeit.recommend.service;
 
+import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
@@ -26,12 +27,13 @@ public class RecommendService {
   private final TotalContentRepository totalContentRepository;
   private final UserRepository userRepository;
   private final SubjectRepository subjectRepository;
-  private final WebClient fastapiWebClient;
+  private final AIClient aiClient;
 
+  // 마이페이지에서 사용자 추천 컨텐츠 조회
   public List<UserContentResDto> getUserContent(long userId) {
-    List<UserContent> userContents = userContentRepository.findByUserIdWithContent(userId);
+    List<UserContent> userContentsList = userContentRepository.findByUserIdWithContent(userId);
 
-    return userContents.stream()
+    return userContentsList.stream()
         .map(
             uc -> {
               TotalContent tc = uc.getTotalContent();
@@ -43,43 +45,35 @@ public class RecommendService {
                   tc.getContentType(),
                   tc.getContentPlatform(),
                   tc.getContentDuration().name(),
-                  tc.getContentPrice().name());
+                  tc.getContentPrice().name(),
+                      uc.getIsAiRecommended()
+              );
             })
         .collect(Collectors.toList());
   }
 
-//  // 추천 컨텐츠 요청
-//  public Mono<List<UserContentResDto>> fetchAndSaveRecommendation(Long userId, Long subjectId){
-//      return fastapiWebClient.get()
-//              .uri(uriBuilder -> uriBuilder
-//                      .path("/fastapi요청경로")
-//                      .queryParam("userId",userId)
-//                      .queryParam("subjectId",subjectId)
-//                      .build())
-//              .retrieve()
-//              .bodyToFlux(UserContentResDto.class)
-//              .collectList()
-//              .flatMap(list -> saveUserContent(userId, list)
-//                      .thenReturn(list));
-//
-//  }
-//  // DB에 저장
-//    private Mono<Void> saveUserContent(Long userId, List<UserContentResDto> userContentList) {
-//        return Mono.fromRunnable(() -> {
-//            User user = userRepository.findById(userId)
-//                    .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-//
-//            List<UserContent> contentList = userContentList.stream()
-//                    .map(dto -> {
-//                        TotalContent totalContent = totalContentRepository.findById(dto.totalContentId())
-//                                .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
-//                        Subject subject = subjectRepository.findById(dto.subjectId())
-//                                .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-//                        return new UserContent(null, totalContent, subject, user);
-//                    })
-//                    .toList();
-//
-//            userContentRepository.saveAll(contentList);
-//        });
-//    }
-//}
+  // 추천 컨텐츠 요청
+  public List<UserContentResDto> fetchAndSaveRecommendation(Long userId, Long subjectId) {
+      List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
+      saveUserContent(userId, recommendationList);
+      return recommendationList;
+  }
+
+    // DB에 저장
+    private void saveUserContent(Long userId, List<UserContentResDto> userContentList) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+
+        List<UserContent> contentList = userContentList.stream()
+                .map(dto -> {
+                    TotalContent totalContent = totalContentRepository.findById(dto.totalContentId())
+                            .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
+                    Subject subject = subjectRepository.findById(dto.subjectId())
+                            .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+                    return new UserContent(null, totalContent, subject, user, dto.isAiRecommended());
+                })
+                .toList();
+
+        userContentRepository.saveAll(contentList);
+    }
+}

@@ -8,4 +8,6 @@ public record UserContentResDto(
     String contentType,
     String contentPlatform,
     String contentDuration,
-    String contentPrice) {}
+    String contentPrice,
+    Boolean isAiRecommended
+) {}

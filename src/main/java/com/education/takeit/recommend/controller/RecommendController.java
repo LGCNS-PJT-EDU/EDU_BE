@@ -21,7 +21,7 @@ public class RecommendController {
 
   private final RecommendService recommendService;
 
-  @GetMapping
+  @GetMapping("/list")
   @Operation(summary = "추천받은 컨텐츠 조회", description = "사용자가 추천받은 컨텐츠 조회하는 API")
   public ResponseEntity<List<UserContentResDto>> getUserContent(
       @RequestParam("userId") Long userId) {
@@ -29,9 +29,19 @@ public class RecommendController {
     return ResponseEntity.ok(contentList);
   }
 
-  @GetMapping
-  public Mono<ResponseEntity<List<UserContentResDto>>> getRecommendation(@RequestParam Long userId, @RequestParam Long subjectId) {
-    return recommendService.fetchAndSaveRecommendation(userId,subjectId)
-            .map(ResponseEntity::ok);
-  }
+//  @GetMapping("/contents")
+//  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
+//  public ResponseEntity<List<UserContentResDto>> getrecommendation(
+//          @RequestParam Long userId,
+//          @RequestParam Long subjectId
+//  ){
+//    List<UserContentResDto> recommendationList = recommendService.fetchAndSaveRecommendation(userId, subjectId);
+//    return ResponseEntity.ok(recommendationList);
+//  }
+
+
+
+
+
+
 }

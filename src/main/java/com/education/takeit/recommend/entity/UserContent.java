@@ -28,4 +28,7 @@ public class UserContent {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
+
+  @Column(name = "is_ai_recommended", nullable = false)
+  private Boolean isAiRecommended;
 }
