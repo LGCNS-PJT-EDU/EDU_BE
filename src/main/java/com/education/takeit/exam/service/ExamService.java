@@ -10,14 +10,13 @@ import com.education.takeit.kafka.dto.FeedbackEventDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

@@ -10,19 +10,13 @@ import org.springframework.kafka.config.TopicBuilder;
 @ConditionalOnProperty(value = "kafka.topics.auto-create", matchIfMissing = true)
 public class TopicConfig {
 
-    @Bean
-    public NewTopic feedbackRequestTopic() {
-        return TopicBuilder.name("feedback.request")
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
+  @Bean
+  public NewTopic feedbackRequestTopic() {
+    return TopicBuilder.name("feedback.request").partitions(3).replicas(1).build();
+  }
 
-    @Bean
-    public NewTopic feedbackDlqTopic() {
-        return TopicBuilder.name("feedback.dql")
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
+  @Bean
+  public NewTopic feedbackDlqTopic() {
+    return TopicBuilder.name("feedback.dql").partitions(3).replicas(1).build();
+  }
 }
