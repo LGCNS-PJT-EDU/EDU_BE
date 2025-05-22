@@ -35,7 +35,7 @@ public class RecommendService {
             uc -> {
               TotalContent tc = uc.getTotalContent();
               return new UserContentResDto(
-                  tc.getContentId(),
+                  tc.getTotalContentId(),
                   tc.getSubject().getSubId(),
                   tc.getContentTitle(),
                   tc.getContentUrl(),
