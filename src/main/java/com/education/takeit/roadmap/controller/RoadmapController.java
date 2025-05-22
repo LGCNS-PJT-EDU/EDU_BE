@@ -5,6 +5,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.*;
 import com.education.takeit.roadmap.service.RoadmapService;
+import com.education.takeit.roadmap.service.RoadmapTransactionalService;
 import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class RoadmapController {
   private final RoadmapService roadmapService;
   private final SubjectService subjectService;
+  private final RoadmapTransactionalService roadmapTransactionalService;
 
   /*  @PostMapping("/create")
   @Operation(
@@ -36,13 +38,13 @@ public class RoadmapController {
   @Operation(
       summary = "회원가입한 사용자의 로드맵 저장 요청",
       description = "게스트 상태에서 로드맵받은 후 회원가입해서 로드맵을 DB에 저장하는 API")
-  public ResponseEntity<Message> saveRoadmap(
+  public ResponseEntity<RoadmapSaveResDto> saveRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody GuestRoadmapSaveReqDto request) {
     System.out.println(userDetails);
     Long userId = userDetails.getUserId();
-    roadmapService.saveGuestRoadmap(request.uuid(), userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    RoadmapSaveResDto roadmapSaveResDto = roadmapService.saveGuestRoadmap(request.uuid(), userId);
+    return ResponseEntity.ok(roadmapSaveResDto);
   }
 
   @GetMapping("/progress")
@@ -71,7 +73,7 @@ public class RoadmapController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     {
       Long userId = userDetails.getUserId();
-      roadmapService.deleteRoadmap(userId);
+      roadmapTransactionalService.deleteRoadmap(userId);
       return ResponseEntity.ok(new Message(StatusCode.OK));
     }
   }
