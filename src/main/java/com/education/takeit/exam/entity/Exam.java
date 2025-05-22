@@ -2,8 +2,10 @@ package com.education.takeit.exam.entity;
 
 import com.education.takeit.roadmap.entity.Subject;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Exam {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
