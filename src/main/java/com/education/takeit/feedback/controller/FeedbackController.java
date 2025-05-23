@@ -2,6 +2,8 @@ package com.education.takeit.feedback.controller;
 
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.feedback.service.FeedbackService;
+import com.education.takeit.global.dto.Message;
+import com.education.takeit.global.dto.StatusCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -20,8 +22,8 @@ public class FeedbackController {
   // 차후에 URI 변경 가능성 존재
   @GetMapping("/retrieve")
   @Operation(summary = "특정 사용자 피드백 목록 조회", description = "사용자의 모든 피드백 데이터를 JSON 형태로 반환하는 API")
-  public ResponseEntity<List<FeedbackResponseDto>> findAllFeedback(@RequestParam String userId) {
+  public ResponseEntity<Message> findAllFeedback(@RequestParam String userId) {
     List<FeedbackResponseDto> list = feedbackService.findFeedback(userId);
-    return ResponseEntity.ok(list);
+    return ResponseEntity.ok(new Message(StatusCode.OK, list));
   }
 }
