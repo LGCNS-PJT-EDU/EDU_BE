@@ -37,6 +37,6 @@ public class Diagnosis {
       mappedBy = "diagnosis",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
-      fetch = FetchType.EAGER)
+      fetch = FetchType.LAZY)
   private List<Choice> choices = new ArrayList<>();
 }
