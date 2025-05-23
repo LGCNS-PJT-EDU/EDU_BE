@@ -34,6 +34,7 @@ public class AIClient {
       maxAttempts = 3,
       backoff = @Backoff(delay = 1000) // 재시도 간격
       )
+
   private <T> List<T> getForList(String uri, Class<T[]> responseType, Object... uriVariables) {
     T[] response =
         restClient
