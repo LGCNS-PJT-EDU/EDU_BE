@@ -22,6 +22,7 @@ public enum StatusCode {
   DEFAULT_ROADMAP_NOT_FOUND(400, "기본 로드맵이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
   CONNECTION_FAILED(502, "서버에 접속할 수 없습니다.", HttpStatus.BAD_GATEWAY),
   SUBJECT_NOT_FOUND(400, "과목 정보를 불러올 수 없습니다", HttpStatus.NOT_FOUND),
+  CONTENTS_NOT_FOUND(404, "컨텐츠가 존재하지 않습니다", HttpStatus.NOT_FOUND),
   AI_CONNECTION_FAILED(502, "AI 서버에 접속할 수 없습니다.", HttpStatus.BAD_GATEWAY),
   EMPTY_RESULT(204, "응답이 비어 있습니다.", HttpStatus.NO_CONTENT),
   NOT_FOUND_ROADMAP(404, "해당 로드맵 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
