@@ -5,6 +5,8 @@ import com.education.takeit.exam.enums.Difficulty;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.kafka.FeedbackKafkaProducer;
+import com.education.takeit.kafka.dto.FeedbackEventDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ public class ExamService {
   private final AIClient aiClient;
   private final RoadmapRepository roadmapRepository;
   private final ExamLevelCalculator examLevelCalculator;
+  private final FeedbackKafkaProducer feedbackKafkaProducer;
 
   /**
    * 사전 평가 문제 조회
@@ -69,6 +72,12 @@ public class ExamService {
     roadmap.setPreSubmitCount(roadmap.getPreSubmitCount() + 1);
 
     roadmapRepository.save(roadmap);
+
+    // 결과 저장 성공 직후
+    Long subjectId = examAnswerRes.subjectId();
+    String type = "pre";
+    FeedbackEventDto event = new FeedbackEventDto(userId, subjectId, type);
+    feedbackKafkaProducer.publish(event);
 
     return ResponseEntity.noContent().build();
   }

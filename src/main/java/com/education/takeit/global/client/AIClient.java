@@ -5,6 +5,7 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -87,5 +88,14 @@ public class AIClient {
               throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
             })
         .toBodilessEntity();
+  }
+
+  /** 추천 컨텐츠 요청 */
+  public List<UserContentResDto> getRecommendation(Long userId, Long subjectId) {
+    return getForList(
+        "/fastapi요청경로?userId={userId}&subjectId={subjectId}",
+        UserContentResDto[].class,
+        userId,
+        subjectId);
   }
 }
