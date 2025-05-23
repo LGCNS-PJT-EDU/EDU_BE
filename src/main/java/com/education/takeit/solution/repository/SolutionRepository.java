@@ -5,5 +5,5 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SolutionRepository extends JpaRepository<Solution, Long> {
-  List<Solution> findAllByUser_UserId(long userId);
+  List<Solution> findAllByUser_UserIdAndExam_Subject_SubId(long userId, long examId);
 }
