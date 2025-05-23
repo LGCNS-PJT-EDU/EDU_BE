@@ -45,12 +45,8 @@ public class UserServiceImpl implements UserService {
   public String signIn(ReqSigninDto reqSigninDto) {
     User user =
         userRepository
-            .findByEmail(reqSigninDto.email())
+            .findByEmailAndLoginType(reqSigninDto.email(), LoginType.LOCAL)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-
-    if (user.getLoginType() != LoginType.LOCAL) {
-      throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
-    }
 
     if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
       throw new CustomException(StatusCode.NOT_EXIST_USER);
