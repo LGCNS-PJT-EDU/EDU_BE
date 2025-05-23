@@ -24,8 +24,7 @@ public class RecommendController {
 
   @GetMapping("/list")
   @Operation(summary = "추천받은 컨텐츠 조회", description = "사용자가 추천받은 컨텐츠 조회하는 API")
-  public ResponseEntity<Message> getUserContent(
-      @RequestParam("userId") Long userId) {
+  public ResponseEntity<Message> getUserContent(@RequestParam("userId") Long userId) {
     List<UserContentResDto> contentList = recommendService.getUserContent(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK, contentList));
   }
