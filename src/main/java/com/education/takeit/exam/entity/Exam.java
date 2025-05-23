@@ -32,6 +32,9 @@ public class Exam {
   @Column(name = "option4", nullable = false)
   private String option4;
 
+  @Column(name = "solution", nullable = false)
+  private String solution;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;

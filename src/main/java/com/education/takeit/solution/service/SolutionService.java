@@ -1,26 +1,26 @@
 package com.education.takeit.solution.service;
 
-import com.education.takeit.exam.dto.ExamAnswerDto;
 import com.education.takeit.exam.entity.Exam;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.solution.dto.SolutionResDto;
-import com.education.takeit.solution.entity.Solution;
-import com.education.takeit.solution.repository.SolutionRepository;
+import com.education.takeit.solution.entity.UserExamAnswer;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class SolutionService {
-    private final SolutionRepository solutionRepository;
+    private final UserExamAnswerRepository userExamAnswerRepository;
 
     // 해설 조회
     public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
-        List<Solution> solutionList = solutionRepository.findAllByUser_UserIdAndExam_Subject_SubId(userId, subjectId);
+        List<UserExamAnswer> solutionList = userExamAnswerRepository.findByUser_UserIdAndExam_Subject_SubId(userId, subjectId);
 
         if (solutionList.isEmpty()) {
             throw new CustomException(StatusCode.NOT_FOUND_SOLUTION);
@@ -42,7 +42,7 @@ public class SolutionService {
                                     exam.getOption4(), // 보기 4
                                     exam.getExamAnswer(), // 정답
                                     solution.getUserAnswer(), // 사용자 선택
-                                    solution.getSolutionContent(), // 해설
+                                    exam.getSolution(), // 해설
                                     exam.getExamLevel() // 난이도
                             );
                         })
