@@ -24,11 +24,10 @@ public class KakaoOauthClient {
   private final KakaoProperties properties;
 
   @Retryable(
-          value = {HttpServerErrorException.class}, // 5xx 에러 발생했을 때만 재시도
-          maxAttempts = 3,
-          backoff = @Backoff(delay = 1000) // 재시도 간격
-  )
-
+      value = {HttpServerErrorException.class}, // 5xx 에러 발생했을 때만 재시도
+      maxAttempts = 3,
+      backoff = @Backoff(delay = 1000) // 재시도 간격
+      )
   public OAuthTokenResponse getToken(String code) {
     MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
     form.add("grant_type", "authorization_code");
@@ -44,11 +43,15 @@ public class KakaoOauthClient {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .body(form)
         .retrieve()
-            .onStatus(status-> status.is4xxClientError(),(req,res)-> {
+        .onStatus(
+            status -> status.is4xxClientError(),
+            (req, res) -> {
               log.warn("카카오 토큰 요청 실패: 상태 코드", res.getStatusCode());
               throw new BadRequestException("잘못된 요청입니다.");
             })
-            .onStatus(status-> status.is5xxServerError(),(req,res)-> {
+        .onStatus(
+            status -> status.is5xxServerError(),
+            (req, res) -> {
               log.error("카카오 토큰 요청 실패: 상태 코드", res.getStatusCode());
               throw new HttpServerErrorException(res.getStatusCode());
             })
@@ -60,11 +63,15 @@ public class KakaoOauthClient {
         .get()
         .uri("https://kauth.kakao.com/.well-known/jwks.json")
         .retrieve()
-            .onStatus(status-> status.is4xxClientError(),(req,res)-> {
+        .onStatus(
+            status -> status.is4xxClientError(),
+            (req, res) -> {
               log.warn("카카오 OIDC 키 발급 요청 실패: 상태 코드", res.getStatusCode());
               throw new BadRequestException("잘못된 요청입니다.");
             })
-            .onStatus(status-> status.is5xxServerError(),(req,res)-> {
+        .onStatus(
+            status -> status.is5xxServerError(),
+            (req, res) -> {
               log.error("카카오 OIDC 키 발급 요청 실패: 상태 코드", res.getStatusCode());
               throw new HttpServerErrorException(res.getStatusCode());
             })

@@ -23,11 +23,10 @@ public class GoogleOauthClient {
   private final GoogleProperties properties;
 
   @Retryable(
-          value = {HttpServerErrorException.class}, // 5xx 에러 발생했을 때만 재시도
-          maxAttempts = 3,
-          backoff = @Backoff(delay = 1000) // 재시도 간격
-  )
-
+      value = {HttpServerErrorException.class}, // 5xx 에러 발생했을 때만 재시도
+      maxAttempts = 3,
+      backoff = @Backoff(delay = 1000) // 재시도 간격
+      )
   public OAuthTokenResponse getToken(String code) {
     MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
     form.add("grant_type", "authorization_code");
@@ -42,11 +41,15 @@ public class GoogleOauthClient {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .body(form)
         .retrieve()
-            .onStatus(status -> status.is4xxClientError(),(req,res)-> {
+        .onStatus(
+            status -> status.is4xxClientError(),
+            (req, res) -> {
               log.warn("Google 토큰 요청 실패: 상태 코드={} ", res.getStatusCode());
               throw new BadRequestException("잘못된 요청입니다.");
             })
-            .onStatus(status -> status.is5xxServerError(),(req,res)-> {
+        .onStatus(
+            status -> status.is5xxServerError(),
+            (req, res) -> {
               log.error("Google 토큰 요청 실패: 상태 코드={}", res.getStatusCode());
               throw new HttpServerErrorException(res.getStatusCode());
             })
