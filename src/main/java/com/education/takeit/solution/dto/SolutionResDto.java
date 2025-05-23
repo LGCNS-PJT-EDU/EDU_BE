@@ -10,5 +10,5 @@ public record SolutionResDto(
     String option4,
     int examAnswer,
     int userAnswer,
-    String solutionContent,
+    String solution,
     String examLevel) {}
