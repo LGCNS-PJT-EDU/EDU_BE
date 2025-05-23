@@ -15,21 +15,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Builder
 public class UserExamAnswer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long examAnswerId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long examAnswerId;
 
-    @Column(name = "user_answer", nullable = false)
-    private int userAnswer;
+  @Column(name = "user_answer", nullable = false)
+  private int userAnswer;
 
-    @Column(name = "is_pre", nullable = false)
-    private boolean isPre;
+  @Column(name = "is_pre", nullable = false)
+  private boolean isPre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exam_id", nullable = false)
-    private Exam exam;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "exam_id", nullable = false)
+  private Exam exam;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 }
