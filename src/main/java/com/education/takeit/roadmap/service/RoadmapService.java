@@ -236,6 +236,10 @@ public class RoadmapService {
   public void saveRoadmap(
       Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
+    if (roadmapManagementRepository.findByUserId(userId) != null) {
+      throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
+    }
+
     LectureAmount lectureAmount = null;
     PriceLevel priceLevel = null;
     Boolean likesBooks = null;
