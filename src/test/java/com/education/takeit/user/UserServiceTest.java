@@ -1,5 +1,9 @@
 package com.education.takeit.user;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
@@ -9,6 +13,7 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.education.takeit.user.service.UserServiceImpl;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,12 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -86,7 +85,8 @@ public class UserServiceTest {
   @Test
   void 로그인_성공() {
     // Given
-    when(userRepository.findByEmailAndLoginType(signinDto.email(),LoginType.LOCAL)).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
     String fakeTokens = "fake-access-token";
@@ -103,7 +103,8 @@ public class UserServiceTest {
   @Test
   void 로그인_비밀번호_불일치시_예외() {
     // Given
-    when(userRepository.findByEmailAndLoginType(signinDto.email(),LoginType.LOCAL)).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(false);
 
     // When & Then
