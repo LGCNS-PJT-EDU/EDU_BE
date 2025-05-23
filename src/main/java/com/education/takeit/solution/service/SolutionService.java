@@ -1,6 +1,8 @@
 package com.education.takeit.solution.service;
 
+import com.education.takeit.exam.dto.ExamAnswerDto;
 import com.education.takeit.exam.entity.Exam;
+import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.entity.Subject;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SolutionService {
     private final UserExamAnswerRepository userExamAnswerRepository;
+    private final UserRepository userRepository;
+    private final ExamRepository examRepository;
 
     // 해설 조회
     public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
@@ -48,4 +54,20 @@ public class SolutionService {
                         })
                 .collect(Collectors.toList());
     }
+
+    public void saveAllUserSolutions(Long userId, List<ExamAnswerDto> answers, boolean isPre){
+        User user = userRepository.findById(userId).orElseThrow();
+
+        for(ExamAnswerDto answer : answers) {
+            UserExamAnswer userExamAnswer =
+                    UserExamAnswer.builder()
+                            .userAnswer(answer.userAnswer())
+                            .user(user)
+                            .exam(examRepository.findByExamId(answer.examId()))
+                            .isPre(isPre)
+                            .build();
+        userExamAnswerRepository.save(userExamAnswer);
+        }
+    }
+
 }

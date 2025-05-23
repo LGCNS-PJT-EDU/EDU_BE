@@ -1,7 +1,7 @@
 package com.education.takeit.exam.dto;
 
 public record ExamAnswerDto(
-    Long id,
+    Long examId,
     int chapterNum,
     String chapterName,
     String difficulty,
