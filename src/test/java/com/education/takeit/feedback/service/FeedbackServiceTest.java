@@ -1,25 +1,24 @@
 package com.education.takeit.feedback.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.*;
+
 import com.education.takeit.feedback.dto.FeedbackDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.feedback.dto.InfoDto;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
@@ -40,8 +39,7 @@ class FeedbackServiceTest {
   @DisplayName("정상 응답 시 데이터를 그대로 반환한다 - 데이터 여러 개")
   void testFindMultipleFeedback() {
     // 2개의 데이터(JSON 데이터)가 들어있는 리스트를 만든다
-    var dummyList =
-        List.of(createDummyDto(1L, "JavaScript"), createDummyDto(1L, "Python"));
+    var dummyList = List.of(createDummyDto(1L, "JavaScript"), createDummyDto(1L, "Python"));
     given(mockClient.getFeedback(1L)).willReturn(dummyList);
 
     // user1이 들어있는 데이터를 검색한다
@@ -49,10 +47,7 @@ class FeedbackServiceTest {
 
     // mockClient가 한번 호출되었는가? -> 리스트 크기가 2인가? -> 각 DTO의 userId가 user1인가?
     then(mockClient).should().getFeedback(1L);
-    assertThat(result)
-        .hasSize(2)
-        .extracting(r -> r.info().userId())
-        .containsExactly(1L, 1L);
+    assertThat(result).hasSize(2).extracting(r -> r.info().userId()).containsExactly(1L, 1L);
   }
 
   @Test
