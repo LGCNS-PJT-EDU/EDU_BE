@@ -47,8 +47,7 @@ public class UserController {
 
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
-  public ResponseEntity<Message> logout(
-          @AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<Message> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     userService.signOut(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK));

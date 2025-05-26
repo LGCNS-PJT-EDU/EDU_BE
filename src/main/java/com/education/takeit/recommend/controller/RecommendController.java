@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,7 +25,8 @@ public class RecommendController {
 
   @GetMapping("/list")
   @Operation(summary = "추천받은 컨텐츠 조회", description = "사용자가 추천받은 컨텐츠 조회하는 API")
-  public ResponseEntity<Message> getUserContent(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<Message> getUserContent(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     List<UserContentResDto> contentList = recommendService.getUserContent(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK, contentList));
