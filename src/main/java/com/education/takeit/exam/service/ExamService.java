@@ -77,11 +77,7 @@ public class ExamService {
     try {
       aiClient.postPreExam(userId, result);
 
-      saveUserExamAnswer(userId,
-              answers,
-              true,
-              subject.submitCnt(),
-              examAnswerRes.subjectId());
+      saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
 
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
@@ -139,11 +135,7 @@ public class ExamService {
     try {
       aiClient.postPostExam(userId, result);
 
-      saveUserExamAnswer(userId,
-              answers,
-              false,
-              subject.submitCnt(),
-              examAnswerRes.subjectId());
+      saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
 
     } catch (RestClientException e) {
       log.warn("사후 평가 결과 전송 실패: {}", e.getMessage());
@@ -258,19 +250,20 @@ public class ExamService {
   }
 
   private void saveUserExamAnswer(
-          Long userId,
-          List<ExamAnswerDto> answers,
-          boolean isPre,
-          int nth,
-          Long subjectId
-  ){
-    User user = userRepository.findById(userId)
-            .orElseThrow(()-> new CustomException(StatusCode.USER_NOT_FOUND));
-    Subject subject = subjectRepository.findById(subjectId)
-            .orElseThrow(()-> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-    for(ExamAnswerDto answer:answers){
-      Exam exam = examRepository.findById(answer.examId())
-              .orElseThrow(()-> new CustomException(StatusCode.EXAM_NOT_FOUND));
+      Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    Subject subject =
+        subjectRepository
+            .findById(subjectId)
+            .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+    for (ExamAnswerDto answer : answers) {
+      Exam exam =
+          examRepository
+              .findById(answer.examId())
+              .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
       UserExamAnswer entity = new UserExamAnswer();
       entity.setUser(user);
