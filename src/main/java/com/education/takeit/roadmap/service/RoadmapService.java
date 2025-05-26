@@ -236,6 +236,10 @@ public class RoadmapService {
   public void saveRoadmap(
       Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
+    if (roadmapManagementRepository.findByUserId(userId) != null) {
+      throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
+    }
+
     LectureAmount lectureAmount = null;
     PriceLevel priceLevel = null;
     Boolean likesBooks = null;
@@ -500,6 +504,10 @@ public class RoadmapService {
   public RoadmapFindResDto findUserRoadmap(Long userId) {
 
     RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
+    if (userRoadmapManagement == null) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
+
     List<Roadmap> userRoadmaps =
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(
             userRoadmapManagement.getRoadmapManagementId());

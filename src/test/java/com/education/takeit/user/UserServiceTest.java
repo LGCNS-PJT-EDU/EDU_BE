@@ -85,7 +85,8 @@ public class UserServiceTest {
   @Test
   void 로그인_성공() {
     // Given
-    when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
     String fakeTokens = "fake-access-token";
@@ -102,7 +103,8 @@ public class UserServiceTest {
   @Test
   void 로그인_비밀번호_불일치시_예외() {
     // Given
-    when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(false);
 
     // When & Then

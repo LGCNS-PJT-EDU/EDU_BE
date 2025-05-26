@@ -45,12 +45,8 @@ public class UserServiceImpl implements UserService {
   public String signIn(ReqSigninDto reqSigninDto) {
     User user =
         userRepository
-            .findByEmail(reqSigninDto.email())
+            .findByEmailAndLoginType(reqSigninDto.email(), LoginType.LOCAL)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-
-    if (user.getLoginType() != LoginType.LOCAL) {
-      throw new CustomException(StatusCode.NOT_SUPPORT_LOCAL_LOGIN);
-    }
 
     if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
       throw new CustomException(StatusCode.NOT_EXIST_USER);
@@ -59,12 +55,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void signOut(String accessToken) {
-    if (!jwtUtils.validateToken(accessToken)) {
-      throw new CustomException(StatusCode.INVALID_TOKEN);
-    }
-    // access token에서 userId 추출
-    Long userId = jwtUtils.getUserId(accessToken);
+  public void signOut(Long userId) {
 
     // Redis에서 refresh token 삭제
     redisTemplate.delete(userId + "'s refresh token");
