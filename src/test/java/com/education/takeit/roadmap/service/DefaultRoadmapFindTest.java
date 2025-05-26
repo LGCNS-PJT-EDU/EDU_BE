@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultRoadmapGetTest {
+public class DefaultRoadmapFindTest {
 
     @InjectMocks
     private RoadmapService roadmapService;
