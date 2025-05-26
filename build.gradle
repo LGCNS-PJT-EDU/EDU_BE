@@ -72,6 +72,8 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
     // 테스트코드 수행할대 필요한 H2
     testImplementation 'com.h2database:h2'
+    // Spring retry
+    implementation 'org.springframework.retry:spring-retry'
 }
 
 tasks.named('test') {
