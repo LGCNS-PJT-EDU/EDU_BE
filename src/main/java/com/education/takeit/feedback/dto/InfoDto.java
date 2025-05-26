@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 
 public record InfoDto(
-    @JsonProperty("userId") String userId,
+    @JsonProperty("userId") Long userId,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") @JsonProperty("date")
         LocalDate date,
     @JsonProperty("subject") String subject) {}

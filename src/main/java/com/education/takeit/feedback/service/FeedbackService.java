@@ -12,7 +12,7 @@ public class FeedbackService {
 
   private final AIClient aiClient;
 
-  public List<FeedbackResponseDto> findFeedback(String userId) {
+  public List<FeedbackResponseDto> findFeedback(Long userId) {
     return aiClient.getFeedback(userId);
   }
 }

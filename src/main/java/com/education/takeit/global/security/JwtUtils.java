@@ -3,12 +3,13 @@ package com.education.takeit.global.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import java.security.Key;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class JwtUtils {
   private final RedisTemplate<String, String> redisTemplate;
 
   private String secretKey = "AbcDefGhijkLmnOpQRStuvwXYZ1234567890!@#"; // 임시
-  private final long accessTokenExpiration = 1000L * 60 * 15; // 액세스 토큰 유효시간 : 15분
+  private final long accessTokenExpiration = 1000L * 60 * 150; // 액세스 토큰 유효시간 : 15분
   private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
   private Key key;

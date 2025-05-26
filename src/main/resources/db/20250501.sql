@@ -4199,3 +4199,14 @@ INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option
     (2948, 'Flask config에서 설정 값을 불러오는 방법 중 올바른 것은?', 1, '하', 'app.config[\'DEBUG\']', 'app.settings.debug', 'app.env.DEBUG', 'app[\'DEBUG\']', 59, 'Flask 설정 값은 app.config 딕셔너리를 통해 접근할 수 있다.'),
     (2949, 'GitHub Actions에서 비밀 정보를 안전하게 사용하는 방법은?', 3, '하', '코드에 직접 입력', '환경변수에 저장', 'secrets에 저장하고 `${{ secrets.KEY }}`로 접근', '브랜치에 하드코딩', 59, 'GitHub Actions의 secrets 기능을 활용하면 민감 정보를 안전하게 저장하고 사용할 수 있다.'),
     (2950, 'Sentry에서 에러 발생 시 수집되는 정보가 아닌 것은?', 3, '중', 'stack trace', '브라우저 버전', '사용자 비밀번호', '요청 URL', 59, 'Sentry는 보안상 사용자 비밀번호와 같은 민감 정보를 수집하지 않도록 설계되어 있다.');
+
+CREATE TABLE feedback (
+      feedback_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      feedback_content TEXT NOT NULL,
+      nth INT NOT NULL,
+      is_pre BOOLEAN NOT NULL,
+      user_id BIGINT NOT NULL,
+      sub_id BIGINT NOT NULL,
+      CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+      CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
+);

@@ -6,8 +6,6 @@ import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -18,6 +16,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -81,7 +82,7 @@ public class AIClient {
   }
 
   /** 사용자 피드백 조회 */
-  public List<FeedbackResponseDto> getFeedback(String userId) {
+  public List<FeedbackResponseDto> getFeedback(Long userId) {
     return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
   }
 
