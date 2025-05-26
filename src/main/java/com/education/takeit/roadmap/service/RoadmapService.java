@@ -504,7 +504,7 @@ public class RoadmapService {
   public RoadmapFindResDto findUserRoadmap(Long userId) {
 
     RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
-    if(userRoadmapManagement == null) {
+    if (userRoadmapManagement == null) {
       throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
     }
 
