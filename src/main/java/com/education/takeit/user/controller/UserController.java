@@ -45,30 +45,12 @@ public class UserController {
     return ResponseEntity.ok().headers(headers).body(message);
   }
 
-  @PostMapping("/reissue")
-  @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
-  public ResponseEntity<Message> reissue(
-      @RequestHeader("Authorization") String expiredAccessToken) {
-    String token = expiredAccessToken.replace("Bearer ", "").trim();
-
-    Long userId = userService.extractUserId(token);
-    if (!userService.validateRefreshToken(userId)) {
-      return ResponseEntity.status(401).body(new Message(StatusCode.UNAUTHORIZED));
-    }
-    String newAccessToken = userService.reissueAccessToken(token);
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + newAccessToken);
-    Message message = new Message(StatusCode.OK);
-    return ResponseEntity.ok().headers(headers).body(message);
-  }
-
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
   public ResponseEntity<Message> logout(
-      @RequestHeader("Authorization") String authorizationHeader) {
-    String accessToken = authorizationHeader.replace("Bearer ", "");
-    userService.signOut(accessToken);
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long userId = userDetails.getUserId();
+    userService.signOut(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
