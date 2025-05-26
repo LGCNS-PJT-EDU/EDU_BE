@@ -9,7 +9,7 @@ public interface UserService {
 
   String signIn(ReqSigninDto reqSigninDto);
 
-  void signOut(String accessToken);
+  void signOut(Long userId);
 
   boolean checkDuplicate(String email);
 

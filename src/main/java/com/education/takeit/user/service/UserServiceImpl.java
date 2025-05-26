@@ -55,12 +55,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void signOut(String accessToken) {
-    if (!jwtUtils.validateToken(accessToken)) {
-      throw new CustomException(StatusCode.INVALID_TOKEN);
-    }
-    // access token에서 userId 추출
-    Long userId = jwtUtils.getUserId(accessToken);
+  public void signOut(Long userId) {
 
     // Redis에서 refresh token 삭제
     redisTemplate.delete(userId + "'s refresh token");
