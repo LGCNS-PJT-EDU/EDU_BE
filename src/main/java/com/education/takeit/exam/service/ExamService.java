@@ -78,8 +78,6 @@ public class ExamService {
       aiClient.postPreExam(userId, result);
 
       saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
-      log.debug(">>> [ExamService] subject id = {}", subject.subjectId());
-      log.debug(">>> [ExamService] subject id = {}", examAnswerRes.subjectId());
 
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
