@@ -78,6 +78,8 @@ public class ExamService {
       aiClient.postPreExam(userId, result);
 
       saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
+      log.debug(">>> [ExamService] subject id = {}", subject.subjectId());
+      log.debug(">>> [ExamService] subject id = {}", examAnswerRes.subjectId());
 
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
@@ -250,7 +252,7 @@ public class ExamService {
   }
 
   private void saveUserExamAnswer(
-      Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
+          Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
     User user =
         userRepository
             .findById(userId)
@@ -259,19 +261,22 @@ public class ExamService {
         subjectRepository
             .findById(subjectId)
             .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+
     for (ExamAnswerDto answer : answers) {
       Exam exam =
           examRepository
               .findById(answer.examId())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
-      UserExamAnswer entity = new UserExamAnswer();
-      entity.setUser(user);
-      entity.setSubject(subject);
-      entity.setExam(exam);
-      entity.setUserAnswer(answer.userAnswer());
-      entity.setPre(isPre);
-      entity.setNth(nth);
+      UserExamAnswer entity = UserExamAnswer.builder()
+              .user(user)
+              .subject(subject)
+              .exam(exam)
+              .userAnswer(answer.userAnswer())
+              .isPre(isPre)
+              .nth(nth)
+              .build();
+
 
       userExamAnswerRepository.save(entity);
     }

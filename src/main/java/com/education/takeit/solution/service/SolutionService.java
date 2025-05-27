@@ -58,15 +58,25 @@ public class SolutionService {
   public void saveAllUserSolutions(Long userId, List<ExamAnswerDto> answers, boolean isPre) {
     User user = userRepository.findById(userId).orElseThrow();
 
-    for (ExamAnswerDto answer : answers) {
-      UserExamAnswer userExamAnswer =
-          UserExamAnswer.builder()
-              .userAnswer(answer.userAnswer())
-              .user(user)
-              .exam(examRepository.findByExamId(answer.examId()))
-              .isPre(isPre)
-              .build();
-      userExamAnswerRepository.save(userExamAnswer);
+    for(ExamAnswerDto answer:answers){
+        Exam exam = examRepository.findByExamId(answer.examId());
+        Subject subject = exam.getSubject();
+
+        int nth;
+        if(isPre){
+            nth=1;
+        } else{
+            nth= userExamAnswerRepository.countByUserAndSubjectAndIsPre(user,subject,false)+1;
+        }
+        UserExamAnswer userExamAnswer = UserExamAnswer.builder()
+                .user(user)
+                .subject(subject)
+                .exam(exam)
+                .userAnswer(answer.userAnswer())
+                .isPre(isPre)
+                .nth(nth)
+                .build();
+        userExamAnswerRepository.save(userExamAnswer);
     }
   }
 }
