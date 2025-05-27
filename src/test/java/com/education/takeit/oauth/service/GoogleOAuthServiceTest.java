@@ -1,5 +1,9 @@
 package com.education.takeit.oauth.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
@@ -12,19 +16,14 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class GoogleOAuthServiceTest {
   private GoogleOauthClient googleOauthClient;
@@ -78,7 +77,8 @@ class GoogleOAuthServiceTest {
 
     when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(savedUser.getUserId()))
+        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
 
     // when
     UserSigninResDto tokens = googleOAuthService.login(loginRequest);

@@ -1,3 +1,3 @@
 package com.education.takeit.user.dto;
 
-public record UserSigninResDto (String accessToken, String refreshToken) {}
+public record UserSigninResDto(String accessToken, String refreshToken) {}

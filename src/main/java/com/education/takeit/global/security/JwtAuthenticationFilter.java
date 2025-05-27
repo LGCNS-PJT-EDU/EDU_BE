@@ -10,6 +10,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +19,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtUtils jwtUtils;
@@ -47,8 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-          throws ServletException, IOException {
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     try {
       String token = resolveToken(request);
@@ -70,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       UserDetails userDetails = customUserDetailService.loadUserByUsername(userId.toString());
 
       UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
       authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
       SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -83,7 +84,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       setErrorResponse(response, StatusCode.INVALID_TOKEN); // 401
     }
   }
-
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -103,12 +103,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     response.setStatus(status.getStatusCode());
     response.setContentType("application/json;charset=UTF-8");
     try {
-      Message errorMessage = new Message(StatusCode.INVALID_TOKEN, objectMapper.writeValueAsString(status));
+      Message errorMessage =
+          new Message(StatusCode.INVALID_TOKEN, objectMapper.writeValueAsString(status));
       String json = objectMapper.writeValueAsString(errorMessage);
       response.getWriter().write(json);
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
-
 }

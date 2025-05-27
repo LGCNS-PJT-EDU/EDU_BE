@@ -38,7 +38,6 @@ public class OAuthController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-
     return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
   }
 
@@ -62,7 +61,6 @@ public class OAuthController {
   }
 
   /**
-   *
    * @param request
    * @return
    */

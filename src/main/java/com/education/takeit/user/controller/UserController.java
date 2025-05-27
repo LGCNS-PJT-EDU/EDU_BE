@@ -69,10 +69,9 @@ public class UserController {
 
   @PostMapping("/refresh")
   @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
-  public ResponseEntity<Message> refreshAccessToken(
-          @RequestParam String refreshToken) {
+  public ResponseEntity<Message> refreshAccessToken(@RequestParam String refreshToken) {
     Long userId = jwtUtils.getUserId(refreshToken);
-    if (!jwtUtils.validateRefreshToken(userId, refreshToken)){
+    if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
       return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
     }
     String newAccessToken = jwtUtils.generateAccessToken(userId);
