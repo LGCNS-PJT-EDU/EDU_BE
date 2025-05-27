@@ -11,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "user_exam_answer")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
