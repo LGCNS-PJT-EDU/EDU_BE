@@ -39,7 +39,8 @@ public class SolutionService {
               Exam exam = solution.getExam();
               Subject subject = exam.getSubject();
               return new SolutionResDto(
-                  solution.isPre(),
+                  solution.isPre(), // 사전 사후 여부
+                  solution.getNth(), // 회차 정보
                   subject.getSubNm(), // 과목 이름
                   exam.getExamContent(), // 문제 내용
                   exam.getOption1(), // 보기 1
