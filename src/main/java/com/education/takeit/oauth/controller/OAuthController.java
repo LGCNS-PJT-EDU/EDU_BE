@@ -6,6 +6,7 @@ import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.service.GoogleOAuthService;
 import com.education.takeit.oauth.service.KakaoOAuthService;
 import com.education.takeit.oauth.service.NaverOAuthService;
+import com.education.takeit.user.dto.UserSigninResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,12 @@ public class OAuthController {
   @PostMapping("/google/login")
   @Operation(summary = "Google OAuth 소셜 로그인", description = "Google OAuth 소셜 로그인 API")
   public ResponseEntity<Message> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
-    String accessToken = googleOAuthService.login(request);
+    UserSigninResDto userSigninResDto = googleOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + accessToken);
+    headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-    Message message = new Message(StatusCode.OK);
-
-    return ResponseEntity.ok().headers(headers).body(message);
+    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
   }
 
   /**
@@ -51,26 +50,30 @@ public class OAuthController {
   @PostMapping("/kakao/login")
   @Operation(summary = "Kakao OAuth 소셜 로그인", description = "Kakao OAuth 소셜 로그인 API")
   public ResponseEntity<Message> loginWithKakao(@RequestBody OAuthLoginRequest request) {
-    String accessToken = kakaoOAuthService.login(request);
+    UserSigninResDto userSigninResDto = kakaoOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + accessToken);
+    headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
     Message message = new Message(StatusCode.OK);
 
-    return ResponseEntity.ok().headers(headers).body(message);
+    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
   }
 
+  /**
+   * @param request
+   * @return
+   */
   @PostMapping("/naver/login")
   @Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
   public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
-    String accessToken = naverOAuthService.login(request);
+    UserSigninResDto userSigninResDto = naverOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + accessToken);
+    headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
     Message message = new Message(StatusCode.OK);
 
-    return ResponseEntity.ok().headers(headers).body(message);
+    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
   }
 }

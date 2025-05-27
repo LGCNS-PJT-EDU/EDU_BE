@@ -11,6 +11,7 @@ import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
+import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
@@ -75,6 +76,7 @@ class KakaoOAuthServiceTest {
     OAuthTokenResponse tokenResponse =
         OAuthTokenResponse.builder()
             .accessToken("mock-access-token")
+            .refreshToken("mock-refresh-token")
             .tokenType("Bearer")
             .idToken(idToken)
             .build();
@@ -90,15 +92,17 @@ class KakaoOAuthServiceTest {
         User.builder().email(email).nickname(nickname).loginType(LoginType.KAKAO).build();
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn("new-mock-access-token");
+    when(jwtUtils.generateTokens(savedUser.getUserId()))
+        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
 
     // when
-    String tokens = kakaoOAuthService.login(loginRequest);
+    UserSigninResDto tokens = kakaoOAuthService.login(loginRequest);
 
     // then
     SoftAssertions softly = new SoftAssertions();
 
-    softly.assertThat(tokens).isEqualTo("new-mock-access-token");
+    softly.assertThat(tokens.accessToken()).isEqualTo("new-mock-access-token");
+    softly.assertThat(tokens.refreshToken()).isEqualTo("new-mock-refresh-token");
     softly.assertAll();
   }
 

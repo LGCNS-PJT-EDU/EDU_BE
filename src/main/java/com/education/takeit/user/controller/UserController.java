@@ -4,8 +4,9 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.user.dto.ReqSigninDto;
-import com.education.takeit.user.dto.ReqSignupDto;
+import com.education.takeit.user.dto.UserSigninReqDto;
+import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.dto.UserSignupReqDto;
 import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,22 +28,22 @@ public class UserController {
 
   @PostMapping("/signup")
   @Operation(summary = "회원가입", description = "자체 서비스 회원가입 API")
-  public ResponseEntity<Message> signUp(@Valid @RequestBody ReqSignupDto reqSignupDto) {
-    userService.signUp(reqSignupDto);
+  public ResponseEntity<Message> signUp(@Valid @RequestBody UserSignupReqDto userSignupReqDto) {
+    userService.signUp(userSignupReqDto);
     return ResponseEntity.ok(new Message(StatusCode.OK));
   }
 
   @PostMapping("/signin")
   @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
-  public ResponseEntity<Message> signIn(@RequestBody ReqSigninDto reqSigninDto) {
-    String accessToken = userService.signIn(reqSigninDto);
+  public ResponseEntity<Message> signIn(@RequestBody UserSigninReqDto userSigninReqDto) {
+    UserSigninResDto userSigninResDto = userService.signIn(userSigninReqDto);
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + accessToken);
+    headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
     Message message = new Message(StatusCode.OK);
 
-    return ResponseEntity.ok().headers(headers).body(message);
+    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
   }
 
   @DeleteMapping("/signout")
@@ -64,5 +65,16 @@ public class UserController {
   public ResponseEntity<Message> Withdraw(@AuthenticationPrincipal CustomUserDetails principal) {
     userService.withdraw(principal.getUserId());
     return ResponseEntity.ok(new Message(StatusCode.OK));
+  }
+
+  @PostMapping("/refresh")
+  @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
+  public ResponseEntity<Message> refreshAccessToken(@RequestParam String refreshToken) {
+    Long userId = jwtUtils.getUserId(refreshToken);
+    if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
+      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+    }
+    String newAccessToken = jwtUtils.generateAccessToken(userId);
+    return ResponseEntity.ok(new Message(StatusCode.OK, newAccessToken));
   }
 }
