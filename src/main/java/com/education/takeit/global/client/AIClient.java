@@ -35,6 +35,7 @@ public class AIClient {
       backoff = @Backoff(delay = 1000) // 재시도 간격
       )
   private <T> List<T> getForList(String uri, Class<T[]> responseType, Object... uriVariables) {
+    log.info("FastAPI 요청 시도: {}", uri);
     T[] response =
         restClient
             .get()
@@ -59,6 +60,7 @@ public class AIClient {
   }
 
   private <T> void postForNoContent(String uri, Object body, Object... uriVariables) {
+    log.info("FastAPI 요청 시도: {}", uri);
     restClient
         .post()
         .uri(baseUrl + uri, uriVariables)

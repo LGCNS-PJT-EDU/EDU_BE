@@ -30,6 +30,7 @@ public enum StatusCode {
   ALREADY_EXIST_ROADMAP(409, "이미 로드맵이 존재합니다.", HttpStatus.CONFLICT),
   UNAUTHORIZED_USER(401, "로그인이 필요한 기능입니다.", HttpStatus.UNAUTHORIZED),
   NOT_FOUND_SOLUTION(400, "해설이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+  EXAM_NOT_FOUND(404, "해당 시험이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   ;
 
   private final int statusCode;
