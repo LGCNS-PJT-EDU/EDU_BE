@@ -11,10 +11,11 @@ import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,8 @@ public class SolutionService {
               Exam exam = solution.getExam();
               Subject subject = exam.getSubject();
               return new SolutionResDto(
-                  solution.isPre(),
+                  solution.isPre(), // 사전 사후 여부
+                  solution.getNth(), // 회차 정보
                   subject.getSubNm(), // 과목 이름
                   exam.getExamContent(), // 문제 내용
                   exam.getOption1(), // 보기 1
