@@ -31,6 +31,7 @@ public enum StatusCode {
   UNAUTHORIZED_USER(401, "로그인이 필요한 기능입니다.", HttpStatus.UNAUTHORIZED),
   NOT_FOUND_SOLUTION(400, "해설이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   EXAM_NOT_FOUND(404, "해당 시험이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+  DIAGNOSIS_RESPONSE_NOT_FOUND(404, "진단 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   ALREADY_EXIST_PRE_EXAM(409, "이미 사전 평가를 응시했습니다.", HttpStatus.CONFLICT);
 
   private final int statusCode;

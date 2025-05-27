@@ -65,8 +65,8 @@ public class SecurityConfig {
                         "/api/user/oauth/naver", // OAuth2 경로 허용
                         "/login/**", // 로그인 경로 허용
                         "/api/user/check-email", // 회원가입시 이메일 중복확인
-                        "/api/diagnosis" // 진단 경로
-                        )
+                        "/api/diagnosis", // 진단 경로
+                        "/api/roadmap")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요
