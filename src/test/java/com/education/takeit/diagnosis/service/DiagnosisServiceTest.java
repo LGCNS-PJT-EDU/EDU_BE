@@ -77,7 +77,7 @@ class DiagnosisServiceTest {
     when(diagnosisRepository.findAllWithChoices()).thenReturn(List.of(common, fe, be));
 
     // when
-    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis(null);
 
     // then
     assertThat(result.COMMON()).hasSize(1);

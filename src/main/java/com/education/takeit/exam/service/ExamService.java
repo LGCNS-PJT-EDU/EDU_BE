@@ -1,14 +1,22 @@
 package com.education.takeit.exam.service;
 
 import com.education.takeit.exam.dto.*;
+import com.education.takeit.exam.entity.Exam;
 import com.education.takeit.exam.enums.Difficulty;
+import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.kafka.FeedbackKafkaProducer;
 import com.education.takeit.kafka.dto.FeedbackEventDto;
 import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
+import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.solution.entity.UserExamAnswer;
+import com.education.takeit.solution.repository.UserExamAnswerRepository;
+import com.education.takeit.user.entity.User;
+import com.education.takeit.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +36,10 @@ public class ExamService {
   private final RoadmapRepository roadmapRepository;
   private final ExamLevelCalculator examLevelCalculator;
   private final FeedbackKafkaProducer feedbackKafkaProducer;
+  private final UserRepository userRepository;
+  private final SubjectRepository subjectRepository;
+  private final ExamRepository examRepository;
+  private final UserExamAnswerRepository userExamAnswerRepository;
 
   /**
    * 사전 평가 문제 조회
@@ -64,6 +76,9 @@ public class ExamService {
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
     try {
       aiClient.postPreExam(userId, result);
+
+      saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
+
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
     }
@@ -119,6 +134,9 @@ public class ExamService {
 
     try {
       aiClient.postPostExam(userId, result);
+
+      saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
+
     } catch (RestClientException e) {
       log.warn("사후 평가 결과 전송 실패: {}", e.getMessage());
     }
@@ -229,6 +247,37 @@ public class ExamService {
               return new ChapterResultDto(entry.getKey(), chapterName, weakness, cnt, totalCnt);
             })
         .toList();
+  }
+
+  private void saveUserExamAnswer(
+      Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    Subject subject =
+        subjectRepository
+            .findById(subjectId)
+            .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+
+    for (ExamAnswerDto answer : answers) {
+      Exam exam =
+          examRepository
+              .findById(answer.examId())
+              .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
+
+      UserExamAnswer entity =
+          UserExamAnswer.builder()
+              .user(user)
+              .subject(subject)
+              .exam(exam)
+              .userAnswer(answer.userAnswer())
+              .isPre(isPre)
+              .nth(nth)
+              .build();
+
+      userExamAnswerRepository.save(entity);
+    }
   }
 
   public List<ExamResDto> createMock() {
