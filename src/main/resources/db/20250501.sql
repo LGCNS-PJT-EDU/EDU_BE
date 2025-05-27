@@ -666,6 +666,7 @@ CREATE TABLE user_content(
     total_content_id BIGINT NOT NULL,
     sub_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
+    is_ai_recommended boolean NOT NULL,
     CONSTRAINT fk_user_content_total_content FOREIGN KEY (total_content_id) REFERENCES total_content(total_content_id),
     CONSTRAINT fk_user_content_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
     CONSTRAINT fk_user_content_users FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -1240,10 +1241,13 @@ CREATE TABLE user_exam_answer(
      exam_answer_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
      user_answer INT NOT NULL,
      is_pre BOOLEAN NOT NULL,
+     nth INT NOT NULL,
      exam_id BIGINT NOT NULL,
+     sub_id BIGINT NOT NULL,
      user_id BIGINT NOT NULL,
-     CONSTRAINT fk_solution_exam FOREIGN KEY (exam_id) REFERENCES exam(exam_id),
-     CONSTRAINT fk_solution_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+     CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
+     CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (exam_id) REFERENCES exam(exam_id),
+     CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- 1968번 파이썬인데 옵션이 한 줄 이라서 문제 변경 필요합니다.
