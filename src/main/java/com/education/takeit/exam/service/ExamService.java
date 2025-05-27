@@ -250,7 +250,7 @@ public class ExamService {
   }
 
   private void saveUserExamAnswer(
-          Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
+      Long userId, List<ExamAnswerDto> answers, boolean isPre, int nth, Long subjectId) {
     User user =
         userRepository
             .findById(userId)
@@ -266,7 +266,8 @@ public class ExamService {
               .findById(answer.examId())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
-      UserExamAnswer entity = UserExamAnswer.builder()
+      UserExamAnswer entity =
+          UserExamAnswer.builder()
               .user(user)
               .subject(subject)
               .exam(exam)
@@ -274,7 +275,6 @@ public class ExamService {
               .isPre(isPre)
               .nth(nth)
               .build();
-
 
       userExamAnswerRepository.save(entity);
     }
