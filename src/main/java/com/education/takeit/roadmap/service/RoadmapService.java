@@ -71,7 +71,7 @@ public class RoadmapService {
     } else {
       RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
       if (roadmapManagement != null) {
-        throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
+        roadmapTransactionalService.deleteRoadmap(userId);
       }
 
       // 개인 roadmap 데이터 저장
@@ -501,12 +501,7 @@ public class RoadmapService {
         "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType));
   }
 
-  public RoadmapFindResDto findUserRoadmap(Long userId) {
-
-    RoadmapManagement userRoadmapManagement = roadmapManagementRepository.findByUserId(userId);
-    if (userRoadmapManagement == null) {
-      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
-    }
+  public RoadmapFindResDto findUserRoadmap(RoadmapManagement userRoadmapManagement) {
 
     List<Roadmap> userRoadmaps =
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(
@@ -541,18 +536,55 @@ public class RoadmapService {
         .orElse(null);
   }
 
-  public RoadmapSaveResDto saveNewRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
-    roadmapTransactionalService.deleteRoadmap(userId);
+  public RoadmapFindResDto findRoadmap(Long userId, String uuid){
+    RoadmapManagement roadmapManagement = null;
+    if(userId != null){
+      roadmapManagement = roadmapManagementRepository.findByUserId(userId);
 
-    RoadmapSaveResDto roadmapSaveResDto = createRoadmap(answers);
+      if(roadmapManagement != null){
+        return findUserRoadmap(roadmapManagement);
+      }
+      else if(!uuid.equals("takeit")){
+        RoadmapSaveResDto roadmapSaveResDto = saveGuestRoadmap(uuid, userId);
+        return new RoadmapFindResDto(roadmapSaveResDto.subjects(), roadmapSaveResDto.uuid(), roadmapSaveResDto.userLocationSubjectId());
+      }
+      else{
+        throw new CustomException(StatusCode.DIAGNOSIS_RESPONSE_NOT_FOUND);
+      }
+    }
+    else{
+      if(!uuid.equals("takeit")){
+        return findGuestRoadmap(uuid);
+      }
+      else{
+        throw new CustomException(StatusCode.DIAGNOSIS_RESPONSE_NOT_FOUND);
+      }
+    }
+  }
 
-    List<Long> subjectIds =
-        roadmapSaveResDto.subjects().stream()
-            .map(SubjectDto::subjectId)
-            .collect(Collectors.toList());
+  public RoadmapFindResDto findGuestRoadmap(String uuid){
+    String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
 
-    saveRoadmap(userId, subjectIds, answers);
+    if (redisSubjects == null) {
+      throw new CustomException(StatusCode.ROADMAP_NOT_FOUND);
+    }
 
-    return roadmapSaveResDto;
+    // subjectIds 문자열 → List<Long> 로 변환
+    List<Long> subjectIds = Arrays.stream(redisSubjects.split(",")).map(Long::parseLong).toList();
+
+    // 로드맵 반환을 위한 subject List 생성
+    List<Subject> subjects = subjectRepository.findAllById(subjectIds);
+
+    List<SubjectDto> subjectDtos =
+            subjects.stream()
+                    .map(
+                            subject ->
+                                    new SubjectDto(
+                                            subject.getSubId(), subject.getSubNm(), subject.getBaseSubOrder()))
+                    .toList();
+
+    Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
+
+    return new RoadmapFindResDto(subjectDtos, uuid +"'s roadmap", userLocationSubjectId);
   }
 }

@@ -33,8 +33,9 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단 문제 리스트 요청", description = "진단 문제 GET API")
-  public ResponseEntity<Message> findAllDiagnosis() {
-    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis();
+  public ResponseEntity<Message> findAllDiagnosis(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long userId = (userDetails != null) ? userDetails.getUserId() : null;
+    GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK, result));
   }
 
@@ -52,19 +53,6 @@ public class DiagnosisController {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
-    return ResponseEntity.ok(new Message(StatusCode.OK, result));
-  }
-
-  @PostMapping("re-diagnosis")
-  @Operation(summary = "사용자 재진단 로드맵 제공", description = "사용자가 재진단 했을 때 기존 로드맵 삭제 후 새 로드맵 제공하는 API")
-  public ResponseEntity<Message> saveNewRoadmap(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestBody List<DiagnosisAnswerRequest> answers) {
-    if (userDetails == null) {
-      throw new CustomException(StatusCode.UNAUTHORIZED_USER);
-    }
-    Long userId = userDetails.getUserId();
-    RoadmapSaveResDto result = roadmapService.saveNewRoadmap(userId, answers);
     return ResponseEntity.ok(new Message(StatusCode.OK, result));
   }
 }

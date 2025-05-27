@@ -7,6 +7,7 @@ import com.education.takeit.diagnosis.repository.DiagnosisRepository;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
+import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.service.RoadmapService;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,19 @@ public class DiagnosisService {
 
   private final DiagnosisRepository diagnosisRepository;
   private final RoadmapService roadmapService;
+  private final RoadmapManagementRepository roadmapManagementRepository;
 
   /**
    * 진단 질문 조회 메소드
    *
    * @return 진단 질문 리스트
    */
-  public GroupedDiagnosisResponse findAllDiagnosis() {
+  public GroupedDiagnosisResponse findAllDiagnosis(Long userId) {
+    boolean roadmapExist = false;
+    if(userId != null) {
+      roadmapExist = roadmapManagementRepository.existsByUserId(userId);
+    }
+
     List<DiagnosisResponse> list =
         diagnosisRepository.findAllWithChoices().stream()
             .map(
@@ -49,7 +56,7 @@ public class DiagnosisService {
     if (list.isEmpty()) {
       throw new CustomException(StatusCode.DIAGNOSIS_NOT_FOUND);
     }
-    return groupDiagnosisByType(list);
+    return groupDiagnosisByType(list, roadmapExist);
   }
 
   /**
@@ -58,7 +65,7 @@ public class DiagnosisService {
    * @param list
    * @return 진단 질문 그룹핑 리스트
    */
-  public GroupedDiagnosisResponse groupDiagnosisByType(List<DiagnosisResponse> list) {
+  public GroupedDiagnosisResponse groupDiagnosisByType(List<DiagnosisResponse> list, boolean roadmapExist) {
 
     Map<String, List<DiagnosisResponse>> grouped =
         list.stream().collect(Collectors.groupingBy(DiagnosisResponse::questionType));
@@ -66,7 +73,8 @@ public class DiagnosisService {
     return new GroupedDiagnosisResponse(
         grouped.getOrDefault("COMMON", List.of()),
         grouped.getOrDefault("BE", List.of()),
-        grouped.getOrDefault("FE", List.of()));
+        grouped.getOrDefault("FE", List.of()),
+            roadmapExist);
   }
 
   /**

@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoadmapManagementRepository extends JpaRepository<RoadmapManagement, Long> {
   RoadmapManagement findByUserId(long userId);
+  boolean existsByUserId(long userId);
 }

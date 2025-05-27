@@ -117,7 +117,7 @@ public class UserRoadmapFindTest {
         .thenReturn(List.of(roadmap1, roadmap2, roadmap3));
 
     // when
-    RoadmapFindResDto result = roadmapService.findUserRoadmap(userId);
+    RoadmapFindResDto result = roadmapService.findUserRoadmap(roadmapManagement);
 
     // then
     assertEquals("Roadmap", result.roadmapName());
@@ -126,40 +126,5 @@ public class UserRoadmapFindTest {
     assertEquals("HTML", result.subjects().get(0).subjectName());
     assertEquals("CSS", result.subjects().get(1).subjectName());
     assertEquals("JavaScript", result.subjects().get(2).subjectName());
-  }
-
-  @Test
-  void findUserRoadmap_shouldThrowException_whenRoadmapManagementNotFound() {
-    // given
-    long userId = 2L;
-    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
-
-    // when & then
-    CustomException ex =
-        assertThrows(CustomException.class, () -> roadmapService.findUserRoadmap(userId));
-
-    assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
-  }
-
-  @Test
-  void findUserRoadmap_shouldThrowException_whenUserRoadmapListEmpty() {
-    // given
-    Long userId = 2L;
-    RoadmapManagement roadmapManagement =
-        RoadmapManagement.builder()
-            .roadmapManagementId(100L)
-            .userId(userId)
-            .roadmapNm("Empty Roadmap")
-            .build();
-
-    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
-    when(roadmapRepository.findByRoadmapManagement_RoadmapManagementId(100L))
-        .thenReturn(Collections.emptyList());
-
-    // when & then
-    CustomException ex =
-        assertThrows(CustomException.class, () -> roadmapService.findUserRoadmap(userId));
-
-    assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
   }
 }

@@ -28,7 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           "/api/user/signin",
           "/api/user/signup",
           "/error",
-          "/api/user/check-email");
+          "/api/user/check-email",
+          "api/roadmap");
 
   public JwtAuthenticationFilter(
       JwtUtils jwtUtils, CustomUserDetailService customUserDetailService) {
