@@ -61,14 +61,14 @@ public class SolutionService {
     for (ExamAnswerDto answer : answers) {
       Exam exam = examRepository.findByExamId(answer.examId());
       Subject subject = exam.getSubject();
-      if(subject==null){
+      if (subject == null) {
         throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
       }
 
       int nth;
       if (isPre) {
-        int preCount= userExamAnswerRepository.countByUserAndSubjectAndIsPre(user,subject,true);
-        if(preCount>0){
+        int preCount = userExamAnswerRepository.countByUserAndSubjectAndIsPre(user, subject, true);
+        if (preCount > 0) {
           throw new CustomException(StatusCode.ALREADY_EXIST_PRE_EXAM);
         }
         nth = 1;
