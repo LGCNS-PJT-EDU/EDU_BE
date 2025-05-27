@@ -5,7 +5,6 @@ import com.education.takeit.diagnosis.dto.GroupedDiagnosisResponse;
 import com.education.takeit.diagnosis.service.DiagnosisService;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
-import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.service.RoadmapService;
@@ -33,7 +32,8 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단 문제 리스트 요청", description = "진단 문제 GET API")
-  public ResponseEntity<Message> findAllDiagnosis(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<Message> findAllDiagnosis(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis(userId);
     return ResponseEntity.ok(new Message(StatusCode.OK, result));

@@ -536,33 +536,32 @@ public class RoadmapService {
         .orElse(null);
   }
 
-  public RoadmapFindResDto findRoadmap(Long userId, String uuid){
+  public RoadmapFindResDto findRoadmap(Long userId, String uuid) {
     RoadmapManagement roadmapManagement = null;
-    if(userId != null){
+    if (userId != null) {
       roadmapManagement = roadmapManagementRepository.findByUserId(userId);
 
-      if(roadmapManagement != null){
+      if (roadmapManagement != null) {
         return findUserRoadmap(roadmapManagement);
-      }
-      else if(!uuid.equals("takeit")){
+      } else if (!uuid.equals("takeit")) {
         RoadmapSaveResDto roadmapSaveResDto = saveGuestRoadmap(uuid, userId);
-        return new RoadmapFindResDto(roadmapSaveResDto.subjects(), roadmapSaveResDto.uuid(), roadmapSaveResDto.userLocationSubjectId());
-      }
-      else{
+        return new RoadmapFindResDto(
+            roadmapSaveResDto.subjects(),
+            roadmapSaveResDto.uuid(),
+            roadmapSaveResDto.userLocationSubjectId());
+      } else {
         throw new CustomException(StatusCode.DIAGNOSIS_RESPONSE_NOT_FOUND);
       }
-    }
-    else{
-      if(!uuid.equals("takeit")){
+    } else {
+      if (!uuid.equals("takeit")) {
         return findGuestRoadmap(uuid);
-      }
-      else{
+      } else {
         throw new CustomException(StatusCode.DIAGNOSIS_RESPONSE_NOT_FOUND);
       }
     }
   }
 
-  public RoadmapFindResDto findGuestRoadmap(String uuid){
+  public RoadmapFindResDto findGuestRoadmap(String uuid) {
     String redisSubjects = redisTemplate.opsForValue().get("guest:" + uuid + ":subjects");
 
     if (redisSubjects == null) {
@@ -576,15 +575,15 @@ public class RoadmapService {
     List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
     List<SubjectDto> subjectDtos =
-            subjects.stream()
-                    .map(
-                            subject ->
-                                    new SubjectDto(
-                                            subject.getSubId(), subject.getSubNm(), subject.getBaseSubOrder()))
-                    .toList();
+        subjects.stream()
+            .map(
+                subject ->
+                    new SubjectDto(
+                        subject.getSubId(), subject.getSubNm(), subject.getBaseSubOrder()))
+            .toList();
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
-    return new RoadmapFindResDto(subjectDtos, uuid +"'s roadmap", userLocationSubjectId);
+    return new RoadmapFindResDto(subjectDtos, uuid + "'s roadmap", userLocationSubjectId);
   }
 }

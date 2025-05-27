@@ -97,8 +97,8 @@ public class RoadmapController {
 
   @GetMapping
   @Operation(summary = "로드맵 제공", description = "게스트, 사용자의 로드맵 정보 반환")
-  public ResponseEntity<Message> findRoadmap(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                 @RequestParam("uuid") String uuid) {
+  public ResponseEntity<Message> findRoadmap(
+      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("uuid") String uuid) {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     RoadmapFindResDto roadmapFindResDto = roadmapService.findRoadmap(userId, uuid);
     return ResponseEntity.ok(new Message(StatusCode.OK, roadmapFindResDto));

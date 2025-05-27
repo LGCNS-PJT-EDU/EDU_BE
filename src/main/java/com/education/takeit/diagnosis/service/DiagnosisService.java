@@ -30,7 +30,7 @@ public class DiagnosisService {
    */
   public GroupedDiagnosisResponse findAllDiagnosis(Long userId) {
     boolean roadmapExist = false;
-    if(userId != null) {
+    if (userId != null) {
       roadmapExist = roadmapManagementRepository.existsByUserId(userId);
     }
 
@@ -65,7 +65,8 @@ public class DiagnosisService {
    * @param list
    * @return 진단 질문 그룹핑 리스트
    */
-  public GroupedDiagnosisResponse groupDiagnosisByType(List<DiagnosisResponse> list, boolean roadmapExist) {
+  public GroupedDiagnosisResponse groupDiagnosisByType(
+      List<DiagnosisResponse> list, boolean roadmapExist) {
 
     Map<String, List<DiagnosisResponse>> grouped =
         list.stream().collect(Collectors.groupingBy(DiagnosisResponse::questionType));
@@ -74,7 +75,7 @@ public class DiagnosisService {
         grouped.getOrDefault("COMMON", List.of()),
         grouped.getOrDefault("BE", List.of()),
         grouped.getOrDefault("FE", List.of()),
-            roadmapExist);
+        roadmapExist);
   }
 
   /**
