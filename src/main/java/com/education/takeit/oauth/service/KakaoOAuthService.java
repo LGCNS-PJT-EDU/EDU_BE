@@ -10,14 +10,16 @@ import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
+import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class KakaoOAuthService implements OAuthService {
    * @return
    */
   @Override
-  public String login(OAuthLoginRequest request) {
+  public UserSigninResDto login(OAuthLoginRequest request) {
     /* 토큰 발급을 위한 RestClient 요청*/
     OAuthTokenResponse token = kakaoClient.getToken(request.code());
 

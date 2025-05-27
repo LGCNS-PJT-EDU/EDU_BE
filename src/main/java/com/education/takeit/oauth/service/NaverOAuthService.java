@@ -7,12 +7,14 @@ import com.education.takeit.oauth.client.NaverOauthClient;
 import com.education.takeit.oauth.dto.NaverUserResponse;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
+import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class NaverOAuthService implements OAuthService {
   private final JwtUtils jwtUtils;
 
   @Override
-  public String login(OAuthLoginRequest request) {
+  public UserSigninResDto login(OAuthLoginRequest request) {
     if (request.state() == null || request.state().isBlank()) {
       throw new CustomException(StatusCode.MISSING_NAVER_STATE);
     }

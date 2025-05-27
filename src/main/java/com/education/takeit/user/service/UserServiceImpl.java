@@ -3,8 +3,9 @@ package com.education.takeit.user.service;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.user.dto.ReqSigninDto;
-import com.education.takeit.user.dto.ReqSignupDto;
+import com.education.takeit.user.dto.UserSigninReqDto;
+import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.dto.UserSignupReqDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
@@ -25,16 +26,16 @@ public class UserServiceImpl implements UserService {
   private final RedisTemplate<String, String> redisTemplate;
 
   @Override
-  public void signUp(ReqSignupDto reqSignupDto) {
-    if (userRepository.existsByEmailAndLoginType(reqSignupDto.email(), LoginType.LOCAL)) {
+  public void signUp(UserSignupReqDto userSignupReqDto) {
+    if (userRepository.existsByEmailAndLoginType(userSignupReqDto.email(), LoginType.LOCAL)) {
       throw new CustomException(StatusCode.ALREADY_EXIST_EMAIL);
     }
 
     User user =
         User.builder()
-            .email(reqSignupDto.email())
-            .nickname(reqSignupDto.nickname())
-            .password(passwordEncoder.encode(reqSignupDto.password()))
+            .email(userSignupReqDto.email())
+            .nickname(userSignupReqDto.nickname())
+            .password(passwordEncoder.encode(userSignupReqDto.password()))
             .loginType(LoginType.LOCAL)
             .build();
 
@@ -42,13 +43,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public String signIn(ReqSigninDto reqSigninDto) {
+  public UserSigninResDto signIn(UserSigninReqDto userSigninReqDto) {
     User user =
         userRepository
-            .findByEmailAndLoginType(reqSigninDto.email(), LoginType.LOCAL)
+            .findByEmailAndLoginType(userSigninReqDto.email(), LoginType.LOCAL)
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
-    if (!passwordEncoder.matches(reqSigninDto.password(), user.getPassword())) {
+    if (!passwordEncoder.matches(userSigninReqDto.password(), user.getPassword())) {
       throw new CustomException(StatusCode.NOT_EXIST_USER);
     }
     return jwtUtils.generateTokens(user.getUserId());
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean validateRefreshToken(Long userId) {
-    return jwtUtils.validateRefreshToken(userId);
+  public boolean validateRefreshToken(Long userId, String refreshToken) {
+    return jwtUtils.validateRefreshToken(userId, refreshToken);
   }
 }

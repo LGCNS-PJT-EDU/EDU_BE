@@ -1,21 +1,23 @@
 package com.education.takeit.oauth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.NaverOauthClient;
 import com.education.takeit.oauth.dto.NaverUserResponse;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
+import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 public class NaverOAuthServiceTest {
   private NaverOauthClient naverOauthClient;
@@ -40,6 +42,7 @@ public class NaverOAuthServiceTest {
     OAuthTokenResponse tokenResponse =
         OAuthTokenResponse.builder()
             .accessToken("mock-access-token")
+            .refreshToken("mock-refresh-token")
             .tokenType("mock-token-type")
             .build();
 
@@ -63,12 +66,13 @@ public class NaverOAuthServiceTest {
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn("mock-access-token");
+    when(jwtUtils.generateTokens(mockUser.getUserId())).thenReturn(new UserSigninResDto("mock-access-token", "mock-refresh-token"));
 
-    String tokens = naverOAuthService.login(loginRequest);
+    UserSigninResDto tokens = naverOAuthService.login(loginRequest);
 
     // then
-    assertThat(tokens).isEqualTo("mock-access-token");
+    assertThat(tokens.accessToken()).isEqualTo("mock-access-token");
+    assertThat(tokens.refreshToken()).isEqualTo("mock-refresh-token");
 
     // 메서드 호출 검증
     verify(naverOauthClient).getToken("mock-code", "mock-state");

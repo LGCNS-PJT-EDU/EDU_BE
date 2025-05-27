@@ -1,8 +1,5 @@
 package com.education.takeit.oauth.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.education.takeit.global.dto.StatusCode;
@@ -11,18 +8,23 @@ import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.KakaoOauthClient;
 import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
+import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Optional;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class KakaoOAuthServiceTest {
 
@@ -75,6 +77,7 @@ class KakaoOAuthServiceTest {
     OAuthTokenResponse tokenResponse =
         OAuthTokenResponse.builder()
             .accessToken("mock-access-token")
+            .refreshToken("mock-refresh-token")
             .tokenType("Bearer")
             .idToken(idToken)
             .build();
@@ -90,15 +93,16 @@ class KakaoOAuthServiceTest {
         User.builder().email(email).nickname(nickname).loginType(LoginType.KAKAO).build();
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn("new-mock-access-token");
+    when(jwtUtils.generateTokens(savedUser.getUserId())).thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
 
     // when
-    String tokens = kakaoOAuthService.login(loginRequest);
+    UserSigninResDto tokens = kakaoOAuthService.login(loginRequest);
 
     // then
     SoftAssertions softly = new SoftAssertions();
 
-    softly.assertThat(tokens).isEqualTo("new-mock-access-token");
+    softly.assertThat(tokens.accessToken()).isEqualTo("new-mock-access-token");
+    softly.assertThat(tokens.refreshToken()).isEqualTo("new-mock-refresh-token");
     softly.assertAll();
   }
 
