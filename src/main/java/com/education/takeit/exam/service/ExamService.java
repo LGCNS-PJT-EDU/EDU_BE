@@ -259,19 +259,22 @@ public class ExamService {
         subjectRepository
             .findById(subjectId)
             .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+
     for (ExamAnswerDto answer : answers) {
       Exam exam =
           examRepository
               .findById(answer.examId())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
-      UserExamAnswer entity = new UserExamAnswer();
-      entity.setUser(user);
-      entity.setSubject(subject);
-      entity.setExam(exam);
-      entity.setUserAnswer(answer.userAnswer());
-      entity.setPre(isPre);
-      entity.setNth(nth);
+      UserExamAnswer entity =
+          UserExamAnswer.builder()
+              .user(user)
+              .subject(subject)
+              .exam(exam)
+              .userAnswer(answer.userAnswer())
+              .isPre(isPre)
+              .nth(nth)
+              .build();
 
       userExamAnswerRepository.save(entity);
     }
