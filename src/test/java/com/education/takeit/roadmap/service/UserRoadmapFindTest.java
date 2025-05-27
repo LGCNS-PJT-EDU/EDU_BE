@@ -108,7 +108,6 @@ public class UserRoadmapFindTest {
             .level(0)
             .build();
 
-    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
     when(roadmapRepository.findByRoadmapManagement_RoadmapManagementId(100L))
         .thenReturn(List.of(roadmap1, roadmap2, roadmap3));
 
