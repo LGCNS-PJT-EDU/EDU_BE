@@ -4214,3 +4214,23 @@ CREATE TABLE feedback (
       CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
       CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
+
+# 면접 질문 테이블 생성
+CREATE TABLE interview (
+    interview_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    interview_content TEXT NOT NULL,
+    interview_answer TEXT NOT NULL,
+    sub_id BIGINT NOT NULL,
+    CONSTRAINT fk_interview_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
+);
+
+# 사용자 면접 답변 테이블 생성
+CREATE TABLE user_interview_reply(
+    reply_id BIGINT AUTO_INCREMENT PRIMARY KEY ,
+    user_reply TEXT NOT NULL,
+    interview_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_user_reply_interview FOREIGN KEY (interview_id) REFERENCES interview(interview_id),
+    CONSTRAINT fk_interview_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
