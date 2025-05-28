@@ -9,7 +9,7 @@ public class Interview {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long interviewId;
 
-  @Column(name = "interview_id", nullable = false)
+  @Column(name = "interview_content", nullable = false)
   private String interviewContent;
 
   @Column(name = "interview_answer", nullable = false)
