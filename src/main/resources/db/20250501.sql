@@ -8,8 +8,10 @@ DROP TABLE IF EXISTS total_content;
 DROP TABLE IF EXISTS chapter;
 DROP TABLE IF EXISTS roadmap;
 DROP TABLE IF EXISTS roadmap_management;
+DROP TABLE IF EXISTS feedback;
 DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS track;
+DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
 
 -- users 테이블 생성
