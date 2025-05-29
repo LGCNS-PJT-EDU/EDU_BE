@@ -29,7 +29,7 @@ CREATE TABLE diagnosis (
     diagnosis_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
     question_type VARCHAR(50) NOT NULL,
-    created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_dt DATETIME(6) NOT NULL
 );
 
 -- choice 테이블 생성
@@ -38,7 +38,7 @@ CREATE TABLE choice (
     choice_num INT NOT NULL,
     choice TEXT NOT NULL,
     value VARCHAR(255) NOT NULL,
-    created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_dt DATETIME(6) NOT NULL,
     diagnosis_id BIGINT NOT NULL,
     CONSTRAINT fk_choice_diagnosis FOREIGN KEY (diagnosis_id) REFERENCES diagnosis(diagnosis_id)
 );
@@ -4828,3 +4828,14 @@ INSERT INTO interview (interview_content, interview_answer, sub_id) values
     ('Flask 애플리케이션의 배포 시 Docker Compose를 사용하는 이유는?', 'Docker Compose를 사용하면 Flask 앱, Nginx, Redis, PostgreSQL 등 다양한 서비스를 하나의 `docker-compose.yml` 파일로 정의하고 동시에 실행할 수 있어 배포 및 로컬 개발 환경 구성이 간편해집니다. 의존성 컨테이너를 함께 관리할 수 있으며, 환경 변수 설정, 볼륨 마운트, 네트워크 설정 등을 쉽게 구성할 수 있는 장점이 있습니다.', 59),
     ('운영 중 Flask 서버가 갑자기 다운되는 현상을 방지하기 위한 방안은?', '서버 다운을 방지하기 위해 Gunicorn의 워커 자동 재시작, Nginx의 타임아웃 및 재시도 설정, 프로세스 매니저(supervisord, systemd) 사용을 통해 장애 복구를 자동화할 수 있습니다. 또한 애플리케이션 레벨에서 예외 처리를 철저히 하고, 외부 API 호출이나 DB 연결 시 타임아웃을 명확히 설정하며, 메모리 누수 및 무한 루프 등 치명적인 오류를 사전에 방지하도록 설계하는 것이 중요합니다.', 59);
 
+-- feedback_fail_log 테이블 생성
+CREATE TABLE feedback_fail_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    subject_id BIGINT NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    nth INT NOT NULL,
+    error_code VARCHAR(255) NOT NULL,
+    error_message VARCHAR(1000) NOT NULL,
+    created_dt DATETIME(6) NOT NULL
+);
