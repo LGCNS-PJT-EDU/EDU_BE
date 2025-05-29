@@ -16,10 +16,10 @@ public class Interview {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long interviewId;
 
-  @Column(name = "interview_content", nullable = false,columnDefinition = "TEXT")
+  @Column(name = "interview_content", nullable = false, columnDefinition = "TEXT")
   private String interviewContent;
 
-  @Column(name = "interview_answer", nullable = false,columnDefinition = "TEXT")
+  @Column(name = "interview_answer", nullable = false, columnDefinition = "TEXT")
   private String interviewAnswer;
 
   @ManyToOne(fetch = FetchType.LAZY)
