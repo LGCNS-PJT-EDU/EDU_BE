@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final List<String> EXCLUDE_PATHS =
       List.of(
-          "/api/auth/**",
+          "/api/oauth/**",
           "/api/user/signin",
           "/api/user/signup",
           "/api/user/check-email",
