@@ -6,8 +6,6 @@ import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -18,6 +16,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,6 +83,31 @@ public class AIClient {
         .toBodilessEntity();
   }
 
+  private <T> List<T> postForList(String uri, Class<T[]> responseType, Object... uriVariables) {
+    log.info("FastAPI 요청 시도: {}", uri);
+    T[] response =
+            restClient
+                    .post()
+                    .uri(baseUrl + uri, uriVariables)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.is4xxClientError(),
+                            (req, res) -> {
+                              log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
+                              throw new BadRequestException("잘못된 요청입니다.");
+                            })
+                    .onStatus(
+                            status -> status.is5xxServerError(),
+                            (req, res) -> {
+                              log.error("FastAPI POST 실패: 상태코드={}", res.getStatusCode());
+                              throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
+                            })
+                    .body(responseType);
+
+    return Arrays.asList(response);
+  }
+
   /** 사용자 피드백 조회 */
   public List<FeedbackResponseDto> getFeedback(Long userId) {
     return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
@@ -115,10 +141,10 @@ public class AIClient {
 
   /** 추천 컨텐츠 요청 */
   public List<UserContentResDto> getRecommendation(Long userId, Long subjectId) {
-    return getForList(
-        "/fastapi요청경로?userId={userId}&subjectId={subjectId}",
+    return postForList(
+        "/api/recommendation?user_id={userId}&subject_id={subjectId}",
         UserContentResDto[].class,
         userId,
         subjectId);
+    }
   }
-}

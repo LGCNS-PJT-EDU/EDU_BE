@@ -12,10 +12,11 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,8 @@ public class RecommendService {
                   tc.getContentPlatform(),
                   tc.getContentDuration().name(),
                   tc.getContentPrice().name(),
-                  uc.getIsAiRecommended());
+                  uc.getIsAiRecommended(),
+                  uc.getAiRecommendReason());
             })
         .collect(Collectors.toList());
   }
@@ -68,13 +70,13 @@ public class RecommendService {
                 dto -> {
                   TotalContent totalContent =
                       totalContentRepository
-                          .findById(dto.totalContentId())
+                          .findById(dto.contentId())
                           .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
                   Subject subject =
                       subjectRepository
                           .findById(dto.subjectId())
                           .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(null, totalContent, subject, user, dto.isAiRecommended());
+                  return new UserContent(null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
                 })
             .toList();
 

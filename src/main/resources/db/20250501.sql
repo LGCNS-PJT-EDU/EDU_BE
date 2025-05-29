@@ -667,6 +667,7 @@ CREATE TABLE user_content(
     sub_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     is_ai_recommended boolean NOT NULL,
+    ai_recommend_reason TEXT NOT NULL,
     CONSTRAINT fk_user_content_total_content FOREIGN KEY (total_content_id) REFERENCES total_content(total_content_id),
     CONSTRAINT fk_user_content_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
     CONSTRAINT fk_user_content_users FOREIGN KEY (user_id) REFERENCES users(user_id)
