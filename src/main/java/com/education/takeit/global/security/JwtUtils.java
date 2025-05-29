@@ -4,12 +4,13 @@ import com.education.takeit.user.dto.UserSigninResDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import java.security.Key;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor

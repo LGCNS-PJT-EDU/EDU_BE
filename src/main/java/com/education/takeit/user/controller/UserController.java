@@ -10,14 +10,19 @@ import com.education.takeit.user.dto.UserSignupReqDto;
 import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -82,7 +87,19 @@ public class UserController {
 
   @PostMapping("/refresh")
   @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
-  public ResponseEntity<Message> refreshAccessToken(@RequestParam String refreshToken) {
+  public ResponseEntity<Message> refreshAccessToken(HttpServletRequest request) {
+    // 1. 쿠키에서 refreshToken 추출
+    String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+            .filter(cookie -> "refreshToken".equals(cookie.getName()))
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElse(null);
+
+    // 2. refreshToken 유무 확인
+    if (refreshToken == null) {
+      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+    }
+
     Long userId = jwtUtils.getUserId(refreshToken);
     if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
       return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
@@ -90,6 +107,8 @@ public class UserController {
     String newAccessToken = jwtUtils.generateAccessToken(userId);
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + newAccessToken);
-    return ResponseEntity.ok(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
+    return ResponseEntity.ok()
+            .headers(headers)
+            .body(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
   }
 }
