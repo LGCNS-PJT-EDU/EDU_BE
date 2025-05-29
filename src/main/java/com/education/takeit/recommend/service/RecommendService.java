@@ -12,11 +12,10 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +75,8 @@ public class RecommendService {
                       subjectRepository
                           .findById(dto.subjectId())
                           .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
+                  return new UserContent(
+                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
                 })
             .toList();
 

@@ -7,6 +7,7 @@ import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.service.RecommendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,15 +33,13 @@ public class RecommendController {
     return ResponseEntity.ok(new Message(StatusCode.OK, contentList));
   }
 
-    @GetMapping("/contents")
-    @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
-    public ResponseEntity<Message> getrecommendation(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam Long subjectId
-    ){
-      Long userId = userDetails.getUserId();
-      List<UserContentResDto> recommendationList = recommendService.fetchAndSaveRecommendation(userId, subjectId);
-      return ResponseEntity.ok(new Message(StatusCode.OK, recommendationList));
-    }
-
+  @GetMapping("/contents")
+  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
+  public ResponseEntity<Message> getrecommendation(
+      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
+    Long userId = userDetails.getUserId();
+    List<UserContentResDto> recommendationList =
+        recommendService.fetchAndSaveRecommendation(userId, subjectId);
+    return ResponseEntity.ok(new Message(StatusCode.OK, recommendationList));
+  }
 }
