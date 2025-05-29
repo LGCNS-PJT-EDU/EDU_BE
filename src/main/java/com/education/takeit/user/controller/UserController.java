@@ -11,14 +11,13 @@ import com.education.takeit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/user")
@@ -44,17 +43,20 @@ public class UserController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-    ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", userSigninResDto.refreshToken())
+    ResponseCookie refreshTokenCookie =
+        ResponseCookie.from("refreshToken", userSigninResDto.refreshToken())
             .httpOnly(true) // JS에서 접근 불가능하게
-            .secure(false)   // HTTPS 통신에서만 전송
-            .path("/")      // 모든 경로에 대해 쿠키 유효
+            .secure(false) // HTTPS 통신에서만 전송
+            .path("/") // 모든 경로에 대해 쿠키 유효
             .maxAge(Duration.ofDays(14)) // 만료 시간 설정
             .sameSite("Lax") // 또는 "Lax"/"None"
             .build();
 
     headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
-    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   @DeleteMapping("/signout")
