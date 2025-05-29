@@ -9,13 +9,18 @@ import com.education.takeit.oauth.service.NaverOAuthService;
 import com.education.takeit.user.dto.UserSigninResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/oauth")
 @RequiredArgsConstructor
 @Tag(name = "소셜 로그인", description = "OAuth 소셜 로그인 API")
 public class OAuthController {
@@ -38,7 +43,20 @@ public class OAuthController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
+    ResponseCookie refreshTokenCookie =
+        ResponseCookie.from("refreshToken", userSigninResDto.refreshToken())
+            .httpOnly(true) // JS에서 접근 불가능하게
+            .secure(false) // HTTPS 통신에서만 전송
+            .path("/") // 모든 경로에 대해 쿠키 유효
+            .maxAge(Duration.ofDays(14)) // 만료 시간 설정
+            .sameSite("Lax") // 또는 "Lax"/"None"
+            .build();
+
+    headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   /**
@@ -55,9 +73,20 @@ public class OAuthController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-    Message message = new Message(StatusCode.OK);
+    ResponseCookie refreshTokenCookie =
+        ResponseCookie.from("refreshToken", userSigninResDto.refreshToken())
+            .httpOnly(true) // JS에서 접근 불가능하게
+            .secure(false) // HTTPS 통신에서만 전송
+            .path("/") // 모든 경로에 대해 쿠키 유효
+            .maxAge(Duration.ofDays(14)) // 만료 시간 설정
+            .sameSite("Lax") // 또는 "Lax"/"None"
+            .build();
 
-    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
+    headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   /**
@@ -72,8 +101,19 @@ public class OAuthController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + userSigninResDto.accessToken());
 
-    Message message = new Message(StatusCode.OK);
+    ResponseCookie refreshTokenCookie =
+        ResponseCookie.from("refreshToken", userSigninResDto.refreshToken())
+            .httpOnly(true) // JS에서 접근 불가능하게
+            .secure(false) // HTTPS 통신에서만 전송
+            .path("/") // 모든 경로에 대해 쿠키 유효
+            .maxAge(Duration.ofDays(14)) // 만료 시간 설정
+            .sameSite("Lax") // 또는 "Lax"/"None"
+            .build();
 
-    return ResponseEntity.ok().headers(headers).body(new Message(StatusCode.OK, userSigninResDto));
+    headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 }
