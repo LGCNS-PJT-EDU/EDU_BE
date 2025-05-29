@@ -15,10 +15,9 @@ import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +35,13 @@ public class FeedbackService {
 
   @Transactional
   public void saveFeedback(FeedbackResultDto feedbackResultDto) {
-    User user = userRepository.findByUserId(feedbackResultDto.userId())
+    User user =
+        userRepository
+            .findByUserId(feedbackResultDto.userId())
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-    Subject subject = subjectRepository.findBySubId(feedbackResultDto.subjectId())
+    Subject subject =
+        subjectRepository
+            .findBySubId(feedbackResultDto.subjectId())
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_SUBJECT));
 
     FeedbackDto feedbackDto = feedbackResultDto.feedback().feedback();
@@ -46,15 +49,15 @@ public class FeedbackService {
     String strengthJson = toJson(feedbackDto.strength());
     String weaknessJson = toJson(feedbackDto.weakness());
 
-    Feedback feedback = new Feedback(
+    Feedback feedback =
+        new Feedback(
             feedbackDto.finalComment(),
             feedbackResultDto.nth(),
             "pre".equalsIgnoreCase(feedbackResultDto.type()),
             user,
             subject,
             strengthJson,
-            weaknessJson
-    );
+            weaknessJson);
 
     feedbackRepository.save(feedback);
   }

@@ -36,7 +36,14 @@ public class Feedback {
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
   private String weakness;
 
-  public Feedback(String feedbackContent, int nth, boolean isPre, User user, Subject subject, String strenth, String weakness) {
+  public Feedback(
+      String feedbackContent,
+      int nth,
+      boolean isPre,
+      User user,
+      Subject subject,
+      String strenth,
+      String weakness) {
     this.feedbackContent = feedbackContent;
     this.nth = nth;
     this.isPre = isPre;
