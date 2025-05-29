@@ -36,3 +36,6 @@ client:
 
 slack:
   webhook-url: ${WEBHOOK_URL}
+
+openai:
+  secret-key: ${OPEN_AI_KEY}
