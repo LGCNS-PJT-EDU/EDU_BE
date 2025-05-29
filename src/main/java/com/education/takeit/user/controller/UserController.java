@@ -13,16 +13,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -89,7 +88,8 @@ public class UserController {
   @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
   public ResponseEntity<Message> refreshAccessToken(HttpServletRequest request) {
     // 1. 쿠키에서 refreshToken 추출
-    String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+    String refreshToken =
+        Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
             .filter(cookie -> "refreshToken".equals(cookie.getName()))
             .map(Cookie::getValue)
             .findFirst()
@@ -108,7 +108,7 @@ public class UserController {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + newAccessToken);
     return ResponseEntity.ok()
-            .headers(headers)
-            .body(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
+        .headers(headers)
+        .body(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
   }
 }
