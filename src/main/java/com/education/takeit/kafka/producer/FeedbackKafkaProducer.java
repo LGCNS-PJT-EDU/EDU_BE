@@ -2,14 +2,13 @@ package com.education.takeit.kafka.producer;
 
 import com.education.takeit.kafka.dto.FeedbackFailDto;
 import com.education.takeit.kafka.dto.FeedbackRequestDto;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -37,9 +36,9 @@ public class FeedbackKafkaProducer {
 
   private void sendWithRetry(FeedbackRequestDto dto, int attempt) {
     try {
-        if (true) {
-            throw new RuntimeException("테스트 예외 발생");
-        }
+      if (true) {
+        throw new RuntimeException("테스트 예외 발생");
+      }
       feedbackKafkaTemplate
           .send(FEEDBACK_TOPIC, dto.userId().toString(), dto)
           .toCompletableFuture()

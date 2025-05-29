@@ -3,13 +3,12 @@ package com.education.takeit.kafka.consumer;
 import com.education.takeit.kafka.dto.FeedbackFailDto;
 import com.education.takeit.kafka.service.FeedbackFailLogService;
 import com.education.takeit.kafka.slack.SlackNotifier;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component
