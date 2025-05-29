@@ -3,7 +3,6 @@ package com.education.takeit.global.config;
 import com.education.takeit.global.security.JwtAuthenticationFilter;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.global.security.service.CustomUserDetailService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +63,7 @@ public class SecurityConfig {
                         "/api/user/signup",
                         "/h2-console/**", // H2 콘솔 허용
                         "/oauth2/**",
-                        "/api/user/oauth/naver", // OAuth2 경로 허용
+                        "/api/oauth/**", // OAuth2 경로 허용
                         "/login/**", // 로그인 경로 허용
                         "/api/user/check-email", // 회원가입시 이메일 중복확인
                         "/api/diagnosis", // 진단 경로
