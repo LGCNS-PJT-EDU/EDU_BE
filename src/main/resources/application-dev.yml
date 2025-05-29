@@ -61,3 +61,7 @@ fastapi:
 
 client:
   base-url: ${CLIENT_BASE_URL}
+
+openai:
+  secret-key: ${OPEN_AI_KEY}
+
