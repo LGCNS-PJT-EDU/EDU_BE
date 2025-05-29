@@ -32,6 +32,8 @@ public class Roadmap {
   @Column(name = "is_complete", nullable = false)
   private boolean isComplete;
 
+  // 사후평가 완료 여부
+
   @Column(name = "pre_submit_count", nullable = false)
   private int preSubmitCount;
 
