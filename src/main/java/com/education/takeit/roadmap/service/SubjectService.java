@@ -2,6 +2,8 @@ package com.education.takeit.roadmap.service;
 
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.recommend.dto.UserContentResDto;
+import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.dto.ChapterFindDto;
 import com.education.takeit.roadmap.dto.RecommendContentsFindDto;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
@@ -24,14 +26,8 @@ public class SubjectService {
   private final ChapterRepository chapterRepository;
   private final RoadmapRepository roadmapRepository;
   private final RoadmapManagementRepository roadmapManagementRepository;
+  private final RecommendService recommendService;
 
-  public List<RecommendContentsFindDto> findRecommendContents() {
-    RecommendContentsFindDto dummy1 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url1", "동영상");
-    RecommendContentsFindDto dummy2 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url2", "동영상");
-    RecommendContentsFindDto dummy3 = new RecommendContentsFindDto("추천 컨텐츠 제공 예정", "url3", "책");
-
-    return Arrays.asList(dummy1, dummy2, dummy3);
-  }
 
   public SubjectFindResDto findUserSubject(Long userId, Long subjectId) {
     if (userId == null) {
@@ -57,8 +53,8 @@ public class SubjectService {
     Roadmap userRoadmap =
         roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
 
-    // 추천 컨텐츠 받아오기(임시)
-    List<RecommendContentsFindDto> recommendContents = findRecommendContents();
+    // 추천 컨텐츠 받아오기
+    List<UserContentResDto> recommendContents =recommendService.getUserContent(userId);
 
     // DTO화
     return new SubjectFindResDto(
