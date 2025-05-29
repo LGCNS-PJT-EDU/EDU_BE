@@ -16,7 +16,7 @@ public class UserInterviewReply {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long replyId;
 
-  @Column(name = "user_reply", nullable = false,columnDefinition = "TEXT")
+  @Column(name = "user_reply", nullable = false, columnDefinition = "TEXT")
   private String userReply;
 
   @ManyToOne(fetch = FetchType.LAZY)
