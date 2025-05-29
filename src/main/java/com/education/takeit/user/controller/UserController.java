@@ -88,6 +88,8 @@ public class UserController {
       return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
     }
     String newAccessToken = jwtUtils.generateAccessToken(userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, newAccessToken));
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "Bearer " + newAccessToken);
+    return ResponseEntity.ok(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
   }
 }
