@@ -4214,6 +4214,8 @@ CREATE TABLE feedback (
       is_pre BOOLEAN NOT NULL,
       user_id BIGINT NOT NULL,
       sub_id BIGINT NOT NULL,
+      strenth LONGTEXT NOT NULL,
+      weakness LONGTEXT NOT NULL,
       CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
       CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
