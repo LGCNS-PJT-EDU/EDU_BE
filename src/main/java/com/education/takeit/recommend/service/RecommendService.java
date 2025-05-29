@@ -12,10 +12,11 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class RecommendService {
   private final AIClient aiClient;
 
   // 마이페이지에서 사용자 추천 컨텐츠 조회
-  public List<UserContentResDto> getUserContent(long userId) {
+  public List<UserContentResDto> getUserContent(Long userId) {
     List<UserContent> userContentsList = userContentRepository.findByUserIdWithContent(userId);
 
     return userContentsList.stream()
