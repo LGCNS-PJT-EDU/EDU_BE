@@ -38,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           "/swagger-ui.html",
           "/v3/api-docs/**",
           "/swagger-resources/**",
-          "/api/roadmap",
           "/api/diagnosis");
 
   public JwtAuthenticationFilter(

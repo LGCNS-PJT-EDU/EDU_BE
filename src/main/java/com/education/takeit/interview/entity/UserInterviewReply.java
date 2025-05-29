@@ -2,14 +2,21 @@ package com.education.takeit.interview.entity;
 
 import com.education.takeit.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "user_interview_reply")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class UserInterviewReply {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long replyId;
 
-  @Column(name = "user_reply", nullable = false)
+  @Column(name = "user_reply", nullable = false,columnDefinition = "TEXT")
   private String userReply;
 
   @ManyToOne(fetch = FetchType.LAZY)
