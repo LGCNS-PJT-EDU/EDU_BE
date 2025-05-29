@@ -5,7 +5,6 @@ import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.dto.ChapterFindDto;
-import com.education.takeit.roadmap.dto.RecommendContentsFindDto;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.RoadmapManagement;
@@ -14,7 +13,6 @@ import com.education.takeit.roadmap.repository.ChapterRepository;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ public class SubjectService {
   private final RoadmapRepository roadmapRepository;
   private final RoadmapManagementRepository roadmapManagementRepository;
   private final RecommendService recommendService;
-
 
   public SubjectFindResDto findUserSubject(Long userId, Long subjectId) {
     if (userId == null) {
@@ -54,7 +51,7 @@ public class SubjectService {
         roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
 
     // 추천 컨텐츠 받아오기
-    List<UserContentResDto> recommendContents =recommendService.getUserContent(userId);
+    List<UserContentResDto> recommendContents = recommendService.getUserContent(userId);
 
     // DTO화
     return new SubjectFindResDto(
