@@ -2,14 +2,7 @@ spring:
   application:
     name: takeit
   profiles:
-    active: local
-  kafka:
-    bootstrap-servers: ${KAFKA_BROKERS}
-    admin:
-      fail-fast: true
-      properties:
-        request.timeout.ms: 10000
-        default.api.timeout.ms: 10000
+    active: dev
 springdoc:
   api-docs:
     path: /api-docs

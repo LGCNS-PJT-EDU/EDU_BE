@@ -19,8 +19,20 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS}
+    admin:
+      fail-fast: true
+      properties:
+        request.timeout.ms: 10000
+        default.api.timeout.ms: 10000
+
+
 fastapi:
   base-url: ${FAST_API_URL}
 
 client:
   base-url: ${CLIENT_BASE_URL}
+
+slack:
+  webhook-url: ${WEBHOOK_URL}

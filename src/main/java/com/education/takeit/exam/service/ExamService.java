@@ -7,8 +7,8 @@ import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.FeedbackKafkaProducer;
-import com.education.takeit.kafka.dto.FeedbackEventDto;
+import com.education.takeit.kafka.dto.FeedbackRequestDto;
+import com.education.takeit.kafka.producer.FeedbackKafkaProducer;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
@@ -89,9 +89,10 @@ public class ExamService {
     roadmapRepository.save(roadmap);
 
     // 결과 저장 성공 직후
-    Long subjectId = examAnswerRes.subjectId();
+    Long subjectId = roadmap.getSubject().getSubId();
     String type = "pre";
-    FeedbackEventDto event = new FeedbackEventDto(userId, subjectId, type);
+    int nth = roadmap.getPreSubmitCount();
+    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
     feedbackKafkaProducer.publish(event);
 
     return ResponseEntity.noContent().build();
