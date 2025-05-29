@@ -109,27 +109,28 @@ public class AIClient {
     return Arrays.asList(response);
   }
 
-  private <T> T postForObject(String uri, Object body, Class<T> responseType, Object... uriVariables) {
+  private <T> T postForObject(
+      String uri, Object body, Class<T> responseType, Object... uriVariables) {
     log.info("FastAPI POST 요청 시도: {}", uri);
     return restClient
-            .post()
-            .uri(baseUrl + uri, uriVariables)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(body)
-            .retrieve()
-            .onStatus(
-                    status -> status.is4xxClientError(),
-                    (req, res) -> {
-                      log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                      throw new BadRequestException("잘못된 요청입니다.");
-                    })
-            .onStatus(
-                    status -> status.is5xxServerError(),
-                    (req, res) -> {
-                      log.error("FastAPI POST 실패: 상태코드={}", res.getStatusCode());
-                      throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
-                    })
-            .body(responseType);
+        .post()
+        .uri(baseUrl + uri, uriVariables)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(body)
+        .retrieve()
+        .onStatus(
+            status -> status.is4xxClientError(),
+            (req, res) -> {
+              log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
+              throw new BadRequestException("잘못된 요청입니다.");
+            })
+        .onStatus(
+            status -> status.is5xxServerError(),
+            (req, res) -> {
+              log.error("FastAPI POST 실패: 상태코드={}", res.getStatusCode());
+              throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
+            })
+        .body(responseType);
   }
 
   /** 사용자 피드백 조회 */
@@ -173,15 +174,16 @@ public class AIClient {
   }
 
   public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
-    //return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
+    // return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
 
     String userMessage = chatRequestDto.message();
 
-    String mockResponse = switch (userMessage) {
-      case "안녕" -> "안녕하세요! 무엇을 도와드릴까요?";
-      case "스프링 부트란?" -> "Spring Boot는 자바 기반 프레임워크입니다.";
-      default -> "죄송해요, 잘 이해하지 못했어요.";
-    };
+    String mockResponse =
+        switch (userMessage) {
+          case "안녕" -> "안녕하세요! 무엇을 도와드릴까요?";
+          case "스프링 부트란?" -> "Spring Boot는 자바 기반 프레임워크입니다.";
+          default -> "죄송해요, 잘 이해하지 못했어요.";
+        };
 
     return new ChatResDto(mockResponse);
   }

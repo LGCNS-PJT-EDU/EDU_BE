@@ -69,8 +69,7 @@ public class SecurityConfig {
                         "/api/roadmap",
                         "/api/user/refresh", // 리프레시 토큰 발급
                         "/ws/**",
-                        "/user/**"
-                        )
+                        "/user/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요
@@ -86,7 +85,7 @@ public class SecurityConfig {
     // WebConfig 설정은 Spring MVC 레벨에서의 CORS 처리 담당.
     // 따라서 SpringSecurity도 따로 CORS 설정을 명시해줘야 함.
     CorsConfiguration configuration = new CorsConfiguration();
-    //configuration.setAllowedOrigins(List.of(baseUrl));
+    // configuration.setAllowedOrigins(List.of(baseUrl));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedOriginPatterns(List.of(baseUrl));
     configuration.setAllowedHeaders(List.of("*"));

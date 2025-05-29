@@ -8,15 +8,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final ChatRepository chatRepository;
+  private final ChatRepository chatRepository;
 
-    public void saveLog(String userMessage, String aiResponse, Long userId) {
-        Chat chat =
-                Chat.builder()
-                        .userMessage(userMessage)
-                        .aiMessage(aiResponse)
-                        .userId(userId)
-                        .build();
-        chatRepository.save(chat);
-    }
+  public void saveLog(String userMessage, String aiResponse, Long userId) {
+    Chat chat =
+        Chat.builder().userMessage(userMessage).aiMessage(aiResponse).userId(userId).build();
+    chatRepository.save(chat);
+  }
 }

@@ -14,27 +14,26 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final StompHandler stompHandler;
+  private final StompHandler stompHandler;
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/chat") // 클라이언트 연결 URL
-                .setAllowedOriginPatterns("*");
-//                .withSockJS();
-    }
+  @Override
+  public void registerStompEndpoints(StompEndpointRegistry registry) {
+    registry
+        .addEndpoint("/ws/chat") // 클라이언트 연결 URL
+        .setAllowedOriginPatterns("*");
+    //                .withSockJS();
+  }
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/queue"); // 구독 경로
-        registry.setApplicationDestinationPrefixes("/pub"); // 클라이언트 송신 경로 접두사
+  @Override
+  public void configureMessageBroker(MessageBrokerRegistry registry) {
+    registry.enableSimpleBroker("/topic", "/queue"); // 구독 경로
+    registry.setApplicationDestinationPrefixes("/pub"); // 클라이언트 송신 경로 접두사
 
-        registry.setUserDestinationPrefix("/user");
+    registry.setUserDestinationPrefix("/user");
+  }
 
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler); // ChannelInterceptor 구현체
-    }
-
+  @Override
+  public void configureClientInboundChannel(ChannelRegistration registration) {
+    registration.interceptors(stompHandler); // ChannelInterceptor 구현체
+  }
 }
