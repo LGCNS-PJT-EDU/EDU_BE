@@ -27,7 +27,7 @@ public class RecommendService {
   private final AIClient aiClient;
 
   // 마이페이지에서 사용자 추천 컨텐츠 조회
-  public List<UserContentResDto> getUserContent(long userId) {
+  public List<UserContentResDto> getUserContent(Long userId) {
     List<UserContent> userContentsList = userContentRepository.findByUserIdWithContent(userId);
 
     return userContentsList.stream()
