@@ -5,8 +5,8 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.interview.dto.InterviewContentResDto;
-import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
+import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.service.InterviewService;
 import com.education.takeit.interview.service.UserInterviewReplyService;
 import com.education.takeit.user.entity.User;
@@ -35,17 +35,20 @@ public class InterviewController {
         interviewService.getInterview(subjectId);
     return ResponseEntity.ok(new Message(StatusCode.OK, interviewContentResDtoList));
   }
+
   @PostMapping("/feedback")
   @Operation(summary = "면접 피드백 ", description = "사용자 면접 응답을 받아와서 openAI에 면접 피드백 생성 요청 보내는 API")
   public ResponseEntity<Message> saveReplyAndGetFeedback(
-          @RequestBody UserInterviewReplyReqDto reqDto,
-          @AuthenticationPrincipal CustomUserDetails userDetails
-          ){
+      @RequestBody UserInterviewReplyReqDto reqDto,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
-    User user = userRepository.findByUserId(userId)
-            .orElseThrow(()-> new CustomException(StatusCode.USER_NOT_FOUND));
+    User user =
+        userRepository
+            .findByUserId(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-    InterviewFeedbackResDto response = userInterviewReplyService.saveReplyAndRequestFeedback(reqDto,user);
-    return ResponseEntity.ok(new Message(StatusCode.OK,response));
+    InterviewFeedbackResDto response =
+        userInterviewReplyService.saveReplyAndRequestFeedback(reqDto, user);
+    return ResponseEntity.ok(new Message(StatusCode.OK, response));
   }
 }
