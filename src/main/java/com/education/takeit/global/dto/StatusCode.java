@@ -33,7 +33,7 @@ public enum StatusCode {
   EXAM_NOT_FOUND(404, "해당 시험이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   DIAGNOSIS_RESPONSE_NOT_FOUND(404, "진단 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
   ALREADY_EXIST_PRE_EXAM(409, "이미 사전 평가를 응시했습니다.", HttpStatus.CONFLICT),
-  INTERVIEW_NOT_FOUND(404,"면접 질문이 존재하지 않습니다." , HttpStatus.NOT_FOUND );
+  INTERVIEW_NOT_FOUND(404, "면접 질문이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
 
   private final int statusCode;
   private final String message;

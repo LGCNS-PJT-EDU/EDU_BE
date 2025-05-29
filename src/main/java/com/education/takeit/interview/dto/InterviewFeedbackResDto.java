@@ -1,5 +1,3 @@
 package com.education.takeit.interview.dto;
 
-public record InterviewFeedbackResDto(
-        String interviewFeedback) {
-}
+public record InterviewFeedbackResDto(String interviewFeedback) {}
