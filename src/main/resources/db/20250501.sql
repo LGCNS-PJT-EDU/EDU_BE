@@ -20,7 +20,7 @@ CREATE TABLE diagnosis (
     diagnosis_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
     question_type VARCHAR(50) NOT NULL,
-    created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_dt DATETIME(6) NOT NULL
 );
 
 -- choice 테이블 생성
@@ -29,7 +29,7 @@ CREATE TABLE choice (
     choice_num INT NOT NULL,
     choice TEXT NOT NULL,
     value VARCHAR(255) NOT NULL,
-    created_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_dt DATETIME(6) NOT NULL,
     diagnosis_id BIGINT NOT NULL,
     CONSTRAINT fk_choice_diagnosis FOREIGN KEY (diagnosis_id) REFERENCES diagnosis(diagnosis_id)
 );
@@ -4205,3 +4205,15 @@ INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option
     (2948, 'Flask config에서 설정 값을 불러오는 방법 중 올바른 것은?', 1, '하', 'app.config[''DEBUG'']', 'app.settings.debug', 'app.env.DEBUG', 'app[''DEBUG'']', 59),
     (2949, 'GitHub Actions에서 비밀 정보를 안전하게 사용하는 방법은?', 3, '하', '코드에 직접 입력', '환경변수에 저장', 'secrets에 저장하고 `${{ secrets.KEY }}`로 접근', '브랜치에 하드코딩', 59),
     (2950, 'Sentry에서 에러 발생 시 수집되는 정보가 아닌 것은?', 3, '중', 'stack trace', '브라우저 버전', '사용자 비밀번호', '요청 URL', 59);
+
+-- feedback_fail_log 테이블 생성
+CREATE TABLE feedback_fail_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    subject_id BIGINT NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    nth INT NOT NULL,
+    error_code VARCHAR(255) NOT NULL,
+    error_message VARCHAR(1000) NOT NULL,
+    created_dt DATETIME(6) NOT NULL
+);

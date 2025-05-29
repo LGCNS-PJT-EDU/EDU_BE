@@ -16,7 +16,7 @@ public class TopicConfig {
   }
 
   @Bean
-  public NewTopic feedbackDlqTopic() {
-    return TopicBuilder.name("feedback.dql").partitions(3).replicas(1).build();
+  public NewTopic feedbackResultFailTopic() {
+    return TopicBuilder.name("feedback.result.fail").partitions(3).replicas(1).build();
   }
 }

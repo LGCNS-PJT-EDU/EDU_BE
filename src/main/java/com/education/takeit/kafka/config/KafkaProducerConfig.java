@@ -1,9 +1,7 @@
 package com.education.takeit.kafka.config;
 
-import com.education.takeit.kafka.dto.DlqWrapper;
-import com.education.takeit.kafka.dto.FeedbackEventDto;
-import java.util.HashMap;
-import java.util.Map;
+import com.education.takeit.kafka.dto.FeedbackFailDto;
+import com.education.takeit.kafka.dto.FeedbackRequestDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +12,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class KafkaProducerConfig {
 
@@ -22,14 +23,14 @@ public class KafkaProducerConfig {
 
   /* 피드맥 토픽용 Template */
   @Bean
-  public KafkaTemplate<String, FeedbackEventDto> feedbackKafkaTemplate() {
-    return new KafkaTemplate<>(producerFactory(FeedbackEventDto.class));
+  public KafkaTemplate<String, FeedbackRequestDto> feedbackKafkaTemplate() {
+    return new KafkaTemplate<>(producerFactory(FeedbackRequestDto.class));
   }
 
-  /* DQL 토픽용 Template */
+  /* 피드백 실패 토픽용 Template */
   @Bean
-  public KafkaTemplate<String, DlqWrapper> dlqKafkaTemplate() {
-    return new KafkaTemplate<>(producerFactory(DlqWrapper.class));
+  public KafkaTemplate<String, FeedbackFailDto> feedbackFailKafkaTemplate() {
+    return new KafkaTemplate<>(producerFactory(FeedbackFailDto.class));
   }
 
   private <V> ProducerFactory<String, V> producerFactory(Class<V> clazz) {
