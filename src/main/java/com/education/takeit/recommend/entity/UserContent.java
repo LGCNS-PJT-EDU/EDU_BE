@@ -31,4 +31,7 @@ public class UserContent {
 
   @Column(name = "is_ai_recommended", nullable = false)
   private Boolean isAiRecommended;
+
+  @Column(name = "ai_recommend_reason", nullable = false, columnDefinition = "TEXT")
+  private String aiRecommendReason;
 }

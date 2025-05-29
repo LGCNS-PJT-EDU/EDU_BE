@@ -43,7 +43,8 @@ public class RecommendService {
                   tc.getContentPlatform(),
                   tc.getContentDuration().name(),
                   tc.getContentPrice().name(),
-                  uc.getIsAiRecommended());
+                  uc.getIsAiRecommended(),
+                  uc.getAiRecommendReason());
             })
         .collect(Collectors.toList());
   }
@@ -68,13 +69,14 @@ public class RecommendService {
                 dto -> {
                   TotalContent totalContent =
                       totalContentRepository
-                          .findById(dto.totalContentId())
+                          .findById(dto.contentId())
                           .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
                   Subject subject =
                       subjectRepository
                           .findById(dto.subjectId())
                           .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(null, totalContent, subject, user, dto.isAiRecommended());
+                  return new UserContent(
+                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
                 })
             .toList();
 
