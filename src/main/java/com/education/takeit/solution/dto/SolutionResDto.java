@@ -2,6 +2,7 @@ package com.education.takeit.solution.dto;
 
 public record SolutionResDto(
     boolean isPre,
+    int nth,
     String subNm,
     String examContent,
     String option1,
@@ -10,5 +11,5 @@ public record SolutionResDto(
     String option4,
     int examAnswer,
     int userAnswer,
-    String solutionContent,
+    String solution,
     String examLevel) {}

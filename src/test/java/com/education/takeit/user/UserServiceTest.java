@@ -7,8 +7,9 @@ import static org.mockito.Mockito.*;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
-import com.education.takeit.user.dto.ReqSigninDto;
-import com.education.takeit.user.dto.ReqSignupDto;
+import com.education.takeit.user.dto.UserSigninReqDto;
+import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.dto.UserSignupReqDto;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
@@ -36,14 +37,14 @@ public class UserServiceTest {
 
   @InjectMocks private UserServiceImpl userService;
 
-  private ReqSignupDto signupDto;
-  private ReqSigninDto signinDto;
+  private UserSignupReqDto signupDto;
+  private UserSigninReqDto signinDto;
   private User user;
 
   @BeforeEach
   void setUp() {
-    signupDto = new ReqSignupDto("test@example.com", "nickname", "password", LoginType.LOCAL);
-    signinDto = new ReqSigninDto("test@example.com", "password");
+    signupDto = new UserSignupReqDto("test@example.com", "nickname", "password", LoginType.LOCAL);
+    signinDto = new UserSigninReqDto("test@example.com", "password");
     user =
         User.builder()
             .email("test@example.com")
@@ -85,15 +86,16 @@ public class UserServiceTest {
   @Test
   void 로그인_성공() {
     // Given
-    when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
-    String fakeTokens = "fake-access-token";
+    UserSigninResDto fakeTokens = new UserSigninResDto("fake-access-token", "fake-refresh-token");
 
     when(jwtUtils.generateTokens(user.getUserId())).thenReturn(fakeTokens);
 
     // When
-    String tokens = userService.signIn(signinDto);
+    UserSigninResDto tokens = userService.signIn(signinDto);
 
     // Then
     assertThat(tokens).isEqualTo(fakeTokens);
@@ -102,7 +104,8 @@ public class UserServiceTest {
   @Test
   void 로그인_비밀번호_불일치시_예외() {
     // Given
-    when(userRepository.findByEmail(signinDto.email())).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
+        .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(false);
 
     // When & Then

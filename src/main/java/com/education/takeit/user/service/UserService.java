@@ -1,15 +1,16 @@
 package com.education.takeit.user.service;
 
-import com.education.takeit.user.dto.ReqSigninDto;
-import com.education.takeit.user.dto.ReqSignupDto;
+import com.education.takeit.user.dto.UserSigninReqDto;
+import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.dto.UserSignupReqDto;
 
 public interface UserService {
 
-  void signUp(ReqSignupDto reqSignupDto);
+  void signUp(UserSignupReqDto userSignupReqDto);
 
-  String signIn(ReqSigninDto reqSigninDto);
+  UserSigninResDto signIn(UserSigninReqDto userSigninReqDto);
 
-  void signOut(String accessToken);
+  void signOut(Long userId);
 
   boolean checkDuplicate(String email);
 
@@ -19,5 +20,5 @@ public interface UserService {
 
   Long extractUserId(String token);
 
-  boolean validateRefreshToken(Long userId);
+  boolean validateRefreshToken(Long userId, String refreshToken);
 }

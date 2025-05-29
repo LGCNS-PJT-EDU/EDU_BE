@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserContentRepository extends JpaRepository<UserContent, Long> {
 
-  @Query("SELECT uc FROM UserContent uc JOIN FETCH uc.totalContent WHERE uc.user.userId =: userId")
+  @Query("SELECT uc FROM UserContent uc JOIN FETCH uc.totalContent WHERE uc.user.userId = :userId")
   List<UserContent> findByUserIdWithContent(@Param("userId") Long userId);
 }

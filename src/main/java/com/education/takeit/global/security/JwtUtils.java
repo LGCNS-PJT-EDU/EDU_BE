@@ -1,5 +1,6 @@
 package com.education.takeit.global.security;
 
+import com.education.takeit.user.dto.UserSigninResDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -27,7 +28,7 @@ public class JwtUtils {
   }
 
   // 액세스, 리프레시 토큰 함께 생성
-  public String generateTokens(Long userId) {
+  public UserSigninResDto generateTokens(Long userId) {
     Date now = new Date();
 
     // 액세스 토큰
@@ -60,7 +61,7 @@ public class JwtUtils {
             refreshTokenExpiration,
             TimeUnit.MILLISECONDS);
 
-    return accessToken;
+    return new UserSigninResDto(accessToken, refreshToken);
   }
 
   //  엑세스 토큰 검증
@@ -98,9 +99,16 @@ public class JwtUtils {
   }
 
   // Redis에 저장된 리프레시 토큰 검증
-  public boolean validateRefreshToken(Long userId) {
+  public boolean validateRefreshToken(Long userId, String refreshToken) {
     String storedRefreshToken = redisTemplate.opsForValue().get(userId + "'s refresh token");
 
-    return storedRefreshToken != null;
+    return storedRefreshToken != null && storedRefreshToken.equals(refreshToken);
+  }
+
+  public String resolveToken(String bearerToken) {
+    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring(7);
+    }
+    return bearerToken;
   }
 }
