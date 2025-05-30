@@ -31,7 +31,7 @@ public class Choice {
 
   @CreatedDate
   @Column(name = "created_dt", updatable = false)
-  private LocalDateTime createdDt;
+  private LocalDateTime createdDt = LocalDateTime.now();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "diagnosis_id", nullable = false)
