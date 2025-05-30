@@ -51,7 +51,7 @@ public class SubjectService {
 
     // 추천 컨텐츠 받아오기
     List<UserContentResDto> recommendContents =
-        recommendService.fetchAndSaveRecommendation(userId, subjectId);
+        recommendService.fetchAndSaveRecommendation(userId, subject.getSubId());
 
     // DTO화
     return new SubjectFindResDto(
