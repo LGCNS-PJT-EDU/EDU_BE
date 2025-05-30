@@ -100,12 +100,12 @@ public class UserController {
 
     // 2. refreshToken 유무 확인
     if (refreshToken == null) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
 
     Long userId = jwtUtils.getUserId(refreshToken);
     if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
     String newAccessToken = jwtUtils.generateAccessToken(userId);
     HttpHeaders headers = new HttpHeaders();
