@@ -1,7 +1,6 @@
 package com.education.takeit.roadmap.dto;
 
 import com.education.takeit.recommend.dto.UserContentResDto;
-
 import java.util.List;
 
 public record SubjectFindResDto(
