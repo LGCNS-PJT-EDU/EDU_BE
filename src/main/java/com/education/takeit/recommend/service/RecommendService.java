@@ -49,6 +49,29 @@ public class RecommendService {
         .collect(Collectors.toList());
   }
 
+  // 사용자 과목별 추천 컨텐츠 조회
+  public List<UserContentResDto> findRecommendations(Long userId, Long subjectId){
+      List<UserContent> userContentsList = userContentRepository.findByUser_UserIdAndSubject_SubjectId(userId, subjectId);
+      return userContentsList.stream()
+              .map(uc->{
+                  TotalContent tc = uc.getTotalContent();
+                  return new UserContentResDto(
+                          tc.getTotalContentId(),
+                          tc.getSubject().getSubId(),
+                          tc.getContentTitle(),
+                          tc.getContentUrl(),
+                          tc.getContentType(),
+                          tc.getContentPlatform(),
+                          tc.getContentDuration().name(),
+                          tc.getContentPrice().name(),
+                          uc.getIsAiRecommended(),
+                          uc.getAiRecommendReason()
+                  );
+              })
+              .collect(Collectors.toList());
+  }
+
+
   // 추천 컨텐츠 요청
   public List<UserContentResDto> fetchAndSaveRecommendation(Long userId, Long subjectId) {
     List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
