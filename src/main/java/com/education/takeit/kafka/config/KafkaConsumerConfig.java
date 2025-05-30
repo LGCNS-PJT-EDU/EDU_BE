@@ -3,6 +3,8 @@ package com.education.takeit.kafka.config;
 import com.education.takeit.kafka.dto.FeedbackFailDto;
 import com.education.takeit.kafka.dto.FeedbackResultDto;
 import com.education.takeit.kafka.recoverer.FeedbackFailRecoverer;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,9 +20,6 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class KafkaConsumerConfig {
 
@@ -31,7 +30,8 @@ public class KafkaConsumerConfig {
 
   @Bean
   public DefaultErrorHandler feedbackErrorHandler(
-          @Qualifier("feedbackFailKafkaTemplate") KafkaOperations<String, FeedbackFailDto> feedbackFailKafkaTemplate) {
+      @Qualifier("feedbackFailKafkaTemplate")
+          KafkaOperations<String, FeedbackFailDto> feedbackFailKafkaTemplate) {
     // 커스텀 recoverer
     FeedbackFailRecoverer recoverer = new FeedbackFailRecoverer(feedbackFailKafkaTemplate);
     // 재시도 정책 (3회 재시도, 지수백오프)
@@ -46,7 +46,6 @@ public class KafkaConsumerConfig {
     // 재시도 실패 시, recoverer가 실패 토픽으로 전송
     return errorHandler;
   }
-
 
   @Bean
   public ConsumerFactory<String, FeedbackResultDto> feedbackSuccessConsumerFactory() {

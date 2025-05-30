@@ -19,8 +19,7 @@ public class FeedbackSuccessKafkaConsumer {
   @KafkaListener(
       topics = "feedback.result.success",
       containerFactory = "feedbackSuccessKafkaListenerContainerFactory")
-  public void consumeSuccess(@Payload FeedbackResultDto payload,
-                             Acknowledgment acknowledgment) {
+  public void consumeSuccess(@Payload FeedbackResultDto payload, Acknowledgment acknowledgment) {
     log.info("성공 피드백 수신: {}", payload);
     try {
       feedbackService.saveFeedback(payload);
