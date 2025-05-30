@@ -8,4 +8,4 @@ public record SubjectFindResDto(
     List<ChapterFindDto> chapters,
     int preSubmitCount,
     int postSubmitCount,
-    List<com.education.takeit.recommend.dto.UserContentResDto> recommendContents) {}
+    List<RecommendContentsFindDto> recommendContents) {}
