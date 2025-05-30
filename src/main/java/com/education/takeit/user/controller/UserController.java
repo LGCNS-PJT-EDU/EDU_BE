@@ -13,15 +13,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -100,12 +101,12 @@ public class UserController {
 
     // 2. refreshToken 유무 확인
     if (refreshToken == null) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
 
     Long userId = jwtUtils.getUserId(refreshToken);
     if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
     String newAccessToken = jwtUtils.generateAccessToken(userId);
     HttpHeaders headers = new HttpHeaders();
