@@ -5,7 +5,9 @@ import com.education.takeit.exam.entity.Exam;
 import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.solution.dto.SolutionResDto;
 import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
@@ -22,6 +24,7 @@ public class SolutionService {
   private final UserExamAnswerRepository userExamAnswerRepository;
   private final UserRepository userRepository;
   private final ExamRepository examRepository;
+  private final RoadmapRepository roadmapRepository;
 
   // 해설 조회
   public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
@@ -67,14 +70,11 @@ public class SolutionService {
       }
 
       int nth;
-      if (isPre) {
-        int preCount = userExamAnswerRepository.countByUserAndSubjectAndIsPre(user, subject, true);
-        if (preCount > 0) {
-          throw new CustomException(StatusCode.ALREADY_EXIST_PRE_EXAM);
-        }
-        nth = 1;
+      Roadmap roadmap = roadmapRepository.findBySubject_SubId(subject.getSubId());
+      if (!isPre) {
+        nth = roadmap.getPostSubmitCount() + 1;
       } else {
-        nth = userExamAnswerRepository.countByUserAndSubjectAndIsPre(user, subject, false) + 1;
+        nth = 1;
       }
       UserExamAnswer userExamAnswer =
           UserExamAnswer.builder()
