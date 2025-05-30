@@ -1,5 +1,7 @@
 package com.education.takeit.roadmap.dto;
 
+import com.education.takeit.recommend.dto.UserContentResDto;
+
 import java.util.List;
 
 public record SubjectFindResDto(
@@ -8,4 +10,4 @@ public record SubjectFindResDto(
     List<ChapterFindDto> chapters,
     int preSubmitCount,
     int postSubmitCount,
-    List<RecommendContentsFindDto> recommendContents) {}
+    List<UserContentResDto> recommendContents) {}

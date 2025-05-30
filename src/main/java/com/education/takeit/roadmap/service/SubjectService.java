@@ -5,6 +5,7 @@ import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.dto.ChapterFindDto;
+import com.education.takeit.roadmap.dto.RecommendContentsFindDto;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.RoadmapManagement;
