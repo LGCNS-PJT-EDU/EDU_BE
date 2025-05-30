@@ -12,8 +12,4 @@ public interface UserContentRepository extends JpaRepository<UserContent, Long> 
   List<UserContent> findByUserIdWithContent(@Param("userId") Long userId);
 
   List<UserContent> findByUser_UserIdAndSubject_SubId(Long userId, Long subjectId);
-
-
-
-
 }

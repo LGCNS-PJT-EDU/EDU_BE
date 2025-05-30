@@ -31,8 +31,10 @@ public class SubjectService {
       throw new CustomException(StatusCode.USER_NOT_FOUND);
     }
     // subjectId 로 subject 정보 조회
-    Subject subject = subjectRepository.findById(subjectId)
-            .orElseThrow(()->new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+    Subject subject =
+        subjectRepository
+            .findById(subjectId)
+            .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
 
     // chapter 정보 조회
     List<ChapterFindDto> chapters =
@@ -49,11 +51,11 @@ public class SubjectService {
 
     // 추천 컨텐츠 받아오기
     List<UserContentResDto> recommendContents =
-        recommendService.findRecommendations(userId,subject.getSubId());
+        recommendService.findRecommendations(userId, subject.getSubId());
 
     // DTO화
     return new SubjectFindResDto(
-            userRoadmap.getRoadmapId(),
+        userRoadmap.getRoadmapId(),
         subject.getSubNm(),
         subject.getSubOverview(),
         chapters,

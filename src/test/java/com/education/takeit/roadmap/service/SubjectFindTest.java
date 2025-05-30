@@ -19,7 +19,6 @@ import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -94,7 +93,7 @@ public class SubjectFindTest {
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
     when(roadmapRepository.findBySubjectAndRoadmapManagement(subject, roadmapManagement))
         .thenReturn(roadmap);
-    when(recommendService.findRecommendations(userId,subjectId)).thenReturn(mockContents);
+    when(recommendService.findRecommendations(userId, subjectId)).thenReturn(mockContents);
 
     // when
     SubjectFindResDto result = subjectService.findUserSubject(userId, subjectId);
@@ -121,38 +120,37 @@ public class SubjectFindTest {
     assertEquals(StatusCode.USER_NOT_FOUND, ex.getStatusCode());
   }
 
+  @Test
+  void findUserSubject_shouldThrow_whenSubjectNotFound() {
+    // given
+    Long userId = 1L;
+    Long subjectId = 99L;
+    when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
 
-    @Test
-    void findUserSubject_shouldThrow_whenSubjectNotFound() {
-      // given
-      Long userId = 1L;
-      Long subjectId = 99L;
-      when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
+    // when & then
+    CustomException ex =
+        assertThrows(
+            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
 
-      // when & then
-      CustomException ex =
-          assertThrows(
-              CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
+    assertEquals(StatusCode.SUBJECT_NOT_FOUND, ex.getStatusCode());
+  }
 
-      assertEquals(StatusCode.SUBJECT_NOT_FOUND, ex.getStatusCode());
-    }
+  @Test
+  void findUserSubject_shouldThrow_whenUserRoadmapManagementNotFound() {
+    // given
+    long userId = 1L;
+    Long subjectId = 10L;
 
-    @Test
-    void findUserSubject_shouldThrow_whenUserRoadmapManagementNotFound() {
-      // given
-      long userId = 1L;
-      Long subjectId = 10L;
+    Subject subject = Subject.builder().subId(subjectId).subNm("Java").build();
 
-      Subject subject = Subject.builder().subId(subjectId).subNm("Java").build();
+    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
 
-      when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
-      when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+    // when & then
+    CustomException ex =
+        assertThrows(
+            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
 
-      // when & then
-      CustomException ex =
-          assertThrows(
-              CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
-
-      assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
-    }
+    assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
+  }
 }
