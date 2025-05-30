@@ -9,11 +9,12 @@ import com.education.takeit.roadmap.service.RoadmapTransactionalService;
 import com.education.takeit.roadmap.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -89,7 +90,7 @@ public class RoadmapController {
   @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공하는 API")
   public ResponseEntity<Message> findUserRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestParam("subjectId") Long roadmapId) {
+      @RequestParam("roadmapId") Long roadmapId) {
     Long userId = userDetails.getUserId();
     SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, roadmapId);
     return ResponseEntity.ok(new Message(StatusCode.OK, subjectFindResDto));

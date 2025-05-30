@@ -19,6 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 public class SubjectFindTest {
   @InjectMocks private SubjectService subjectService;
@@ -115,30 +121,9 @@ public class SubjectFindTest {
     assertEquals(StatusCode.USER_NOT_FOUND, ex.getStatusCode());
   }
 
-  @Test
-  void findUserSubject_shouldThrow_whenSubjectNotFound() {
-    // given
-    Long userId = 1L;
-    Long subjectId = 99L;
-    when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
-
-    // when & then
-    CustomException ex =
-        assertThrows(
-            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
-
-    assertEquals(StatusCode.SUBJECT_NOT_FOUND, ex.getStatusCode());
-  }
-
-  @Test
-  void findUserSubject_shouldThrow_whenUserRoadmapManagementNotFound() {
-    // given
-    long userId = 1L;
-    Long subjectId = 10L;
-
-    Subject subject = Subject.builder().subId(subjectId).subNm("Java").build();
 
   // 과목 상세 정보를 조회할때 roadmapId를 전달받기 때문에 아래의 테스트 코드는 더 이상 맞지 않습니다.
+
 //  @Test
 //  void findUserSubject_shouldThrow_whenSubjectNotFound() {
 //    // given
