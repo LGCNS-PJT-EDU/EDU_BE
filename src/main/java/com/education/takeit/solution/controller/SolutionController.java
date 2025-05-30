@@ -26,11 +26,11 @@ public class SolutionController {
 
   @GetMapping
   @Operation(summary = "사용자의 해설 조회", description = "사용자가 평가 본 모든 내용의 해설을 과목별 조회")
-  public ResponseEntity<Message> allSolution(
+  public ResponseEntity<Message<List<SolutionResDto>>> allSolution(
       @RequestParam("subjectId") Long subjectId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     List<SolutionResDto> solutionList = solutionService.findAllUserSolutions(userId, subjectId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, solutionList));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, solutionList));
   }
 }

@@ -26,10 +26,10 @@ public class FeedbackController {
   // 차후에 URI 변경 가능성 존재
   @GetMapping("/retrieve")
   @Operation(summary = "특정 사용자 피드백 목록 조회", description = "사용자의 모든 피드백 데이터를 JSON 형태로 반환하는 API")
-  public ResponseEntity<Message> findAllFeedback(
+  public ResponseEntity<Message<List<FeedbackResponseDto>>> findAllFeedback(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     List<FeedbackResponseDto> list = feedbackService.findFeedback(userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, list));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, list));
   }
 }
