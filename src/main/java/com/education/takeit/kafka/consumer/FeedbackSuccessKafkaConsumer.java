@@ -20,13 +20,13 @@ public class FeedbackSuccessKafkaConsumer {
       topics = "feedback.result.success",
       containerFactory = "feedbackSuccessKafkaListenerContainerFactory")
   public void consumeSuccess(@Payload FeedbackResultDto payload, Acknowledgment acknowledgment) {
-    log.info("성공 피드백 수신: {}", payload);
+    log.info("피드백 수신: {}", payload);
     try {
       feedbackService.saveFeedback(payload);
-      log.info("성공 피드백 저장");
+      log.info("피드백 저장 성공");
       acknowledgment.acknowledge();
     } catch (Exception e) {
-      log.error("Failed to process feedback.request.success", e);
+      log.error("피드백 저장 실패", e);
       throw new RuntimeException(e);
     }
   }
