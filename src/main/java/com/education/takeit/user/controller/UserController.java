@@ -13,16 +13,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -35,7 +34,8 @@ public class UserController {
 
   @PostMapping("/signup")
   @Operation(summary = "회원가입", description = "자체 서비스 회원가입 API")
-  public ResponseEntity<Message<String>> signUp(@Valid @RequestBody UserSignupReqDto userSignupReqDto) {
+  public ResponseEntity<Message<String>> signUp(
+      @Valid @RequestBody UserSignupReqDto userSignupReqDto) {
     userService.signUp(userSignupReqDto);
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
@@ -66,7 +66,8 @@ public class UserController {
 
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
-  public ResponseEntity<Message<String>> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<Message<String>> logout(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     userService.signOut(userId);
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
@@ -80,7 +81,8 @@ public class UserController {
 
   @PostMapping("/withdraw")
   @Operation(summary = "회원탈퇴", description = "회원 탈퇴 API")
-  public ResponseEntity<Message<String>> Withdraw(@AuthenticationPrincipal CustomUserDetails principal) {
+  public ResponseEntity<Message<String>> Withdraw(
+      @AuthenticationPrincipal CustomUserDetails principal) {
     userService.withdraw(principal.getUserId());
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }

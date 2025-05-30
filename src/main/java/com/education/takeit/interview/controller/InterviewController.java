@@ -13,12 +13,11 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +30,8 @@ public class InterviewController {
 
   @GetMapping("/list")
   @Operation(summary = "면접 질문 조회", description = "과목별 면접 질문 랜덤하게 3문제씩 조회하는 API")
-  public ResponseEntity<Message<List<InterviewContentResDto>>> getInterviewContent(@RequestParam("subjectId") Long subjectId) {
+  public ResponseEntity<Message<List<InterviewContentResDto>>> getInterviewContent(
+      @RequestParam("subjectId") Long subjectId) {
     List<InterviewContentResDto> interviewContentResDtoList =
         interviewService.getInterview(subjectId);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewContentResDtoList));
