@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Difficulty {
-  EASY("하", 1),
-  MEDIUM("중", 3),
-  HARD("상", 5);
+  EASY("low", 1),
+  MEDIUM("medium", 3),
+  HARD("high", 5);
 
   private final String label;
   private final int score;
