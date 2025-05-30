@@ -30,7 +30,7 @@ public class Diagnosis {
 
   @CreatedDate
   @Column(name = "created_dt", updatable = false)
-  private LocalDateTime createdDt;
+  private LocalDateTime createdDt = LocalDateTime.now();
 
   @Builder.Default
   @OneToMany(

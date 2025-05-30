@@ -13,6 +13,9 @@ DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS feedback_fail_log;
+DROP TABLE IF EXISTS user_interview_reply;
+DROP TABLE IF EXISTS interview;
 
 -- users 테이블 생성
 CREATE TABLE users (
