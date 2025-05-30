@@ -18,13 +18,14 @@ import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -76,9 +77,6 @@ public class ExamService {
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
     try {
       aiClient.postPreExam(userId, result);
-
-      saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
-
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
     }
@@ -95,6 +93,7 @@ public class ExamService {
     FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
     feedbackKafkaProducer.publish(event);
 
+    //saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
   }
 
@@ -135,19 +134,25 @@ public class ExamService {
 
     try {
       aiClient.postPostExam(userId, result);
-
-      saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
-
     } catch (RestClientException e) {
       log.warn("사후 평가 결과 전송 실패: {}", e.getMessage());
     }
 
-    roadmap.setLevel(subject.level()); // 사전 평가
+    roadmap.setLevel(subject.level());
     roadmap.setPostSubmitCount(roadmap.getPostSubmitCount() + 1);
     if (!roadmap.isComplete()) roadmap.setComplete(true);
 
     roadmapRepository.save(roadmap);
 
+
+    // 결과 저장 성공 직후
+    Long subjectId = roadmap.getSubject().getSubId();
+    String type = "post";
+    int nth = roadmap.getPostSubmitCount();
+    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(event);
+
+    //saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
   }
 
