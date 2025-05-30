@@ -89,9 +89,9 @@ public class RoadmapController {
   @Operation(summary = "사용자 과목 정보 제공", description = "사용자가 과목을 눌렀을 때 필요한 정보 제공하는 API")
   public ResponseEntity<Message> findUserRoadmap(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestParam("roadmapId") Long roadmapId) { //subjectId 로 변경
+      @RequestParam("subjectId") Long subjectId) {
     Long userId = userDetails.getUserId();
-    SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, roadmapId);
+    SubjectFindResDto subjectFindResDto = subjectService.findUserSubject(userId, subjectId);
     return ResponseEntity.ok(new Message(StatusCode.OK, subjectFindResDto));
   }
 

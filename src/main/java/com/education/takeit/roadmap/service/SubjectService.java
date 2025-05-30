@@ -26,15 +26,13 @@ public class SubjectService {
   private final RoadmapManagementRepository roadmapManagementRepository;
   private final RecommendService recommendService;
 
-  public SubjectFindResDto findUserSubject(Long userId, Long roadmapId) {
+  public SubjectFindResDto findUserSubject(Long userId, Long subjectId) {
     if (userId == null) {
       throw new CustomException(StatusCode.USER_NOT_FOUND);
     }
-    // roadmapId 로 roadmap 정보 조회
-    Roadmap roadmap = roadmapRepository.findByRoadmapId(roadmapId);
-
     // subjectId 로 subject 정보 조회
-    Subject subject = roadmap.getSubject();
+    Subject subject = subjectRepository.findById(subjectId)
+            .orElseThrow(()->new CustomException(StatusCode.SUBJECT_NOT_FOUND));
 
     // chapter 정보 조회
     List<ChapterFindDto> chapters =
@@ -55,6 +53,7 @@ public class SubjectService {
 
     // DTO화
     return new SubjectFindResDto(
+            userRoadmap.getRoadmapId(),
         subject.getSubNm(),
         subject.getSubOverview(),
         chapters,

@@ -51,7 +51,7 @@ public class RecommendService {
 
   // 사용자 과목별 추천 컨텐츠 조회
   public List<UserContentResDto> findRecommendations(Long userId, Long subjectId){
-      List<UserContent> userContentsList = userContentRepository.findByUser_UserIdAndSubject_SubjectId(userId, subjectId);
+      List<UserContent> userContentsList = userContentRepository.findByUser_UserIdAndSubject_SubId(userId, subjectId);
       return userContentsList.stream()
               .map(uc->{
                   TotalContent tc = uc.getTotalContent();
