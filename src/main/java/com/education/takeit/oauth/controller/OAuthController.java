@@ -9,7 +9,6 @@ import com.education.takeit.oauth.service.NaverOAuthService;
 import com.education.takeit.user.dto.UserSigninResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -18,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/oauth")
@@ -37,7 +38,7 @@ public class OAuthController {
    */
   @PostMapping("/google/login")
   @Operation(summary = "Google OAuth 소셜 로그인", description = "Google OAuth 소셜 로그인 API")
-  public ResponseEntity<Message> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
+  public ResponseEntity<Message<String>> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
     UserSigninResDto userSigninResDto = googleOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
@@ -56,7 +57,7 @@ public class OAuthController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   /**
@@ -67,7 +68,7 @@ public class OAuthController {
    */
   @PostMapping("/kakao/login")
   @Operation(summary = "Kakao OAuth 소셜 로그인", description = "Kakao OAuth 소셜 로그인 API")
-  public ResponseEntity<Message> loginWithKakao(@RequestBody OAuthLoginRequest request) {
+  public ResponseEntity<Message<String>> loginWithKakao(@RequestBody OAuthLoginRequest request) {
     UserSigninResDto userSigninResDto = kakaoOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
@@ -86,7 +87,7 @@ public class OAuthController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   /**
@@ -95,7 +96,7 @@ public class OAuthController {
    */
   @PostMapping("/naver/login")
   @Operation(summary = "Naver OAuth 소셜 로그인", description = "Naver OAuth 소셜 로그인 API")
-  public ResponseEntity<Message> loginWithNaver(@RequestBody OAuthLoginRequest request) {
+  public ResponseEntity<Message<String>> loginWithNaver(@RequestBody OAuthLoginRequest request) {
     UserSigninResDto userSigninResDto = naverOAuthService.login(request);
 
     HttpHeaders headers = new HttpHeaders();
@@ -114,6 +115,6 @@ public class OAuthController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 }

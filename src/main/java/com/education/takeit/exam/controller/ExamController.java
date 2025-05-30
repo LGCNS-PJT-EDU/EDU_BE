@@ -10,11 +10,12 @@ import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.solution.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/exam")
@@ -34,14 +35,14 @@ public class ExamController {
    */
   @GetMapping("/pre")
   @Operation(summary = "사전 평가 문제 리스트 요청", description = "사전평가 문제 GET API")
-  public ResponseEntity<Message> findPreExam(
+  public ResponseEntity<Message<List<ExamResDto>>> findPreExam(
       @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
     if (userDetails == null) {
       throw new CustomException(StatusCode.UNAUTHORIZED_USER);
     }
     Long userId = userDetails.getUserId();
     List<ExamResDto> result = examService.findPreExam(userId, subjectId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, result));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, result));
   }
 
   /**
@@ -53,7 +54,7 @@ public class ExamController {
    */
   @PostMapping("/pre")
   @Operation(summary = "사전 평가 문제 결과 응답 및 전달", description = "사전평가 결과 POST API")
-  public ResponseEntity<Message> submitPreExamResult(
+  public ResponseEntity<Message<String>> submitPreExamResult(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody ExamAnswerResDto examAnswerRes) {
     if (userDetails == null) {
@@ -62,7 +63,7 @@ public class ExamController {
     Long userId = userDetails.getUserId();
     examService.submitPreExam(userId, examAnswerRes);
     solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), true);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
   /**
@@ -74,14 +75,14 @@ public class ExamController {
    */
   @GetMapping("/post")
   @Operation(summary = "사후 평가 문제 리스트 요청", description = "사후평가 문제 GET API")
-  public ResponseEntity<Message> findPostExam(
+  public ResponseEntity<Message<List<ExamResDto>>> findPostExam(
       @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
     if (userDetails == null) {
       throw new CustomException(StatusCode.UNAUTHORIZED_USER);
     }
     Long userId = userDetails.getUserId();
     List<ExamResDto> result = examService.findPostExam(userId, subjectId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, result));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, result));
   }
 
   /**
@@ -93,7 +94,7 @@ public class ExamController {
    */
   @PostMapping("/post")
   @Operation(summary = "사후 평가 문제 결과 응답 및 전달", description = "사후평가 결과 POST API")
-  public ResponseEntity<Message> submitPostExamResult(
+  public ResponseEntity<Message<String>> submitPostExamResult(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody ExamAnswerResDto examAnswerRes) {
     if (userDetails == null) {
@@ -102,6 +103,6 @@ public class ExamController {
     Long userId = userDetails.getUserId();
     examService.submitPostExam(userId, examAnswerRes);
     solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), false);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 }
