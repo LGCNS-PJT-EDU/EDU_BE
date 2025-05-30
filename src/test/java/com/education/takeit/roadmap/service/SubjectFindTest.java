@@ -83,7 +83,7 @@ public class SubjectFindTest {
             .postSubmitCount(3)
             .build();
 
-    List<UserContentResDto> mockContents=List.of(); // 추천컨텐츠 받을 리스트
+    List<UserContentResDto> mockContents = List.of(); // 추천컨텐츠 받을 리스트
 
     when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
     when(chapterRepository.findBySubject(subject))
