@@ -9,13 +9,13 @@ DROP TABLE IF EXISTS chapter;
 DROP TABLE IF EXISTS roadmap;
 DROP TABLE IF EXISTS roadmap_management;
 DROP TABLE IF EXISTS feedback;
+DROP TABLE IF EXISTS user_interview_reply;
+DROP TABLE IF EXISTS interview;
 DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS feedback_fail_log;
-DROP TABLE IF EXISTS user_interview_reply;
-DROP TABLE IF EXISTS interview;
 
 -- users 테이블 생성
 CREATE TABLE users (
@@ -32,16 +32,16 @@ CREATE TABLE diagnosis (
     diagnosis_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
     question_type VARCHAR(50) NOT NULL,
-    created_dt DATETIME(6) NOT NULL
+    created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- choice 테이블 생성
 CREATE TABLE choice (
-    choice_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    choice_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     choice_num INT NOT NULL,
     choice TEXT NOT NULL,
     value VARCHAR(255) NOT NULL,
-    created_dt DATETIME(6) NOT NULL,
+    created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     diagnosis_id BIGINT NOT NULL,
     CONSTRAINT fk_choice_diagnosis FOREIGN KEY (diagnosis_id) REFERENCES diagnosis(diagnosis_id)
 );
@@ -1251,9 +1251,9 @@ CREATE TABLE user_exam_answer(
      exam_id BIGINT NOT NULL,
      sub_id BIGINT NOT NULL,
      user_id BIGINT NOT NULL,
-     CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
+     CONSTRAINT fk_user_exam_answer_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id),
      CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (exam_id) REFERENCES exam(exam_id),
-     CONSTRAINT fk_user_exam_answer_exam FOREIGN KEY (user_id) REFERENCES users(user_id)
+     CONSTRAINT fk_user_exam_answer_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- 1968번 파이썬인데 옵션이 한 줄 이라서 문제 변경 필요합니다.
@@ -4434,7 +4434,7 @@ INSERT INTO interview (interview_content, interview_answer, sub_id) values
     ('styled-components란 무엇인가요?', 'styled-components는 CSS-in-JS 방식의 스타일링 도구로, JavaScript 파일 안에서 CSS를 작성하여 컴포넌트 단위로 스타일을 관리할 수 있게 해주는 라이브러리입니다. React 환경에서 자주 사용되며, 코드와 스타일을 하나의 단위로 유지할 수 있어 유지보수성과 재사용성이 뛰어납니다.', 20),
     ('styled-components의 주요 장점은?', '컴포넌트 기반 스타일링으로 코드의 응집도를 높이고, props 기반 동적 스타일링, 자동 클래스 네이밍, 글로벌 네임 충돌 방지, 조건부 스타일 적용 등의 장점을 제공합니다. 또한 theme을 통한 디자인 시스템 통합도 용이합니다.', 20),
     ('styled-components에서 스타일은 어떻게 정의하나요?', 'styled-components는 tagged template literal 문법을 사용하여 정의합니다. 예: `const Button = styled.button\` background: blue; color: white; \`;`와 같이 작성하면 Button 컴포넌트를 해당 스타일로 정의할 수 있습니다.', 20),
-    ('props를 이용한 동적 스타일링은 어떻게 구현하나요?', 'styled-components는 props를 통해 조건부 스타일을 쉽게 적용할 수 있습니다. 예: `color: \${props => props.primary ? 'blue' : 'gray'};`와 같이 작성하면 컴포넌트 사용 시 전달된 props에 따라 스타일이 동적으로 결정됩니다.', 20),
+    ('props를 이용한 동적 스타일링은 어떻게 구현하나요?', 'styled-components는 props를 통해 조건부 스타일을 쉽게 적용할 수 있습니다. 예: `color: \${props => props.primary ? `blue` : `gray`};`와 같이 작성하면 컴포넌트 사용 시 전달된 props에 따라 스타일이 동적으로 결정됩니다.', 20),
     ('ThemeProvider는 무엇이며 어떻게 사용하나요?', 'ThemeProvider는 styled-components에서 제공하는 컨텍스트 API로, 전체 앱에 공통된 테마 객체를 전달합니다. `theme` 객체에는 색상, 폰트, 여백 등의 디자인 시스템 설정을 담아 어떤 컴포넌트에서도 접근하여 일관된 스타일을 유지할 수 있습니다.', 20),
     ('전역 스타일(GlobalStyle)은 어떻게 적용하나요?', 'styled-components의 `createGlobalStyle`을 사용하면 전체 애플리케이션에 적용되는 전역 스타일을 정의할 수 있습니다. 예: `const GlobalStyle = createGlobalStyle\` body { margin: 0; } \`;`를 App 루트 컴포넌트에서 렌더링하면 적용됩니다.', 20),
     ('styled-components의 CSS 네임 충돌을 어떻게 방지하나요?', 'styled-components는 각 컴포넌트마다 고유한 클래스 이름을 자동으로 생성하여 글로벌 네임스페이스 오염을 방지합니다. 이로 인해 CSS 클래스 충돌이 발생하지 않고, 스타일이 해당 컴포넌트에만 적용됩니다.', 20),
