@@ -22,5 +22,6 @@ public class FeedbackSuccessKafkaConsumer {
     FeedbackResultDto result = record.value();
     log.info("성공 피드백 수신: {}", result);
     // feedback Save
+    feedbackService.saveFeedback(result);
   }
 }
