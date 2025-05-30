@@ -1,5 +1,9 @@
 package com.education.takeit.roadmap.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
@@ -13,17 +17,12 @@ import com.education.takeit.roadmap.repository.ChapterRepository;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SubjectFindTest {
@@ -121,40 +120,39 @@ public class SubjectFindTest {
     assertEquals(StatusCode.USER_NOT_FOUND, ex.getStatusCode());
   }
 
-
   // 과목 상세 정보를 조회할때 roadmapId를 전달받기 때문에 아래의 테스트 코드는 더 이상 맞지 않습니다.
 
-//  @Test
-//  void findUserSubject_shouldThrow_whenSubjectNotFound() {
-//    // given
-//    Long userId = 1L;
-//    Long subjectId = 99L;
-//    when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
-//
-//    // when & then
-//    CustomException ex =
-//        assertThrows(
-//            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
-//
-//    assertEquals(StatusCode.SUBJECT_NOT_FOUND, ex.getStatusCode());
-//  }
-//
-//  @Test
-//  void findUserSubject_shouldThrow_whenUserRoadmapManagementNotFound() {
-//    // given
-//    long userId = 1L;
-//    Long subjectId = 10L;
-//
-//    Subject subject = Subject.builder().subId(subjectId).subNm("Java").build();
-//
-//    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
-//    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
-//
-//    // when & then
-//    CustomException ex =
-//        assertThrows(
-//            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
-//
-//    assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
-//  }
+  //  @Test
+  //  void findUserSubject_shouldThrow_whenSubjectNotFound() {
+  //    // given
+  //    Long userId = 1L;
+  //    Long subjectId = 99L;
+  //    when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
+  //
+  //    // when & then
+  //    CustomException ex =
+  //        assertThrows(
+  //            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
+  //
+  //    assertEquals(StatusCode.SUBJECT_NOT_FOUND, ex.getStatusCode());
+  //  }
+  //
+  //  @Test
+  //  void findUserSubject_shouldThrow_whenUserRoadmapManagementNotFound() {
+  //    // given
+  //    long userId = 1L;
+  //    Long subjectId = 10L;
+  //
+  //    Subject subject = Subject.builder().subId(subjectId).subNm("Java").build();
+  //
+  //    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+  //    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+  //
+  //    // when & then
+  //    CustomException ex =
+  //        assertThrows(
+  //            CustomException.class, () -> subjectService.findUserSubject(userId, subjectId));
+  //
+  //    assertEquals(StatusCode.ROADMAP_NOT_FOUND, ex.getStatusCode());
+  //  }
 }
