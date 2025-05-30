@@ -5,16 +5,19 @@ import com.education.takeit.exam.entity.Exam;
 import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.solution.dto.SolutionResDto;
 import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class SolutionService {
   private final UserExamAnswerRepository userExamAnswerRepository;
   private final UserRepository userRepository;
   private final ExamRepository examRepository;
+  private final RoadmapRepository roadmapRepository;
 
   // 해설 조회
   public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
@@ -67,24 +71,21 @@ public class SolutionService {
       }
 
       int nth;
-      if (isPre) {
-        int preCount = userExamAnswerRepository.countByUserAndSubjectAndIsPre(user, subject, true);
-        if (preCount > 0) {
-          throw new CustomException(StatusCode.ALREADY_EXIST_PRE_EXAM);
-        }
+      Roadmap roadmap = roadmapRepository.findBySubject_SubId(subject.getSubId());
+      if (!isPre) {
+        nth = roadmap.getPostSubmitCount() + 1;
+      } else{
         nth = 1;
-      } else {
-        nth = userExamAnswerRepository.countByUserAndSubjectAndIsPre(user, subject, false) + 1;
       }
       UserExamAnswer userExamAnswer =
-          UserExamAnswer.builder()
-              .user(user)
-              .subject(subject)
-              .exam(exam)
-              .userAnswer(answer.userAnswer())
-              .isPre(isPre)
-              .nth(nth)
-              .build();
+              UserExamAnswer.builder()
+                      .user(user)
+                      .subject(subject)
+                      .exam(exam)
+                      .userAnswer(answer.userAnswer())
+                      .isPre(isPre)
+                      .nth(nth)
+                      .build();
       userExamAnswerRepository.save(userExamAnswer);
     }
   }
