@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.recommend.dto.UserContentResDto;
+import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.entity.Chapter;
 import com.education.takeit.roadmap.entity.Roadmap;
@@ -34,6 +36,8 @@ public class SubjectFindTest {
   @Mock private RoadmapManagementRepository roadmapManagementRepository;
 
   @Mock private RoadmapRepository roadmapRepository;
+
+  @Mock private RecommendService recommendService;
 
   @Test
   void findUserSubject_shouldReturnSubjectInfo_whenValidInput() {
@@ -79,12 +83,15 @@ public class SubjectFindTest {
             .postSubmitCount(3)
             .build();
 
+    List<UserContentResDto> mockContents = List.of(); // 추천컨텐츠 받을 리스트
+
     when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
     when(chapterRepository.findBySubject(subject))
         .thenReturn(List.of(chapter1, chapter2, chapter3, chapter4, chapter5));
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
     when(roadmapRepository.findBySubjectAndRoadmapManagement(subject, roadmapManagement))
         .thenReturn(roadmap);
+    when(recommendService.getUserContent(userId)).thenReturn(mockContents);
 
     // when
     SubjectFindResDto result = subjectService.findUserSubject(userId, subjectId);
@@ -99,6 +106,7 @@ public class SubjectFindTest {
     assertEquals("프로세스와 작업 관리", result.chapters().get(2).chapterName());
     assertEquals(1, result.preSubmitCount());
     assertEquals(3, result.postSubmitCount());
+    assertEquals(mockContents, result.recommendContents());
   }
 
   @Test
