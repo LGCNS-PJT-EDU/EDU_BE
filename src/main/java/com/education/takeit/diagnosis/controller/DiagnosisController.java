@@ -32,11 +32,11 @@ public class DiagnosisController {
    */
   @GetMapping
   @Operation(summary = "진단 문제 리스트 요청", description = "진단 문제 GET API")
-  public ResponseEntity<Message> findAllDiagnosis(
+  public ResponseEntity<Message<GroupedDiagnosisResponse>> findAllDiagnosis(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     GroupedDiagnosisResponse result = diagnosisService.findAllDiagnosis(userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, result));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, result));
   }
 
   /**
@@ -47,12 +47,12 @@ public class DiagnosisController {
    */
   @PostMapping
   @Operation(summary = "진단 결과 응답", description = "진단 결과 응답 POST API")
-  public ResponseEntity<Message> recommendRoadmapByDiagnosis(
+  public ResponseEntity<Message<RoadmapSaveResDto>> recommendRoadmapByDiagnosis(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody List<DiagnosisAnswerRequest> answers) {
     Long userId = (userDetails != null) ? userDetails.getUserId() : null;
     RoadmapSaveResDto result = diagnosisService.recommendRoadmapByDiagnosis(userId, answers);
 
-    return ResponseEntity.ok(new Message(StatusCode.OK, result));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, result));
   }
 }

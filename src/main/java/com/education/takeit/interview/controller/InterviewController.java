@@ -30,15 +30,16 @@ public class InterviewController {
 
   @GetMapping("/list")
   @Operation(summary = "면접 질문 조회", description = "과목별 면접 질문 랜덤하게 3문제씩 조회하는 API")
-  public ResponseEntity<Message> getInterviewContent(@RequestParam("subjectId") Long subjectId) {
+  public ResponseEntity<Message<List<InterviewContentResDto>>> getInterviewContent(
+      @RequestParam("subjectId") Long subjectId) {
     List<InterviewContentResDto> interviewContentResDtoList =
         interviewService.getInterview(subjectId);
-    return ResponseEntity.ok(new Message(StatusCode.OK, interviewContentResDtoList));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewContentResDtoList));
   }
 
   @PostMapping("/feedback")
   @Operation(summary = "면접 피드백 ", description = "사용자 면접 응답을 받아와서 openAI에 면접 피드백 생성 요청 보내는 API")
-  public ResponseEntity<Message> saveReplyAndGetFeedback(
+  public ResponseEntity<Message<InterviewFeedbackResDto>> saveReplyAndGetFeedback(
       @RequestBody UserInterviewReplyReqDto reqDto,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
@@ -49,6 +50,6 @@ public class InterviewController {
 
     InterviewFeedbackResDto response =
         userInterviewReplyService.saveReplyAndRequestFeedback(reqDto, user);
-    return ResponseEntity.ok(new Message(StatusCode.OK, response));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
   }
 }
