@@ -1,5 +1,9 @@
 package com.education.takeit.roadmap.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
@@ -13,18 +17,13 @@ import com.education.takeit.roadmap.repository.ChapterRepository;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SubjectFindTest {
@@ -89,7 +88,7 @@ public class SubjectFindTest {
     List<UserContentResDto> mockContents = List.of(); // 추천컨텐츠 받을 리스트
 
     when(roadmapRepository.findByRoadmapId(roadmapId)).thenReturn(roadmap);
-//    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+    //    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
     when(chapterRepository.findBySubject(subject))
         .thenReturn(List.of(chapter1, chapter2, chapter3, chapter4, chapter5));
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);

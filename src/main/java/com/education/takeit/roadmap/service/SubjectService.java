@@ -13,10 +13,9 @@ import com.education.takeit.roadmap.repository.ChapterRepository;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,6 @@ public class SubjectService {
     }
     // roadmapId 로 roadmap 정보 조회
     Roadmap roadmap = roadmapRepository.findByRoadmapId(roadmapId);
-
 
     // subjectId 로 subject 정보 조회
     Subject subject = roadmap.getSubject();

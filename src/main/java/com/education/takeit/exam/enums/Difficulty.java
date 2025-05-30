@@ -1,9 +1,8 @@
 package com.education.takeit.exam.enums;
 
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Arrays;
 
 @AllArgsConstructor
 @Getter
