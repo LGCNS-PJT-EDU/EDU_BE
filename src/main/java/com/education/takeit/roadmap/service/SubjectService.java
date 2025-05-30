@@ -50,7 +50,7 @@ public class SubjectService {
         roadmapRepository.findBySubjectAndRoadmapManagement(subject, userRoadmapManagement);
 
     // 추천 컨텐츠 받아오기
-    List<UserContentResDto> recommendContents = recommendService.getUserContent(userId);
+    List<UserContentResDto> recommendContents = recommendService.fetchAndSaveRecommendation(userId, subjectId);
 
     // DTO화
     return new SubjectFindResDto(
