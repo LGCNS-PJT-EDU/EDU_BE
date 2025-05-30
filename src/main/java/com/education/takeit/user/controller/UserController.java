@@ -34,14 +34,15 @@ public class UserController {
 
   @PostMapping("/signup")
   @Operation(summary = "회원가입", description = "자체 서비스 회원가입 API")
-  public ResponseEntity<Message> signUp(@Valid @RequestBody UserSignupReqDto userSignupReqDto) {
+  public ResponseEntity<Message<String>> signUp(
+      @Valid @RequestBody UserSignupReqDto userSignupReqDto) {
     userService.signUp(userSignupReqDto);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
   @PostMapping("/signin")
   @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
-  public ResponseEntity<Message> signIn(@RequestBody UserSigninReqDto userSigninReqDto) {
+  public ResponseEntity<Message<String>> signIn(@RequestBody UserSigninReqDto userSigninReqDto) {
     UserSigninResDto userSigninResDto = userService.signIn(userSigninReqDto);
 
     HttpHeaders headers = new HttpHeaders();
@@ -60,33 +61,35 @@ public class UserController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
   }
 
   @DeleteMapping("/signout")
   @Operation(summary = "로그아웃", description = "로그아웃 API")
-  public ResponseEntity<Message> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
+  public ResponseEntity<Message<String>> logout(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     userService.signOut(userId);
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
   @GetMapping("/check-email")
   @Operation(summary = "이메일 중복확인", description = "이메일 중복확인 API")
-  public ResponseEntity<Message> checkEmail(@RequestParam("email") String email) {
-    return ResponseEntity.ok(new Message(StatusCode.OK, userService.checkDuplicate(email)));
+  public ResponseEntity<Message<Boolean>> checkEmail(@RequestParam("email") String email) {
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, userService.checkDuplicate(email)));
   }
 
   @PostMapping("/withdraw")
   @Operation(summary = "회원탈퇴", description = "회원 탈퇴 API")
-  public ResponseEntity<Message> Withdraw(@AuthenticationPrincipal CustomUserDetails principal) {
+  public ResponseEntity<Message<String>> Withdraw(
+      @AuthenticationPrincipal CustomUserDetails principal) {
     userService.withdraw(principal.getUserId());
-    return ResponseEntity.ok(new Message(StatusCode.OK));
+    return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
   @PostMapping("/refresh")
   @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
-  public ResponseEntity<Message> refreshAccessToken(HttpServletRequest request) {
+  public ResponseEntity<Message<String>> refreshAccessToken(HttpServletRequest request) {
     // 1. 쿠키에서 refreshToken 추출
     String refreshToken =
         Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
@@ -97,18 +100,18 @@ public class UserController {
 
     // 2. refreshToken 유무 확인
     if (refreshToken == null) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
 
     Long userId = jwtUtils.getUserId(refreshToken);
     if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
-      return ResponseEntity.ok(new Message(StatusCode.UNAUTHORIZED));
+      return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
     String newAccessToken = jwtUtils.generateAccessToken(userId);
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + newAccessToken);
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message(StatusCode.OK, "accessToken : " + newAccessToken));
+        .body(new Message<>(StatusCode.OK, "accessToken : " + newAccessToken));
   }
 }

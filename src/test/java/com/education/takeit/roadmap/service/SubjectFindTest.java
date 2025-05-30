@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.recommend.dto.UserContentResDto;
+import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.dto.SubjectFindResDto;
 import com.education.takeit.roadmap.entity.Chapter;
 import com.education.takeit.roadmap.entity.Roadmap;
@@ -35,11 +37,14 @@ public class SubjectFindTest {
 
   @Mock private RoadmapRepository roadmapRepository;
 
+  @Mock private RecommendService recommendService;
+
   @Test
   void findUserSubject_shouldReturnSubjectInfo_whenValidInput() {
     // given
     Long userId = 1L;
     Long subjectId = 35L;
+    Long roadmapId = 100L;
 
     Subject subject =
         Subject.builder()
@@ -73,11 +78,14 @@ public class SubjectFindTest {
 
     Roadmap roadmap =
         Roadmap.builder()
+            .roadmapId(roadmapId)
             .subject(subject)
             .roadmapManagement(roadmapManagement)
             .preSubmitCount(1)
             .postSubmitCount(3)
             .build();
+
+    List<UserContentResDto> mockContents = List.of(); // 추천컨텐츠 받을 리스트
 
     when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
     when(chapterRepository.findBySubject(subject))
@@ -85,6 +93,7 @@ public class SubjectFindTest {
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
     when(roadmapRepository.findBySubjectAndRoadmapManagement(subject, roadmapManagement))
         .thenReturn(roadmap);
+    when(recommendService.findRecommendations(userId, subjectId)).thenReturn(mockContents);
 
     // when
     SubjectFindResDto result = subjectService.findUserSubject(userId, subjectId);
@@ -99,6 +108,7 @@ public class SubjectFindTest {
     assertEquals("프로세스와 작업 관리", result.chapters().get(2).chapterName());
     assertEquals(1, result.preSubmitCount());
     assertEquals(3, result.postSubmitCount());
+    assertEquals(mockContents, result.recommendContents());
   }
 
   @Test
