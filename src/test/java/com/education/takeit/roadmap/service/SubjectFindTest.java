@@ -94,7 +94,7 @@ public class SubjectFindTest {
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
     when(roadmapRepository.findBySubjectAndRoadmapManagement(subject, roadmapManagement))
         .thenReturn(roadmap);
-    when(recommendService.getUserContent(userId)).thenReturn(mockContents);
+    when(recommendService.fetchAndSaveRecommendation(userId,subjectId)).thenReturn(mockContents);
 
     // when
     SubjectFindResDto result = subjectService.findUserSubject(userId, roadmapId);
