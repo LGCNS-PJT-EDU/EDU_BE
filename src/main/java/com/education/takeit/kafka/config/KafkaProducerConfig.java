@@ -37,11 +37,17 @@ public class KafkaProducerConfig {
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+    // 신뢰성 보장을 위한 핵심 설정
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true); // 해당 설정을 켜면 메세지를 한번만 발송하게 됨
     props.put(ProducerConfig.ACKS_CONFIG, "all"); // 리더 + ISR 모두 커밋 후 OK
-    props.put(ProducerConfig.RETRIES_CONFIG, 5); // 재시도 허용
-    props.put(
-        ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5); // 메세지 응답을 받지 않은 상태에서전송할 최대 메세지 수
+    props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 1로 낮춰 순서 보장 강화
+    //    // 재시도 관련 최적화
+    //    props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120_000); //총 재시도 시간 2분
+    //    props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE); // 재시도 허용
+    //    props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1_000);
+    // 재시도 테스트용 설정
+    props.put(ProducerConfig.RETRIES_CONFIG, 5); // 5회 재시도
+    props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1_000); // 1초 간격
     return new DefaultKafkaProducerFactory<>(props);
   }
 }

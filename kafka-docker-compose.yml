@@ -39,6 +39,8 @@ services:
       KAFKA_SOCKET_REQUEST_MAX_BYTES: 104857600
       # ───────── JVM 메모리 (로컬 최소화) ─────────
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+      # ───────── TOPIC 자동 생성 해제 ─────────
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
 
 volumes:

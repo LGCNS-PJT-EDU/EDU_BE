@@ -76,9 +76,6 @@ public class ExamService {
     ExamResultDto result = new ExamResultDto(userId, subject, chapters, answers);
     try {
       aiClient.postPreExam(userId, result);
-
-      saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
-
     } catch (RestClientException e) {
       log.warn("사전 평가 결과 전송 실패: {}", e.getMessage());
     }
@@ -95,6 +92,7 @@ public class ExamService {
     FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
     feedbackKafkaProducer.publish(event);
 
+    saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
   }
 
@@ -135,19 +133,24 @@ public class ExamService {
 
     try {
       aiClient.postPostExam(userId, result);
-
-      saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
-
     } catch (RestClientException e) {
       log.warn("사후 평가 결과 전송 실패: {}", e.getMessage());
     }
 
-    roadmap.setLevel(subject.level()); // 사전 평가
+    roadmap.setLevel(subject.level());
     roadmap.setPostSubmitCount(roadmap.getPostSubmitCount() + 1);
     if (!roadmap.isComplete()) roadmap.setComplete(true);
 
     roadmapRepository.save(roadmap);
 
+    // 결과 저장 성공 직후
+    Long subjectId = roadmap.getSubject().getSubId();
+    String type = "post";
+    int nth = roadmap.getPostSubmitCount();
+    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(event);
+
+    saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
   }
 
@@ -279,129 +282,5 @@ public class ExamService {
 
       userExamAnswerRepository.save(entity);
     }
-  }
-
-  public List<ExamResDto> createMock() {
-    return List.of(
-        ExamResDto.builder()
-            .questionId(1L)
-            .question("HTML 문서의 최상위 루트 요소는 무엇인가?")
-            .choice1("<html>")
-            .choice2("<head>")
-            .choice3("<body>")
-            .choice4("<doctype>")
-            .answerNum(1)
-            .chapterNum(1)
-            .chapterName("기본 구조와 시맨틱 태그")
-            .difficulty("하")
-            .build(),
-        ExamResDto.builder()
-            .questionId(2L)
-            .question("head 요소 안에 넣을 수 없는 태그는?")
-            .choice1("<title>")
-            .choice2("<link>")
-            .choice3("<meta>")
-            .choice4("<section>")
-            .answerNum(4)
-            .chapterNum(1)
-            .chapterName("기본 구조와 시맨틱 태그")
-            .difficulty("하")
-            .build(),
-        ExamResDto.builder()
-            .questionId(3L)
-            .question("단락을 나타내는 대표적인 블록 요소는?")
-            .choice1("<p>")
-            .choice2("<span>")
-            .choice3("<li>")
-            .choice4("<br>")
-            .answerNum(1)
-            .chapterNum(2)
-            .chapterName("텍스트 & 목록 요소")
-            .difficulty("하")
-            .build(),
-        ExamResDto.builder()
-            .questionId(4L)
-            .question("순서 없는 목록을 나타내는 태그는?")
-            .choice1("<ul>")
-            .choice2("<ol>")
-            .choice3("<dl>")
-            .choice4("<list>")
-            .answerNum(1)
-            .chapterNum(2)
-            .chapterName("텍스트 & 목록 요소")
-            .difficulty("중")
-            .build(),
-        ExamResDto.builder()
-            .questionId(5L)
-            .question("img 태그의 alt 속성은 어떤 용도인가?")
-            .choice1("접근성을 위한 대체 텍스트 제공")
-            .choice2("이미지 크기 자동 지정")
-            .choice3("CSS 클래스 설정")
-            .choice4("SEO 제외 요청")
-            .answerNum(1)
-            .chapterNum(3)
-            .chapterName("이미지·멀티미디어 & IFrame")
-            .difficulty("중")
-            .build(),
-        ExamResDto.builder()
-            .questionId(6L)
-            .question("video 태그에서 controls 속성의 역할은?")
-            .choice1("재생 버튼 등을 사용자에게 표시")
-            .choice2("자동 재생")
-            .choice3("반복 재생")
-            .choice4("음소거 재생")
-            .answerNum(1)
-            .chapterNum(3)
-            .chapterName("이미지·멀티미디어 & IFrame")
-            .difficulty("하")
-            .build(),
-        ExamResDto.builder()
-            .questionId(7L)
-            .question("폼에서 사용자의 이메일 형식을 검증하려면 어떤 input 타입을 써야 하는가?")
-            .choice1("email")
-            .choice2("text")
-            .choice3("url")
-            .choice4("search")
-            .answerNum(1)
-            .chapterNum(4)
-            .chapterName("폼 & 입력 요소")
-            .difficulty("중")
-            .build(),
-        ExamResDto.builder()
-            .questionId(8L)
-            .question("서로 배타적인 Radio 버튼을 그룹화하려면 동일한 속성은?")
-            .choice1("name")
-            .choice2("id")
-            .choice3("value")
-            .choice4("for")
-            .answerNum(1)
-            .chapterNum(4)
-            .chapterName("폼 & 입력 요소")
-            .difficulty("하")
-            .build(),
-        ExamResDto.builder()
-            .questionId(9L)
-            .question("HTML 테이블에서 한 행을 나타내는 요소는?")
-            .choice1("<tr>")
-            .choice2("<th>")
-            .choice3("<td>")
-            .choice4("<tbody>")
-            .answerNum(1)
-            .chapterNum(5)
-            .chapterName("테이블·메타데이터 & 접근성")
-            .difficulty("중")
-            .build(),
-        ExamResDto.builder()
-            .questionId(10L)
-            .question("표의 열 제목을 나타내는 시맨틱 태그는?")
-            .choice1("<th>")
-            .choice2("<td>")
-            .choice3("<caption>")
-            .choice4("<colgroup>")
-            .answerNum(1)
-            .chapterNum(5)
-            .chapterName("테이블·메타데이터 & 접근성")
-            .difficulty("중")
-            .build());
   }
 }
