@@ -8,7 +8,6 @@ import com.education.takeit.interview.dto.InterviewContentResDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
 import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.service.InterviewService;
-import com.education.takeit.interview.service.UserInterviewReplyService;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "면접", description = "면접 관련 API")
 public class InterviewController {
   private final InterviewService interviewService;
-  private final UserInterviewReplyService userInterviewReplyService;
   private final UserRepository userRepository;
 
   @GetMapping("/list")
@@ -48,8 +46,7 @@ public class InterviewController {
             .findByUserId(userId)
             .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-    InterviewFeedbackResDto response =
-        userInterviewReplyService.saveReplyAndRequestFeedback(reqDto, user);
+    InterviewFeedbackResDto response = interviewService.saveReplyAndRequestFeedback(reqDto, user);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
   }
 }
