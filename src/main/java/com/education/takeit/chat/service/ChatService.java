@@ -1,9 +1,13 @@
 package com.education.takeit.chat.service;
 
+import com.education.takeit.chat.dto.ChatFindResDto;
 import com.education.takeit.chat.entity.Chat;
 import com.education.takeit.chat.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,5 +18,18 @@ public class ChatService {
     Chat chat =
         Chat.builder().userMessage(userMessage).aiMessage(aiResponse).userId(userId).build();
     chatRepository.save(chat);
+  }
+
+  public List<ChatFindResDto> findUserChat(Long userId){
+    List<Chat> chats = chatRepository.findAllByUserId(userId);
+    List<ChatFindResDto> chatFindResDtos = new ArrayList<>();
+
+    for(Chat chat : chats){
+      ChatFindResDto chatFindResDto =
+              new ChatFindResDto(chat.getUserMessage(), chat.getAiMessage(), chat.getChatTimestamp());
+      chatFindResDtos.add(chatFindResDto);
+    }
+
+    return chatFindResDtos;
   }
 }
