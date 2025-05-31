@@ -74,6 +74,10 @@ dependencies {
     testImplementation 'com.h2database:h2'
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {
