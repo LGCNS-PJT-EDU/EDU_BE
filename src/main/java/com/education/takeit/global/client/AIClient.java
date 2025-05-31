@@ -1,5 +1,7 @@
 package com.education.takeit.global.client;
 
+import com.education.takeit.chat.dto.ChatReqDto;
+import com.education.takeit.chat.dto.ChatResDto;
 import com.education.takeit.exam.dto.ExamResDto;
 import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
@@ -107,6 +109,30 @@ public class AIClient {
     return Arrays.asList(response);
   }
 
+  private <T> T postForObject(
+      String uri, Object body, Class<T> responseType, Object... uriVariables) {
+    log.info("FastAPI POST 요청 시도: {}", uri);
+    return restClient
+        .post()
+        .uri(baseUrl + uri, uriVariables)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(body)
+        .retrieve()
+        .onStatus(
+            status -> status.is4xxClientError(),
+            (req, res) -> {
+              log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
+              throw new BadRequestException("잘못된 요청입니다.");
+            })
+        .onStatus(
+            status -> status.is5xxServerError(),
+            (req, res) -> {
+              log.error("FastAPI POST 실패: 상태코드={}", res.getStatusCode());
+              throw new CustomException(StatusCode.AI_CONNECTION_FAILED);
+            })
+        .body(responseType);
+  }
+
   /** 사용자 피드백 조회 */
   public List<FeedbackResponseDto> getFeedback(Long userId) {
     return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
@@ -145,5 +171,20 @@ public class AIClient {
         UserContentResDto[].class,
         userId,
         subjectId);
+  }
+
+  public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
+    // return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
+
+    String userMessage = chatRequestDto.message();
+
+    String mockResponse =
+        switch (userMessage) {
+          case "안녕" -> "안녕하세요! 무엇을 도와드릴까요?";
+          case "스프링 부트란?" -> "Spring Boot는 자바 기반 프레임워크입니다.";
+          default -> "죄송해요, 잘 이해하지 못했어요.";
+        };
+
+    return new ChatResDto(mockResponse);
   }
 }
