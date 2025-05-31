@@ -38,7 +38,7 @@ public class InterviewService {
     Collections.shuffle(interviewList);
     return interviewList.stream()
         .limit(3)
-        .map(i -> new InterviewContentResDto(i.getInterviewId(),i.getInterviewContent()))
+        .map(i -> new InterviewContentResDto(i.getInterviewId(), i.getInterviewContent()))
         .toList();
   }
 
