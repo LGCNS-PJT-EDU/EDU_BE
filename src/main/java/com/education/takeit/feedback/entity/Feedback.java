@@ -4,10 +4,12 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "feedback")
 @Getter
+@NoArgsConstructor
 public class Feedback {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
