@@ -46,8 +46,7 @@ public class InterviewController {
             .findByUserId(userId)
             .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-    InterviewFeedbackResDto response =
-        interviewService.saveReplyAndRequestFeedback(reqDto, user);
+    InterviewFeedbackResDto response = interviewService.saveReplyAndRequestFeedback(reqDto, user);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
   }
 }
