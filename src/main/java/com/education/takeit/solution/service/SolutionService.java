@@ -29,7 +29,7 @@ public class SolutionService {
   // 해설 조회
   public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
     List<UserExamAnswer> solutionList =
-        userExamAnswerRepository.findByUser_UserIdAndExam_Subject_SubId(userId, subjectId);
+        userExamAnswerRepository.findByUser_UserIdAndSubject_SubId(userId, subjectId);
 
     if (solutionList.isEmpty()) {
       throw new CustomException(StatusCode.NOT_FOUND_SOLUTION);
