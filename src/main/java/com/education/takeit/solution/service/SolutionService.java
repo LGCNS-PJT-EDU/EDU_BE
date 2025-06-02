@@ -13,10 +13,11 @@ import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +71,7 @@ public class SolutionService {
       }
 
       int nth;
-      Roadmap roadmap = roadmapRepository.findBySubject_SubId(subject.getSubId());
+      Roadmap roadmap = roadmapRepository.findBySubject_SubIdAndRoadmapManagement_UserId(subject.getSubId(),userId);
       if (!isPre) {
         nth = roadmap.getPostSubmitCount() + 1;
       } else {

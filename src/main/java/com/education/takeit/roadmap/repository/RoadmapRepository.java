@@ -3,8 +3,9 @@ package com.education.takeit.roadmap.repository;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
   List<Roadmap> findByRoadmapManagement_RoadmapManagementId(Long id);
@@ -13,5 +14,5 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
 
   Roadmap findBySubjectAndRoadmapManagement(Subject subject, RoadmapManagement roadmapManagement);
 
-  Roadmap findBySubject_SubId(Long subId);
+  Roadmap findBySubject_SubIdAndRoadmapManagement_UserId(Long subId, Long userId);
 }
