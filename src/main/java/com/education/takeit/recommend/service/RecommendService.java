@@ -1,29 +1,25 @@
 package com.education.takeit.recommend.service;
 
+import com.education.takeit.exam.service.ExamService;
 import com.education.takeit.global.client.AIClient;
-import com.education.takeit.global.dto.StatusCode;
-import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import com.education.takeit.recommend.entity.UserContent;
-import com.education.takeit.recommend.repository.TotalContentRepository;
 import com.education.takeit.recommend.repository.UserContentRepository;
-import com.education.takeit.roadmap.entity.Subject;
-import com.education.takeit.roadmap.repository.SubjectRepository;
-import com.education.takeit.user.entity.User;
-import com.education.takeit.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecommendService {
   private final UserContentRepository userContentRepository;
-  private final TotalContentRepository totalContentRepository;
-  private final UserRepository userRepository;
-  private final SubjectRepository subjectRepository;
+  private final ExamService examService;
   private final AIClient aiClient;
 
   // 마이페이지에서 사용자 추천 컨텐츠 조회
@@ -73,36 +69,16 @@ public class RecommendService {
   }
 
   // 추천 컨텐츠 요청
-  public List<UserContentResDto> fetchAndSaveRecommendation(Long userId, Long subjectId) {
-    List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
-    saveUserContent(userId, recommendationList);
-    return recommendationList;
-  }
-
-  // DB에 저장
-  private void saveUserContent(Long userId, List<UserContentResDto> userContentList) {
-    User user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-
-    List<UserContent> contentList =
-        userContentList.stream()
-            .map(
-                dto -> {
-                  TotalContent totalContent =
-                      totalContentRepository
-                          .findById(dto.contentId())
-                          .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
-                  Subject subject =
-                      subjectRepository
-                          .findById(dto.subjectId())
-                          .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(
-                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
-                })
-            .toList();
-
-    userContentRepository.saveAll(contentList);
+  @Async // FastAPI로 요청을 보내고 응답 받는 것은 비동기로 처리. 응답을 생성하는데 시간이 오래 걸리기 때문.
+  public void fetchAndSaveRecommendation(Long userId, Long subjectId) {
+      try {
+          List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
+          examService.saveUserContent(userId, recommendationList);
+          log.info("추천 컨텐츠 저장 완료!!!!!!!!!!!!!!! userId  : {}, subjectId  : {}", userId, subjectId);
+      } catch (Exception e) {
+          // 도메인 로직 중 발생한 예외
+          log.warn("추천 컨텐츠 저장 실패!!!!!!!!!!!!!!!!!! - userId: {}, subjectId: {}, reason: {}",
+                  userId, subjectId, e.getMessage(), e);
+      }
   }
 }
