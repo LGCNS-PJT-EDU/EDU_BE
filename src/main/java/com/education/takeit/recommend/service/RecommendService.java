@@ -6,13 +6,12 @@ import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import com.education.takeit.recommend.entity.UserContent;
 import com.education.takeit.recommend.repository.UserContentRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,14 +70,18 @@ public class RecommendService {
   // 추천 컨텐츠 요청
   @Async // FastAPI로 요청을 보내고 응답 받는 것은 비동기로 처리. 응답을 생성하는데 시간이 오래 걸리기 때문.
   public void fetchAndSaveRecommendation(Long userId, Long subjectId) {
-      try {
-          List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
-          examService.saveUserContent(userId, recommendationList);
-          log.info("추천 컨텐츠 저장 완료!!!!!!!!!!!!!!! userId  : {}, subjectId  : {}", userId, subjectId);
-      } catch (Exception e) {
-          // 도메인 로직 중 발생한 예외
-          log.warn("추천 컨텐츠 저장 실패!!!!!!!!!!!!!!!!!! - userId: {}, subjectId: {}, reason: {}",
-                  userId, subjectId, e.getMessage(), e);
-      }
+    try {
+      List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
+      examService.saveUserContent(userId, recommendationList);
+      log.info("추천 컨텐츠 저장 완료!!!!!!!!!!!!!!! userId  : {}, subjectId  : {}", userId, subjectId);
+    } catch (Exception e) {
+      // 도메인 로직 중 발생한 예외
+      log.warn(
+          "추천 컨텐츠 저장 실패!!!!!!!!!!!!!!!!!! - userId: {}, subjectId: {}, reason: {}",
+          userId,
+          subjectId,
+          e.getMessage(),
+          e);
+    }
   }
 }
