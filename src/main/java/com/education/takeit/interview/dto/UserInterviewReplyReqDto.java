@@ -1,3 +1,8 @@
 package com.education.takeit.interview.dto;
 
-public record UserInterviewReplyReqDto(Long interviewId, String userReply) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record UserInterviewReplyReqDto(
+        Long interviewId,
+        String userReply
+) {}
