@@ -70,7 +70,9 @@ public class SolutionService {
       }
 
       int nth;
-      Roadmap roadmap = roadmapRepository.findBySubject_SubId(subject.getSubId());
+      Roadmap roadmap =
+          roadmapRepository.findBySubject_SubIdAndRoadmapManagement_UserId(
+              subject.getSubId(), userId);
       if (!isPre) {
         nth = roadmap.getPostSubmitCount() + 1;
       } else {
