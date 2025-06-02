@@ -29,6 +29,6 @@ public class UserInterviewReply {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @Column(name="ai_feedback",nullable = false,columnDefinition = "TEXT")
+  @Column(name = "ai_feedback", nullable = false, columnDefinition = "TEXT")
   private String aiFeedback;
 }

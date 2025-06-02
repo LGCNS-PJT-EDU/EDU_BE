@@ -67,12 +67,12 @@ public class InterviewService {
             reqDto.userReply(), bestAnswer);
     String feedback = openAiRestClient.requestInterviewFeedback(prompt);
     UserInterviewReply reply =
-            UserInterviewReply.builder()
-                    .userReply(reqDto.userReply())
-                    .interview(interview)
-                    .user(user)
-                    .aiFeedback(feedback)
-                    .build();
+        UserInterviewReply.builder()
+            .userReply(reqDto.userReply())
+            .interview(interview)
+            .user(user)
+            .aiFeedback(feedback)
+            .build();
     replyRepository.save(reply);
 
     return new InterviewFeedbackResDto(feedback);
