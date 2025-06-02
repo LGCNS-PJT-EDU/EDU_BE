@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,13 +32,13 @@ public class RecommendController {
     return ResponseEntity.ok(new Message<>(StatusCode.OK, contentList));
   }
 
-  @GetMapping("/contents")
-  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
-  public ResponseEntity<Message<List<UserContentResDto>>> getrecommendation(
-      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
-    Long userId = userDetails.getUserId();
-    List<UserContentResDto> recommendationList =
-        recommendService.fetchAndSaveRecommendation(userId, subjectId);
-    return ResponseEntity.ok(new Message<>(StatusCode.OK, recommendationList));
-  }
+  //  @GetMapping("/contents")
+  //  @Operation(summary = "추천 컨텐츠 생성 요청", description = "fastAPI에 추천 컨텐츠 생성 요청 보내는 API")
+  //  public ResponseEntity<Message<List<UserContentResDto>>> getrecommendation(
+  //      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
+  //    Long userId = userDetails.getUserId();
+  //    List<UserContentResDto> recommendationList =
+  //        recommendService.fetchAndSaveRecommendation(userId, subjectId);
+  //    return ResponseEntity.ok(new Message<>(StatusCode.OK, recommendationList));
+  //  }
 }
