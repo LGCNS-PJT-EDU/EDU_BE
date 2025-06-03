@@ -274,7 +274,7 @@ public class ExamService {
     for (ExamAnswerDto answer : answers) {
       Exam exam =
           examRepository
-              .findById(answer.examId())
+              .findByExamContent(answer.examContent())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
       UserExamAnswer entity =

@@ -63,7 +63,6 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPreExam(userId, examAnswerRes);
-    solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), true);
     recommendService.fetchAndSaveRecommendation(userId, examAnswerRes.subjectId());
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
@@ -104,7 +103,6 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPostExam(userId, examAnswerRes);
-    solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), false);
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 }
