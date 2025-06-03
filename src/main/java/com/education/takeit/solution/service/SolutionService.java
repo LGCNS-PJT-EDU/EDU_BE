@@ -59,35 +59,37 @@ public class SolutionService {
         .collect(Collectors.toList());
   }
 
-  public void saveAllUserSolutions(Long userId, List<ExamAnswerDto> answers, boolean isPre) {
-    User user = userRepository.findById(userId).orElseThrow();
+  //중복되는 메소드라서 주석처리 하겠습니다. - Honey
 
-    for (ExamAnswerDto answer : answers) {
-      Exam exam = examRepository.findByExamId(answer.examId());
-      Subject subject = exam.getSubject();
-      if (subject == null) {
-        throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
-      }
-
-      int nth;
-      Roadmap roadmap =
-          roadmapRepository.findBySubject_SubIdAndRoadmapManagement_UserId(
-              subject.getSubId(), userId);
-      if (!isPre) {
-        nth = roadmap.getPostSubmitCount() + 1;
-      } else {
-        nth = 1;
-      }
-      UserExamAnswer userExamAnswer =
-          UserExamAnswer.builder()
-              .user(user)
-              .subject(subject)
-              .exam(exam)
-              .userAnswer(answer.userAnswer())
-              .isPre(isPre)
-              .nth(nth)
-              .build();
-      userExamAnswerRepository.save(userExamAnswer);
-    }
-  }
+//  public void saveAllUserSolutions(Long userId, List<ExamAnswerDto> answers, boolean isPre) {
+//    User user = userRepository.findById(userId).orElseThrow();
+//
+//    for (ExamAnswerDto answer : answers) {
+//      Exam exam = examRepository.findByExamId(answer.examId());
+//      Subject subject = exam.getSubject();
+//      if (subject == null) {
+//        throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
+//      }
+//
+//      int nth;
+//      Roadmap roadmap =
+//          roadmapRepository.findBySubject_SubIdAndRoadmapManagement_UserId(
+//              subject.getSubId(), userId);
+//      if (!isPre) {
+//        nth = roadmap.getPostSubmitCount() + 1;
+//      } else {
+//        nth = 1;
+//      }
+//      UserExamAnswer userExamAnswer =
+//          UserExamAnswer.builder()
+//              .user(user)
+//              .subject(subject)
+//              .exam(exam)
+//              .userAnswer(answer.userAnswer())
+//              .isPre(isPre)
+//              .nth(nth)
+//              .build();
+//      userExamAnswerRepository.save(userExamAnswer);
+//    }
+//  }
 }
