@@ -29,5 +29,4 @@ public class RoadmapManagement {
   @UpdateTimestamp
   @Column(name = "roadmap_timestamp")
   private LocalDateTime roadmapTimestamp;
-
 }

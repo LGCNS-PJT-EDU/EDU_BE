@@ -11,8 +11,6 @@ import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
-import com.education.takeit.user.entity.LectureAmount;
-import com.education.takeit.user.entity.PriceLevel;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -235,8 +233,7 @@ public class RoadmapService {
     return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
   }
 
-  public void saveRoadmap(
-      Long userId, List<Long> subjectIds) {
+  public void saveRoadmap(Long userId, List<Long> subjectIds) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
