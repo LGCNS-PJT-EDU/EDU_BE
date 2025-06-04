@@ -1,0 +1,33 @@
+{
+  "name":"mysql-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "tasks.max":"1",
+    "database.server.id": "351597341",
+    "database.server.name": "mysql",
+    "database.hostname": "takeitdb.che8i624uxfd.ap-northeast-2.rds.amazonaws.com",
+    "database.port": "3306",
+    "database.user": "takeit",
+    "database.password": "takeit1029!",
+    "database.include.list": "takeitdb",
+    "table.include.list": "takeitdb.users",
+
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:19092",
+    "schema.history.internal.kafka.topic": "schemahistory.users",
+
+    "topic.prefix": "mysql",
+    "topic.creation.enable": "true",
+    "topic.creation.default.replication.factor": "1",
+    "topic.creation.default.partitions": "3",
+
+    "snapshot.mode": "when_needed",
+    "database.history.kafka.recovery.poll.interval.ms": "10000",
+    "database.history.kafka.recovery.attempts": "100",
+    "tombstones.on.delete": false,
+
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": true,
+    "transforms.unwrap.delete.handling.mode": "drop"
+  }
+}
