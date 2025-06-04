@@ -439,13 +439,13 @@ public class RoadmapService {
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
 
     List<SubjectDto> subjects =
-            roadmaps.stream()
-                    .sorted(Comparator.comparing(Roadmap::getOrderSub))
-                    .map(
-                            r ->
-                                    new SubjectDto(
-                                            r.getSubject().getSubId(), r.getSubject().getSubNm(), r.getOrderSub()))
-                    .toList();
+        roadmaps.stream()
+            .sorted(Comparator.comparing(Roadmap::getOrderSub))
+            .map(
+                r ->
+                    new SubjectDto(
+                        r.getSubject().getSubId(), r.getSubject().getSubNm(), r.getOrderSub()))
+            .toList();
 
     String roadmapName = roadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
     Long userLocationSubjectId = findUserLocationRoadmap(roadmaps);

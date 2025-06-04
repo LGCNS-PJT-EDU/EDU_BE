@@ -4,7 +4,6 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.*;
-import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.service.RoadmapService;
 import com.education.takeit.roadmap.service.RoadmapTransactionalService;
 import com.education.takeit.roadmap.service.SubjectService;

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.dto.RoadmapFindResDto;
-import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.entity.Track;
