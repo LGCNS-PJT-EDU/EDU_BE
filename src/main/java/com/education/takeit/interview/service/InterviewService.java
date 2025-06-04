@@ -28,7 +28,6 @@ public class InterviewService {
   private final UserInterviewReplyRepository replyRepository;
   private final OpenAiRestClient openAiRestClient;
 
-
   public List<InterviewContentResDto> getInterview(Long subjectId) {
     // subjectId 로 subject 정보 조회
     Subject subject =
@@ -80,19 +79,19 @@ public class InterviewService {
     return new InterviewFeedbackResDto(feedback);
   }
 
-  public List<InterviewHistoryResDto> getInterviewHistory(Long userId){
+  public List<InterviewHistoryResDto> getInterviewHistory(Long userId) {
     List<UserInterviewReply> replyList = replyRepository.findByUser_UserId(userId);
     return replyList.stream()
-            .map(r-> InterviewHistoryResDto.builder()
+        .map(
+            r ->
+                InterviewHistoryResDto.builder()
                     .interviewContent(r.getInterview().getInterviewContent())
                     .subId(r.getInterview().getSubject().getSubId())
                     .nth(r.getInterview().getNth())
                     .userReply(r.getUserReply())
                     .aiFeedback(r.getAiFeedback())
                     .interviewAnswer(r.getInterview().getInterviewAnswer())
-                            .build())
-            .toList();
+                    .build())
+        .toList();
   }
 }
-
-
