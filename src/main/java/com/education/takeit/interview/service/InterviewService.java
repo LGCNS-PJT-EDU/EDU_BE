@@ -5,6 +5,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.InterviewContentResDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
+import com.education.takeit.interview.dto.InterviewHistoryResDto;
 import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.entity.Interview;
 import com.education.takeit.interview.entity.UserInterviewReply;
@@ -76,5 +77,21 @@ public class InterviewService {
     replyRepository.save(reply);
 
     return new InterviewFeedbackResDto(feedback);
+  }
+
+  public List<InterviewHistoryResDto> getInterviewHistory(Long userId) {
+    List<UserInterviewReply> replyList = replyRepository.findByUser_UserId(userId);
+    return replyList.stream()
+        .map(
+            r ->
+                InterviewHistoryResDto.builder()
+                    .interviewContent(r.getInterview().getInterviewContent())
+                    .subId(r.getInterview().getSubject().getSubId())
+                    .nth(r.getInterview().getNth())
+                    .userReply(r.getUserReply())
+                    .aiFeedback(r.getAiFeedback())
+                    .interviewAnswer(r.getInterview().getInterviewAnswer())
+                    .build())
+        .toList();
   }
 }

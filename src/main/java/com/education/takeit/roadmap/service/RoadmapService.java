@@ -11,6 +11,8 @@ import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.user.entity.LectureAmount;
+import com.education.takeit.user.entity.PriceLevel;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -240,6 +242,15 @@ public class RoadmapService {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
     }
 
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder()
+            .roadmapNm("Roadmap")
+            .roadmapTimestamp(LocalDateTime.now())
+            .userId(userId)
+            .build();
+
+    roadmapManagementRepository.save(roadmapManagement);
+
     LectureAmount lectureAmount = null;
     PriceLevel priceLevel = null;
     Boolean likesBooks = null;
@@ -258,18 +269,11 @@ public class RoadmapService {
         likesBooks = value.equals("Y");
       }
     }
-
-    RoadmapManagement roadmapManagement =
-        RoadmapManagement.builder()
-            .roadmapNm("Roadmap")
-            .roadmapTimestamp(LocalDateTime.now())
-            .userId(userId)
-            .lectureAmount(lectureAmount)
-            .priceLevel(priceLevel)
-            .likesBooks(likesBooks)
-            .build();
-
-    roadmapManagementRepository.save(roadmapManagement);
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    user.updatePreferences(lectureAmount, priceLevel, likesBooks);
 
     List<Subject> subjectList = subjectRepository.findAllById(subjectIds);
 
