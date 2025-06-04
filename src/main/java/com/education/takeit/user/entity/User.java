@@ -61,10 +61,10 @@ public class User {
     }
   }
 
-  public void updatePreferences(LectureAmount lectureAmount, PriceLevel priceLevel, Boolean likesBooks) {
+  public void updatePreferences(
+      LectureAmount lectureAmount, PriceLevel priceLevel, Boolean likesBooks) {
     this.lectureAmount = lectureAmount;
     this.priceLevel = priceLevel;
     this.likesBooks = likesBooks;
   }
-
 }

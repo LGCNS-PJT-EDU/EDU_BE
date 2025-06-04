@@ -82,7 +82,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(userId, subjectIds,answers);
+      saveRoadmap(userId, subjectIds, answers);
 
       return roadmapSaveResDto;
     }
@@ -235,7 +235,8 @@ public class RoadmapService {
     return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
   }
 
-  public void saveRoadmap(Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
+  public void saveRoadmap(
+      Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
@@ -268,9 +269,11 @@ public class RoadmapService {
         likesBooks = value.equals("Y");
       }
     }
-    User user = userRepository.findById(userId)
+    User user =
+        userRepository
+            .findById(userId)
             .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
-    user.updatePreferences(lectureAmount,priceLevel,likesBooks);
+    user.updatePreferences(lectureAmount, priceLevel, likesBooks);
 
     List<Subject> subjectList = subjectRepository.findAllById(subjectIds);
 
@@ -336,7 +339,7 @@ public class RoadmapService {
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
-    saveRoadmap(userId, subjectIds,answers);
+    saveRoadmap(userId, subjectIds, answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
