@@ -38,6 +38,15 @@ public class User {
   @Column(name = "is_active", nullable = false)
   private Boolean active = true; // 계정 활성화 여부(탈퇴 여부) 저장
 
+  @Enumerated(EnumType.STRING)
+  private LectureAmount lectureAmount;
+
+  @Enumerated(EnumType.STRING)
+  private PriceLevel priceLevel;
+
+  @Column(name = "likes_books")
+  private Boolean likesBooks; // Y: true, N: false
+
   @Builder
   public User(String email, String nickname, String password, LoginType loginType) {
     this.email = email;
