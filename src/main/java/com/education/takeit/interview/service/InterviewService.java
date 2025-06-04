@@ -40,7 +40,7 @@ public class InterviewService {
     Collections.shuffle(interviewList);
     return interviewList.stream()
         .limit(3)
-        .map(i -> new InterviewContentResDto(i.getInterviewContent()))
+        .map(i -> new InterviewContentResDto(i.getInterviewId(), i.getInterviewContent()))
         .toList();
   }
 
@@ -51,14 +51,6 @@ public class InterviewService {
         interviewRepository
             .findById(reqDto.interviewId())
             .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
-    UserInterviewReply reply =
-        UserInterviewReply.builder()
-            .userReply(reqDto.userReply())
-            .interview(interview)
-            .user(user)
-            .build();
-
-    replyRepository.save(reply);
 
     String bestAnswer = interview.getInterviewAnswer();
     String prompt =
@@ -76,6 +68,15 @@ public class InterviewService {
             """,
             reqDto.userReply(), bestAnswer);
     String feedback = openAiRestClient.requestInterviewFeedback(prompt);
+    UserInterviewReply reply =
+        UserInterviewReply.builder()
+            .userReply(reqDto.userReply())
+            .interview(interview)
+            .user(user)
+            .aiFeedback(feedback)
+            .build();
+    replyRepository.save(reply);
+
     return new InterviewFeedbackResDto(feedback);
   }
 

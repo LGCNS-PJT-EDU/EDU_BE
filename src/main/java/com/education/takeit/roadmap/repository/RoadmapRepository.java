@@ -13,5 +13,5 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
 
   Roadmap findBySubjectAndRoadmapManagement(Subject subject, RoadmapManagement roadmapManagement);
 
-  Roadmap findBySubject_SubId(Long subId);
+  Roadmap findBySubject_SubIdAndRoadmapManagement_UserId(Long subId, Long userId);
 }

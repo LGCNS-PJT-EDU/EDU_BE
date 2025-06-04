@@ -9,6 +9,11 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.kafka.dto.FeedbackRequestDto;
 import com.education.takeit.kafka.producer.FeedbackKafkaProducer;
+import com.education.takeit.recommend.dto.UserContentResDto;
+import com.education.takeit.recommend.entity.TotalContent;
+import com.education.takeit.recommend.entity.UserContent;
+import com.education.takeit.recommend.repository.TotalContentRepository;
+import com.education.takeit.recommend.repository.UserContentRepository;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
@@ -40,6 +45,8 @@ public class ExamService {
   private final SubjectRepository subjectRepository;
   private final ExamRepository examRepository;
   private final UserExamAnswerRepository userExamAnswerRepository;
+  private final TotalContentRepository totalContentRepository;
+  private final UserContentRepository userContentRepository;
 
   /**
    * 사전 평가 문제 조회
@@ -267,7 +274,7 @@ public class ExamService {
     for (ExamAnswerDto answer : answers) {
       Exam exam =
           examRepository
-              .findById(answer.examId())
+              .findByExamContent(answer.examContent())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
       UserExamAnswer entity =
@@ -282,5 +289,32 @@ public class ExamService {
 
       userExamAnswerRepository.save(entity);
     }
+  }
+
+  // DB에 저장
+  public void saveUserContent(Long userId, List<UserContentResDto> userContentList) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+
+    List<UserContent> contentList =
+        userContentList.stream()
+            .map(
+                dto -> {
+                  TotalContent totalContent =
+                      totalContentRepository
+                          .findById(dto.contentId())
+                          .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
+                  Subject subject =
+                      subjectRepository
+                          .findById(dto.subjectId())
+                          .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+                  return new UserContent(
+                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
+                })
+            .toList();
+
+    userContentRepository.saveAll(contentList);
   }
 }

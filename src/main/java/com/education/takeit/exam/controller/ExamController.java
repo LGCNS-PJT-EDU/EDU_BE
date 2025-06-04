@@ -7,6 +7,7 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
+import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.solution.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ public class ExamController {
 
   private final ExamService examService;
   private final SolutionService solutionService;
+  private final RecommendService recommendService;
 
   /**
    * 사전 평가 GET 요청(10문제)
@@ -61,7 +63,7 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPreExam(userId, examAnswerRes);
-    solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), true);
+    recommendService.fetchAndSaveRecommendation(userId, examAnswerRes.subjectId());
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
@@ -101,7 +103,6 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPostExam(userId, examAnswerRes);
-    solutionService.saveAllUserSolutions(userId, examAnswerRes.answers(), false);
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 }
