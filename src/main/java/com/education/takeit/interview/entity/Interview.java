@@ -25,4 +25,7 @@ public class Interview {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
+
+  @Column(name = "nth", nullable = false)
+  private Integer nth;
 }
