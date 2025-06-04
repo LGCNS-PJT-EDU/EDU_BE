@@ -26,6 +26,6 @@ public class Interview {
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
 
-  @Column(name = "nth",nullable = false)
+  @Column(name = "nth", nullable = false)
   private Integer nth;
 }

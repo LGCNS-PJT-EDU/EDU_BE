@@ -56,9 +56,9 @@ public class InterviewController {
   @GetMapping("/history")
   @Operation(summary = "면접 내역 조회", description = "사용자 면접 기록을 회차별로 조회하는 API")
   public ResponseEntity<Message<List<InterviewHistoryResDto>>> getInterviewHistory(
-          @RequestParam("userId") Long userId
-  ){
-    List<InterviewHistoryResDto> interviewHistoryList=interviewService.getInterviewHistory(userId);
-    return ResponseEntity.ok(new Message<>(StatusCode.OK,interviewHistoryList));
+      @RequestParam("userId") Long userId) {
+    List<InterviewHistoryResDto> interviewHistoryList =
+        interviewService.getInterviewHistory(userId);
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewHistoryList));
   }
 }
