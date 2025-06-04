@@ -1,4 +1,4 @@
-package com.education.takeit.roadmap.entity;
+package com.education.takeit.user.entity;
 
 public enum PriceLevel {
   FREE,

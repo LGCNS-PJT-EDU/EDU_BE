@@ -29,13 +29,4 @@ public class RoadmapManagement {
   @UpdateTimestamp
   @Column(name = "roadmap_timestamp")
   private LocalDateTime roadmapTimestamp;
-
-  @Enumerated(EnumType.STRING)
-  private LectureAmount lectureAmount;
-
-  @Enumerated(EnumType.STRING)
-  private PriceLevel priceLevel;
-
-  @Column(name = "likes_books")
-  private Boolean likesBooks; // Y: true, N: false
 }

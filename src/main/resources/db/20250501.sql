@@ -24,7 +24,10 @@ CREATE TABLE users (
   nickname VARCHAR(255) NOT NULL,
   password VARCHAR(255),
   login_type VARCHAR(50) NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  lecture_amount VARCHAR(255),
+  price_level VARCHAR(255),
+  likes_books BOOLEAN
 );
 
 -- diagnosis 테이블 생성
@@ -171,10 +174,7 @@ CREATE TABLE roadmap_management(
     roadmap_management_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     roadmap_nm VARCHAR(255),
     roadmap_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    lecture_amount VARCHAR(255),
-    price_level VARCHAR(255),
     user_id BIGINT NOT NULL,
-    likes_books BOOLEAN,
     CONSTRAINT fk_roadmap_management_users FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
