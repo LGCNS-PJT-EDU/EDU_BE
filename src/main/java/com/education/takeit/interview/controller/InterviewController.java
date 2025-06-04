@@ -6,6 +6,7 @@ import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.interview.dto.InterviewContentResDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
+import com.education.takeit.interview.dto.InterviewHistoryResDto;
 import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.service.InterviewService;
 import com.education.takeit.user.entity.User;
@@ -48,5 +49,14 @@ public class InterviewController {
 
     InterviewFeedbackResDto response = interviewService.saveReplyAndRequestFeedback(reqDto, user);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
+  }
+
+  @GetMapping("/history")
+  @Operation(summary = "면접 내역 조회", description = "사용자 면접 기록을 회차별로 조회하는 API")
+  public ResponseEntity<Message<List<InterviewHistoryResDto>>> getInterviewHistory(
+          @RequestParam("userId") Long userId
+  ){
+    List<InterviewHistoryResDto> interviewHistoryList=interviewService.getInterviewHistory(userId);
+    return ResponseEntity.ok(new Message<>(StatusCode.OK,interviewHistoryList));
   }
 }
