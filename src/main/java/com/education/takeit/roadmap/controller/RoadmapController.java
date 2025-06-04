@@ -4,6 +4,7 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.roadmap.dto.*;
+import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.service.RoadmapService;
 import com.education.takeit.roadmap.service.RoadmapTransactionalService;
 import com.education.takeit.roadmap.service.SubjectService;
@@ -68,9 +69,9 @@ public class RoadmapController {
 
   @GetMapping("/default")
   @Operation(summary = "기본 로드맵 제공", description = "기본 로드맵 제공 API")
-  public ResponseEntity<Message<List<SubjectDto>>> findDefaultRoadmap(
+  public ResponseEntity<Message<RoadmapFindResDto>> findDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType) {
-    List<SubjectDto> defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
+    RoadmapFindResDto defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, defaultRoadmap));
   }
 

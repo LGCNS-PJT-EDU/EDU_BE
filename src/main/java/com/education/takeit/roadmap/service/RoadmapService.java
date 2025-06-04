@@ -13,6 +13,7 @@ import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import com.education.takeit.user.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,7 @@ public class RoadmapService {
   private final RoadmapRepository roadmapRepository;
   private final UserRepository userRepository;
   private final RoadmapTransactionalService roadmapTransactionalService;
+  private final UserService userService;
 
   public RoadmapSaveResDto selectRoadmap(Long userId, List<DiagnosisAnswerRequest> answers) {
 
@@ -422,7 +424,7 @@ public class RoadmapService {
     roadmapRepository.saveAll(toSave);
   }
 
-  public List<SubjectDto> getDefaultRoadmap(String defaultRoadmapType) {
+  public RoadmapFindResDto getDefaultRoadmap(String defaultRoadmapType) {
     long roadmapId;
 
     if (defaultRoadmapType.equals("FE")) {
@@ -436,14 +438,19 @@ public class RoadmapService {
     List<Roadmap> roadmaps =
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(roadmapId);
 
-    return roadmaps.stream()
-        .sorted(Comparator.comparing(Roadmap::getOrderSub))
-        .map(
-            r -> {
-              Subject s = r.getSubject();
-              return new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder());
-            })
-        .collect(Collectors.toList());
+    List<SubjectDto> subjects =
+            roadmaps.stream()
+                    .sorted(Comparator.comparing(Roadmap::getOrderSub))
+                    .map(
+                            r ->
+                                    new SubjectDto(
+                                            r.getSubject().getSubId(), r.getSubject().getSubNm(), r.getOrderSub()))
+                    .toList();
+
+    String roadmapName = roadmaps.getFirst().getRoadmapManagement().getRoadmapNm();
+    Long userLocationSubjectId = findUserLocationRoadmap(roadmaps);
+
+    return new RoadmapFindResDto(subjects, roadmapName, userLocationSubjectId);
   }
 
   public RoadmapSaveResDto saveDefaultRoadmap(String roadmapType, Long userId) {
@@ -498,7 +505,7 @@ public class RoadmapService {
     }
 
     return new RoadmapSaveResDto(
-        "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType));
+        "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType).subjects());
   }
 
   public RoadmapFindResDto findUserRoadmap(RoadmapManagement userRoadmapManagement) {

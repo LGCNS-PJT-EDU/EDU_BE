@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.roadmap.dto.RoadmapFindResDto;
 import com.education.takeit.roadmap.dto.SubjectDto;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
@@ -108,13 +109,13 @@ public class DefaultRoadmapFindTest {
         .thenReturn(List.of(roadmap1, roadmap2, roadmap3));
 
     // when
-    List<SubjectDto> result = roadmapService.getDefaultRoadmap("FE");
+    RoadmapFindResDto result = roadmapService.getDefaultRoadmap("FE");
 
     // then
-    assertEquals(3, result.size());
-    assertEquals("HTML", result.get(0).subjectName());
-    assertEquals("CSS", result.get(1).subjectName());
-    assertEquals("JavaScript", result.get(2).subjectName());
+    assertEquals(3, result.subjects().size());
+    assertEquals("HTML", result.subjects().get(0).subjectName());
+    assertEquals("CSS", result.subjects().get(1).subjectName());
+    assertEquals("JavaScript", result.subjects().get(2).subjectName());
   }
 
   @Test
@@ -201,13 +202,13 @@ public class DefaultRoadmapFindTest {
         .thenReturn(List.of(roadmap1, roadmap2, roadmap3));
 
     // when
-    List<SubjectDto> result = roadmapService.getDefaultRoadmap("BE");
+    RoadmapFindResDto result = roadmapService.getDefaultRoadmap("BE");
 
     // then
-    assertEquals(3, result.size());
-    assertEquals("Linux", result.get(0).subjectName());
-    assertEquals("인터넷 & 네트워크", result.get(1).subjectName());
-    assertEquals("Git & GitHub", result.get(2).subjectName());
+    assertEquals(3, result.subjects().size());
+    assertEquals("Linux", result.subjects().get(0).subjectName());
+    assertEquals("인터넷 & 네트워크", result.subjects().get(1).subjectName());
+    assertEquals("Git & GitHub", result.subjects().get(2).subjectName());
   }
 
   @Test
