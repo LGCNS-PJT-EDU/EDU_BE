@@ -82,7 +82,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(userId, subjectIds, answers);
+      saveRoadmap(userId, subjectIds);
 
       return roadmapSaveResDto;
     }
@@ -236,29 +236,10 @@ public class RoadmapService {
   }
 
   public void saveRoadmap(
-      Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
+      Long userId, List<Long> subjectIds) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
-    }
-
-    LectureAmount lectureAmount = null;
-    PriceLevel priceLevel = null;
-    Boolean likesBooks = null;
-
-    for (DiagnosisAnswerRequest answer : answers) {
-      long questionId = answer.questionId();
-      String value = answer.answer();
-
-      if (questionId == 2) {
-        int idx = Integer.parseInt(value);
-        lectureAmount = LectureAmount.values()[idx];
-      } else if (questionId == 3) {
-        int idx = Integer.parseInt(value);
-        priceLevel = PriceLevel.values()[idx];
-      } else if (questionId == 4) {
-        likesBooks = value.equals("Y");
-      }
     }
 
     RoadmapManagement roadmapManagement =
@@ -266,9 +247,6 @@ public class RoadmapService {
             .roadmapNm("Roadmap")
             .roadmapTimestamp(LocalDateTime.now())
             .userId(userId)
-            .lectureAmount(lectureAmount)
-            .priceLevel(priceLevel)
-            .likesBooks(likesBooks)
             .build();
 
     roadmapManagementRepository.save(roadmapManagement);
@@ -337,7 +315,7 @@ public class RoadmapService {
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
-    saveRoadmap(userId, subjectIds, answers);
+    saveRoadmap(userId, subjectIds);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
