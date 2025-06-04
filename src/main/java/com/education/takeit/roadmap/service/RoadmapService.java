@@ -11,6 +11,8 @@ import com.education.takeit.roadmap.entity.*;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
+import com.education.takeit.user.entity.LectureAmount;
+import com.education.takeit.user.entity.PriceLevel;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -80,7 +82,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(userId, subjectIds);
+      saveRoadmap(userId, subjectIds,answers);
 
       return roadmapSaveResDto;
     }
@@ -233,7 +235,7 @@ public class RoadmapService {
     return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
   }
 
-  public void saveRoadmap(Long userId, List<Long> subjectIds) {
+  public void saveRoadmap(Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
@@ -247,6 +249,28 @@ public class RoadmapService {
             .build();
 
     roadmapManagementRepository.save(roadmapManagement);
+
+    LectureAmount lectureAmount = null;
+    PriceLevel priceLevel = null;
+    Boolean likesBooks = null;
+
+    for (DiagnosisAnswerRequest answer : answers) {
+      long questionId = answer.questionId();
+      String value = answer.answer();
+
+      if (questionId == 2) {
+        int idx = Integer.parseInt(value);
+        lectureAmount = LectureAmount.values()[idx];
+      } else if (questionId == 3) {
+        int idx = Integer.parseInt(value);
+        priceLevel = PriceLevel.values()[idx];
+      } else if (questionId == 4) {
+        likesBooks = value.equals("Y");
+      }
+    }
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    user.updatePreferences(lectureAmount,priceLevel,likesBooks);
 
     List<Subject> subjectList = subjectRepository.findAllById(subjectIds);
 
@@ -312,7 +336,7 @@ public class RoadmapService {
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
-    saveRoadmap(userId, subjectIds);
+    saveRoadmap(userId, subjectIds,answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");

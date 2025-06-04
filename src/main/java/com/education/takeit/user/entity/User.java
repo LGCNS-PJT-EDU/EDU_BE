@@ -60,4 +60,11 @@ public class User {
       active = false;
     }
   }
+
+  public void updatePreferences(LectureAmount lectureAmount, PriceLevel priceLevel, Boolean likesBooks) {
+    this.lectureAmount = lectureAmount;
+    this.priceLevel = priceLevel;
+    this.likesBooks = likesBooks;
+  }
+
 }
