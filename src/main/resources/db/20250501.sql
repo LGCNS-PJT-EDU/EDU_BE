@@ -4273,6 +4273,7 @@ CREATE TABLE interview (
     interview_content TEXT NOT NULL,
     interview_answer TEXT NOT NULL,
     sub_id BIGINT NOT NULL,
+    nth INT NOT NULL,
     CONSTRAINT fk_interview_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
 
