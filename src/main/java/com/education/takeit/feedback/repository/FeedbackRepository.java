@@ -4,5 +4,5 @@ import com.education.takeit.feedback.entity.Feedback;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
-    void deleteByUser_UserId(Long userId);
+  void deleteByUser_UserId(Long userId);
 }
