@@ -64,7 +64,7 @@ INSERT INTO choice (diagnosis_id, choice_num, choice, value) VALUES
                                                                  (2, 4, '깊게 공부하는게 좋아 10시간!', '3'),
                                                                  (2, 5, '나는야 공부벌레 10시간 이상!', '4');
 
--- 공통 질문 3
+-- 공통 질문
 INSERT INTO diagnosis (diagnosis_id, question, question_type) VALUES (3, '한 강의에 얼마까지 투자할 생각이 있으신가요?', 'COMMON');
 INSERT INTO choice (diagnosis_id, choice_num, choice, value) VALUES
                                                                  (3, 1, '무료', '0'),
@@ -164,7 +164,7 @@ CREATE TABLE subject(
                         sub_type VARCHAR(50) NOT NULL,
                         sub_essential VARCHAR(1) NOT NULL,
                         base_sub_order INT NOT NULL,
-                        sub_overview TEXT,
+                        sub_overview LONGTEXT,
                         track_id BIGINT NOT NULL,
                         CONSTRAINT fk_subject_track FOREIGN KEY (track_id) REFERENCES track(track_id)
 );
@@ -4282,6 +4282,8 @@ CREATE TABLE user_interview_reply(
                                      user_reply TEXT NOT NULL,
                                      interview_id BIGINT NOT NULL,
                                      user_id BIGINT NOT NULL,
+                                     nth INT NOT NULL,
+                                     ai_feedback TEXT NOT NULL,
                                      CONSTRAINT fk_user_reply_interview FOREIGN KEY (interview_id) REFERENCES interview(interview_id),
                                      CONSTRAINT fk_interview_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

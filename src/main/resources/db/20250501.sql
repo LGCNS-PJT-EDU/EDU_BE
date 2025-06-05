@@ -164,7 +164,7 @@ CREATE TABLE subject(
     sub_type VARCHAR(50) NOT NULL,
     sub_essential VARCHAR(1) NOT NULL,
     base_sub_order INT NOT NULL,
-    sub_overview TEXT,
+    sub_overview LONGTEXT,
     track_id BIGINT NOT NULL,
     CONSTRAINT fk_subject_track FOREIGN KEY (track_id) REFERENCES track(track_id)
 );
@@ -4273,7 +4273,6 @@ CREATE TABLE interview (
     interview_content TEXT NOT NULL,
     interview_answer TEXT NOT NULL,
     sub_id BIGINT NOT NULL,
-    nth INT NOT NULL,
     CONSTRAINT fk_interview_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
 
@@ -4283,6 +4282,8 @@ CREATE TABLE user_interview_reply(
     user_reply TEXT NOT NULL,
     interview_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
+    nth INT NOT NULL,
+    ai_feedback TEXT NOT NULL,
     CONSTRAINT fk_user_reply_interview FOREIGN KEY (interview_id) REFERENCES interview(interview_id),
     CONSTRAINT fk_interview_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
