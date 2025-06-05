@@ -4,10 +4,7 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
-import com.education.takeit.interview.dto.InterviewContentResDto;
-import com.education.takeit.interview.dto.InterviewFeedbackResDto;
-import com.education.takeit.interview.dto.InterviewHistoryResDto;
-import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
+import com.education.takeit.interview.dto.*;
 import com.education.takeit.interview.service.InterviewService;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
@@ -32,9 +29,9 @@ public class InterviewController {
   @GetMapping("/list")
   @Operation(summary = "면접 질문 조회", description = "과목별 면접 질문 랜덤하게 3문제씩 조회하는 API")
   public ResponseEntity<Message<List<InterviewContentResDto>>> getInterviewContent(
-      @RequestParam("subjectId") Long subjectId) {
+      @RequestParam List<Long> subjectIds) {
     List<InterviewContentResDto> interviewContentResDtoList =
-        interviewService.getInterview(subjectId);
+        interviewService.getInterview(subjectIds);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewContentResDtoList));
   }
 
