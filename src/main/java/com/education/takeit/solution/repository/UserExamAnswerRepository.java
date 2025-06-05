@@ -9,5 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserExamAnswerRepository extends JpaRepository<UserExamAnswer, Long> {
   List<UserExamAnswer> findByUser_UserIdAndSubject_SubId(Long userId, Long examId);
 
+  void deleteByUser_UserId(Long userId);
+
   int countByUserAndSubjectAndIsPre(User user, Subject subject, boolean isPre);
 }
