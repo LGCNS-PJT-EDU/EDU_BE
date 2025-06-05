@@ -31,4 +31,7 @@ public class UserInterviewReply {
 
   @Column(name = "ai_feedback", nullable = false, columnDefinition = "TEXT")
   private String aiFeedback;
+
+  @Column(name = "nth", nullable = false)
+  private Integer nth;
 }

@@ -84,7 +84,7 @@ public class InterviewService {
                 InterviewHistoryResDto.builder()
                     .interviewContent(r.getInterview().getInterviewContent())
                     .subId(r.getInterview().getSubject().getSubId())
-                    .nth(r.getInterview().getNth())
+                    .nth(r.getNth())
                     .userReply(r.getUserReply())
                     .aiFeedback(r.getAiFeedback())
                     .interviewAnswer(r.getInterview().getInterviewAnswer())

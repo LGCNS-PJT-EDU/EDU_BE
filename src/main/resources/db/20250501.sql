@@ -4273,7 +4273,6 @@ CREATE TABLE interview (
     interview_content TEXT NOT NULL,
     interview_answer TEXT NOT NULL,
     sub_id BIGINT NOT NULL,
-    nth INT NOT NULL,
     CONSTRAINT fk_interview_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
 
@@ -4283,6 +4282,7 @@ CREATE TABLE user_interview_reply(
     user_reply TEXT NOT NULL,
     interview_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
+    nth INT NOT NULL,
     CONSTRAINT fk_user_reply_interview FOREIGN KEY (interview_id) REFERENCES interview(interview_id),
     CONSTRAINT fk_interview_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
