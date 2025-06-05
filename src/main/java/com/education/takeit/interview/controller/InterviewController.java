@@ -29,7 +29,7 @@ public class InterviewController {
   @GetMapping("/list")
   @Operation(summary = "면접 질문 조회", description = "과목별 면접 질문 랜덤하게 3문제씩 조회하는 API")
   public ResponseEntity<Message<List<InterviewContentResDto>>> getInterviewContent(
-          @RequestParam List<Long> subjectIds) {
+      @RequestParam List<Long> subjectIds) {
     List<InterviewContentResDto> interviewContentResDtoList =
         interviewService.getInterview(subjectIds);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewContentResDtoList));

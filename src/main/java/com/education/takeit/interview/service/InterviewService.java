@@ -11,7 +11,6 @@ import com.education.takeit.interview.entity.Interview;
 import com.education.takeit.interview.entity.UserInterviewReply;
 import com.education.takeit.interview.repository.InterviewRepository;
 import com.education.takeit.interview.repository.UserInterviewReplyRepository;
-import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -34,9 +33,10 @@ public class InterviewService {
     Collections.shuffle(interviewList);
     return interviewList.stream()
         .limit(5)
-        .map(i -> new InterviewContentResDto(i.getInterviewId(),
-                i.getInterviewContent(),
-                i.getSubject().getSubId()))
+        .map(
+            i ->
+                new InterviewContentResDto(
+                    i.getInterviewId(), i.getInterviewContent(), i.getSubject().getSubId()))
         .toList();
   }
 
