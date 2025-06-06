@@ -75,7 +75,7 @@ class FeedbackServiceTest {
     var result = feedbackService.findFeedback(1L, 1L);
 
     // mockClient가 한번 호출되었는가? -> 리스트가 빈 리스트인가?
-    then(mockClient).should().getFeedback(1L , 1L);
+    then(mockClient).should().getFeedback(1L, 1L);
     assertThat(result).isNotNull().isEmpty();
   }
 
