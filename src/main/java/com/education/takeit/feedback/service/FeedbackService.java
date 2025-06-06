@@ -30,7 +30,7 @@ public class FeedbackService {
   private final ObjectMapper objectMapper;
 
   public List<FeedbackResponseDto> findFeedback(Long userId, Long subjectId) {
-    return aiClient.getFeedback(userId,subjectId);
+    return aiClient.getFeedback(userId, subjectId);
   }
 
   @Transactional

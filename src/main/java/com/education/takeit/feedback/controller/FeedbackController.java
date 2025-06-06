@@ -28,8 +28,7 @@ public class FeedbackController {
   @GetMapping("/retrieve")
   @Operation(summary = "특정 사용자 피드백 목록 조회", description = "사용자의 모든 피드백 데이터를 JSON 형태로 반환하는 API")
   public ResponseEntity<Message<List<FeedbackResponseDto>>> findAllFeedback(
-          @AuthenticationPrincipal CustomUserDetails userDetails,
-          @RequestParam Long subjectId) {
+      @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long subjectId) {
     Long userId = userDetails.getUserId();
     List<FeedbackResponseDto> list = feedbackService.findFeedback(userId, subjectId);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, list));
