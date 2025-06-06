@@ -34,10 +34,7 @@ public class DefaultRoadmapFindTest {
     Track track = Track.builder().trackId(1L).trackNm("기초지식").build();
 
     RoadmapManagement roadmapManagement =
-            RoadmapManagement.builder()
-                    .roadmapManagementId(1L)
-                    .roadmapNm("프론트엔드 기본 로드맵")
-                    .build();
+        RoadmapManagement.builder().roadmapManagementId(1L).roadmapNm("프론트엔드 기본 로드맵").build();
 
     Subject subject1 =
         Subject.builder()
@@ -133,10 +130,7 @@ public class DefaultRoadmapFindTest {
     Track track2 = Track.builder().trackId(2L).trackNm("VCS").build();
 
     RoadmapManagement roadmapManagement =
-            RoadmapManagement.builder()
-                    .roadmapManagementId(1L)
-                    .roadmapNm("백엔드 기본 로드맵")
-                    .build();
+        RoadmapManagement.builder().roadmapManagementId(1L).roadmapNm("백엔드 기본 로드맵").build();
 
     Subject subject1 =
         Subject.builder()
