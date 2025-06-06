@@ -8,6 +8,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.dto.RoadmapSaveResDto;
 import com.education.takeit.roadmap.entity.Roadmap;
+import com.education.takeit.roadmap.entity.RoadmapManagement;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.entity.Track;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
@@ -37,6 +38,9 @@ public class DefaultRoadmapSaveTest {
     String roadmapType = "FE";
 
     Track track = Track.builder().trackId(1L).trackNm("기초지식").build();
+
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder().roadmapManagementId(1L).roadmapNm("프론트엔드 기본 로드맵").build();
 
     Subject subject1 =
         Subject.builder()
@@ -79,7 +83,7 @@ public class DefaultRoadmapSaveTest {
             .roadmapId(1L)
             .orderSub(1)
             .subject(subject1)
-            .roadmapManagement(null)
+            .roadmapManagement(roadmapManagement)
             .isComplete(false)
             .preSubmitCount(0)
             .postSubmitCount(0)
@@ -91,7 +95,7 @@ public class DefaultRoadmapSaveTest {
             .roadmapId(2L)
             .orderSub(2)
             .subject(subject2)
-            .roadmapManagement(null)
+            .roadmapManagement(roadmapManagement)
             .isComplete(false)
             .preSubmitCount(0)
             .postSubmitCount(0)
@@ -103,7 +107,7 @@ public class DefaultRoadmapSaveTest {
             .roadmapId(3L)
             .orderSub(3)
             .subject(subject3)
-            .roadmapManagement(null)
+            .roadmapManagement(roadmapManagement)
             .isComplete(false)
             .preSubmitCount(0)
             .postSubmitCount(0)

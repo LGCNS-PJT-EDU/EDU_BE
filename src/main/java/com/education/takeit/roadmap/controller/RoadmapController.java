@@ -68,9 +68,9 @@ public class RoadmapController {
 
   @GetMapping("/default")
   @Operation(summary = "기본 로드맵 제공", description = "기본 로드맵 제공 API")
-  public ResponseEntity<Message<List<SubjectDto>>> findDefaultRoadmap(
+  public ResponseEntity<Message<RoadmapFindResDto>> findDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType) {
-    List<SubjectDto> defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
+    RoadmapFindResDto defaultRoadmap = roadmapService.getDefaultRoadmap(defaultRoadmapType);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, defaultRoadmap));
   }
 

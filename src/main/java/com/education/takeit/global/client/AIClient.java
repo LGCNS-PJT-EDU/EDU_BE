@@ -134,8 +134,12 @@ public class AIClient {
   }
 
   /** 사용자 피드백 조회 */
-  public List<FeedbackResponseDto> getFeedback(Long userId) {
-    return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
+  public List<FeedbackResponseDto> getFeedback(Long userId, Long subjectId) {
+    return getForList(
+        "/api/feedback?userId={userId},subjectId={subjectId}",
+        FeedbackResponseDto[].class,
+        userId,
+        subjectId);
   }
 
   /** 사전 평가 문제 조회 */
