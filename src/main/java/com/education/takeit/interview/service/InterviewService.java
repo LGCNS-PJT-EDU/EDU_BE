@@ -5,12 +5,12 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.InterviewContentResDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
+import com.education.takeit.interview.dto.InterviewHistoryResDto;
 import com.education.takeit.interview.dto.UserInterviewReplyReqDto;
 import com.education.takeit.interview.entity.Interview;
 import com.education.takeit.interview.entity.UserInterviewReply;
 import com.education.takeit.interview.repository.InterviewRepository;
 import com.education.takeit.interview.repository.UserInterviewReplyRepository;
-import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -27,18 +27,16 @@ public class InterviewService {
   private final UserInterviewReplyRepository replyRepository;
   private final OpenAiRestClient openAiRestClient;
 
-  public List<InterviewContentResDto> getInterview(Long subjectId) {
-    // subjectId 로 subject 정보 조회
-    Subject subject =
-        subjectRepository
-            .findById(subjectId)
-            .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
+  public List<InterviewContentResDto> getInterview(List<Long> subjectIds) {
+    List<Interview> interviewList = interviewRepository.findBySubject_SubIdIn(subjectIds);
 
-    List<Interview> interviewList = interviewRepository.findBySubject(subject);
     Collections.shuffle(interviewList);
     return interviewList.stream()
-        .limit(3)
-        .map(i -> new InterviewContentResDto(i.getInterviewId(), i.getInterviewContent()))
+        .limit(5)
+        .map(
+            i ->
+                new InterviewContentResDto(
+                    i.getInterviewId(), i.getInterviewContent(), i.getSubject().getSubId()))
         .toList();
   }
 
@@ -76,5 +74,21 @@ public class InterviewService {
     replyRepository.save(reply);
 
     return new InterviewFeedbackResDto(feedback);
+  }
+
+  public List<InterviewHistoryResDto> getInterviewHistory(Long userId) {
+    List<UserInterviewReply> replyList = replyRepository.findByUser_UserId(userId);
+    return replyList.stream()
+        .map(
+            r ->
+                InterviewHistoryResDto.builder()
+                    .interviewContent(r.getInterview().getInterviewContent())
+                    .subId(r.getInterview().getSubject().getSubId())
+                    .nth(r.getNth())
+                    .userReply(r.getUserReply())
+                    .aiFeedback(r.getAiFeedback())
+                    .interviewAnswer(r.getInterview().getInterviewAnswer())
+                    .build())
+        .toList();
   }
 }
