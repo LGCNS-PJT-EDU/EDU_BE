@@ -29,8 +29,8 @@ public class FeedbackService {
   private final SubjectRepository subjectRepository;
   private final ObjectMapper objectMapper;
 
-  public List<FeedbackResponseDto> findFeedback(Long userId) {
-    return aiClient.getFeedback(userId);
+  public List<FeedbackResponseDto> findFeedback(Long userId, Long subjectId) {
+    return aiClient.getFeedback(userId,subjectId);
   }
 
   @Transactional
