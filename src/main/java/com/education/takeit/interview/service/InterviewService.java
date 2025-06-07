@@ -27,7 +27,8 @@ public class InterviewService {
   private final UserInterviewReplyRepository replyRepository;
   private final OpenAiRestClient openAiRestClient;
 
-  public List<InterviewContentResDto> getInterview(List<Long> subjectIds) {
+  public List<InterviewContentResDto> getInterview(List<Long> subjectIds,Long userId) {
+    int currentNth = replyRepository.findMaxNthByUserId(userId).orElse(0)+1;
     List<Interview> interviewList = interviewRepository.findBySubject_SubIdIn(subjectIds);
 
     Collections.shuffle(interviewList);
@@ -36,7 +37,7 @@ public class InterviewService {
         .map(
             i ->
                 new InterviewContentResDto(
-                    i.getInterviewId(), i.getInterviewContent(), i.getSubject().getSubId()))
+                    i.getInterviewId(), i.getInterviewContent(), i.getSubject().getSubId(),currentNth))
         .toList();
   }
 
@@ -70,6 +71,7 @@ public class InterviewService {
             .interview(interview)
             .user(user)
             .aiFeedback(feedback)
+            .nth(reqDto.nth())
             .build();
     replyRepository.save(reply);
 
