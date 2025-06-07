@@ -32,7 +32,7 @@ public class InterviewController {
       @RequestParam List<Long> subjectIds, @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     List<InterviewContentResDto> interviewContentResDtoList =
-        interviewService.getInterview(subjectIds,userId);
+        interviewService.getInterview(subjectIds, userId);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewContentResDtoList));
   }
 
