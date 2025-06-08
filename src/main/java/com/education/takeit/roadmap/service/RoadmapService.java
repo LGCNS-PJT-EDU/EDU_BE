@@ -23,6 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -237,6 +238,16 @@ public class RoadmapService {
     return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
   }
 
+  // 로드맵 이름 임의로 만들어둠
+  private static final List<String> ROADMAP_NAMES = List.of(
+          "강아지", "고양이", "병아리", "개구리",
+          "청설모", "돼지", "코끼리", "곰",
+          "닭", "하루살이", "도마뱀", "고릴라",
+          "부엉이", "호랑이", "생쥐", "염소",
+          "팽귄", "여우", "토끼", "코알라"
+  );
+
+
   public void saveRoadmap(
       Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
 
@@ -244,9 +255,13 @@ public class RoadmapService {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
     }
 
+    String randomRoadmapName = ROADMAP_NAMES.get(
+            ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size())
+    );
+
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
-            .roadmapNm("Roadmap")
+            .roadmapNm(randomRoadmapName)
             .roadmapTimestamp(LocalDateTime.now())
             .userId(userId)
             .build();
