@@ -7,6 +7,8 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.interview.dto.InterviewAllReplyReqDto;
+import com.education.takeit.interview.dto.InterviewFeedbackResDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;
 import java.util.List;
@@ -175,6 +177,13 @@ public class AIClient {
         UserContentResDto[].class,
         userId,
         subjectId);
+  }
+
+  public List<InterviewFeedbackResDto> getInterviewFeedback(Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
+      return postForList("fastAPI요청경로",
+              InterviewFeedbackResDto[].class,
+              userId
+              );
   }
 
   public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
