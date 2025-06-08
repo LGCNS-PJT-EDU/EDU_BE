@@ -2,11 +2,9 @@ package com.education.takeit.interview.controller;
 
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
-import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.interview.dto.*;
 import com.education.takeit.interview.service.InterviewService;
-import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,28 +37,29 @@ public class InterviewController {
   @PostMapping("/answers")
   @Operation(summary = "면접 응답 제출", description = "한 회차 면접 응답 제출하고 AI 피드백 받아오는 API")
   public ResponseEntity<Message<List<InterviewFeedbackResDto>>> saveReplyAndGetFeedback(
-          @RequestBody InterviewAllReplyReqDto reqDto,
-          @AuthenticationPrincipal CustomUserDetails userDetails
-  ){
+      @RequestBody InterviewAllReplyReqDto reqDto,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
-    List<InterviewFeedbackResDto> feedbacks = interviewService.saveReplyAndRequestFeedback(userId,reqDto);
+    List<InterviewFeedbackResDto> feedbacks =
+        interviewService.saveReplyAndRequestFeedback(userId, reqDto);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, feedbacks));
   }
 
-//  @PostMapping("/feedback")
-//  @Operation(summary = "면접 피드백 ", description = "사용자 면접 응답을 받아와서 openAI에 면접 피드백 생성 요청 보내는 API")
-//  public ResponseEntity<Message<InterviewFeedbackResDto>> saveReplyAndGetFeedback(
-//      @RequestBody UserInterviewReplyReqDto reqDto,
-//      @AuthenticationPrincipal CustomUserDetails userDetails) {
-//    Long userId = userDetails.getUserId();
-//    User user =
-//        userRepository
-//            .findByUserId(userId)
-//            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
-//
-//    InterviewFeedbackResDto response = interviewService.saveReplyAndRequestFeedback(reqDto, user);
-//    return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
-//  }
+  //  @PostMapping("/feedback")
+  //  @Operation(summary = "면접 피드백 ", description = "사용자 면접 응답을 받아와서 openAI에 면접 피드백 생성 요청 보내는 API")
+  //  public ResponseEntity<Message<InterviewFeedbackResDto>> saveReplyAndGetFeedback(
+  //      @RequestBody UserInterviewReplyReqDto reqDto,
+  //      @AuthenticationPrincipal CustomUserDetails userDetails) {
+  //    Long userId = userDetails.getUserId();
+  //    User user =
+  //        userRepository
+  //            .findByUserId(userId)
+  //            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+  //
+  //    InterviewFeedbackResDto response = interviewService.saveReplyAndRequestFeedback(reqDto,
+  // user);
+  //    return ResponseEntity.ok(new Message<>(StatusCode.OK, response));
+  //  }
 
   @GetMapping("/history")
   @Operation(summary = "면접 내역 조회", description = "사용자 면접 기록을 회차별로 조회하는 API")
