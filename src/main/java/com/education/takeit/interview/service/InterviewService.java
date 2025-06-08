@@ -103,7 +103,6 @@ public class InterviewService {
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
     try {
-<<<<<<< HEAD
       List<InterviewFeedbackResDto> feedbackList = aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto);
 //      List<InterviewFeedbackResDto> feedbackList = interviewAllReplyReqDto.answers().stream()
 //              .map(dto -> new InterviewFeedbackResDto(
@@ -113,18 +112,6 @@ public class InterviewService {
 //                      "MOCK_FEEDBACK " + dto.userReply() + " 에 대한 피드백입니다." // 테스트용 AI피드백 Mock
 //              ))
 //              .collect(Collectors.toList());
-=======
-      List<InterviewFeedbackResDto> feedbackList =
-          aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto);
-      //    List<InterviewFeedbackResDto> feedbackList = interviewAllReplyReqDto.answers().stream(
-      //          .map(dto -> new InterviewFeedbackResDto(
-      //                dto.interviewId(),
-      //              dto.userReply(),
-      //            dto.nth(),
-      //          "MOCK_FEEDBACK " + dto.userReply() + " 에 대한 피드백입니다." //  테스트용 AI피드백 Mock
-      //            ))
-      //            .collect(Collectors.toList());
->>>>>>> d21b117f6dd4173f4aecad0c987f53cd9597d743
 
       User user =
           userRepository
