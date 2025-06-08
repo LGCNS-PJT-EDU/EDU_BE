@@ -179,11 +179,9 @@ public class AIClient {
         subjectId);
   }
 
-  public List<InterviewFeedbackResDto> getInterviewFeedback(Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
-      return postForList("fastAPI요청경로",
-              InterviewFeedbackResDto[].class,
-              userId
-              );
+  public List<InterviewFeedbackResDto> getInterviewFeedback(
+      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
+    return postForList("fastAPI요청경로", InterviewFeedbackResDto[].class, userId);
   }
 
   public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
