@@ -48,7 +48,7 @@ public class AIClient {
                 status -> status.is4xxClientError(),
                 (req, res) -> {
                   log.warn("FastAPI GET 실패: 상태코드 = {}", res.getStatusCode());
-                  throw new BadRequestException("잘못된 요청입니다.");
+                  throw new CustomException(StatusCode.BAD_REQUEST);
                 })
             .onStatus(
                 status -> status.is5xxServerError(),
@@ -73,7 +73,7 @@ public class AIClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-              throw new BadRequestException("잘못된 요청입니다.");
+                throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
@@ -96,7 +96,7 @@ public class AIClient {
                 status -> status.is4xxClientError(),
                 (req, res) -> {
                   log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                  throw new BadRequestException("잘못된 요청입니다.");
+                    throw new CustomException(StatusCode.BAD_REQUEST);
                 })
             .onStatus(
                 status -> status.is5xxServerError(),
@@ -122,7 +122,7 @@ public class AIClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-              throw new BadRequestException("잘못된 요청입니다.");
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),

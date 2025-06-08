@@ -1,5 +1,7 @@
 package com.education.takeit.oauth.client;
 
+import com.education.takeit.global.dto.StatusCode;
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.oauth.property.GoogleProperties;
 import lombok.RequiredArgsConstructor;
@@ -45,13 +47,13 @@ public class GoogleOauthClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("Google 토큰 요청 실패: 상태 코드={} ", res.getStatusCode());
-              throw new BadRequestException("잘못된 요청입니다.");
+                throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
             (req, res) -> {
               log.error("Google 토큰 요청 실패: 상태 코드={}", res.getStatusCode());
-              throw new HttpServerErrorException(res.getStatusCode());
+                throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
             })
         .body(OAuthTokenResponse.class);
   }
