@@ -239,7 +239,8 @@ public class RoadmapService {
   }
 
   // 로드맵 이름 임의로 만들어둠
-  private static final List<String> ROADMAP_NAMES = List.of(
+  private static final List<String> ROADMAP_NAMES =
+      List.of(
           "노래하는 고양이",
           "춤추는 피자",
           "멍때리는 펭귄",
@@ -259,10 +260,7 @@ public class RoadmapService {
           "흔들리는 라면",
           "귀여운 악어",
           "말하는 부엉이",
-          "삐진 햄스터"
-  );
-
-
+          "삐진 햄스터");
 
   public void saveRoadmap(
       Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
@@ -271,9 +269,8 @@ public class RoadmapService {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
     }
 
-    String randomRoadmapName = ROADMAP_NAMES.get(
-            ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size())
-    );
+    String randomRoadmapName =
+        ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
 
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
