@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
@@ -75,7 +74,7 @@ public class AIClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                throw new CustomException(StatusCode.BAD_REQUEST);
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
@@ -98,7 +97,7 @@ public class AIClient {
                 status -> status.is4xxClientError(),
                 (req, res) -> {
                   log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                    throw new CustomException(StatusCode.BAD_REQUEST);
+                  throw new CustomException(StatusCode.BAD_REQUEST);
                 })
             .onStatus(
                 status -> status.is5xxServerError(),

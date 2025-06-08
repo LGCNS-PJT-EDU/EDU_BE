@@ -7,7 +7,6 @@ import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.oauth.property.NaverProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -48,13 +47,13 @@ public class NaverOauthClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("Naver 토큰 요청 실패: 상태코드={} ", res.getStatusCode());
-                throw new CustomException(StatusCode.BAD_REQUEST);
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
             (req, res) -> {
               log.error("Naver 토큰 요청 실패: 상태코드={} ", res.getStatusCode());
-                throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
+              throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
             })
         .body(OAuthTokenResponse.class);
   }
@@ -69,13 +68,13 @@ public class NaverOauthClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("Naver 사용자 정보 요청 실패: 상태 코드={}", res.getStatusCode());
-                throw new CustomException(StatusCode.BAD_REQUEST);
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
             (req, res) -> {
               log.error("Naver 사용자 정보 요청 실패: 상태 코드={}", res.getStatusCode());
-                throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
+              throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
             })
         .body(NaverUserResponse.class);
   }
