@@ -71,7 +71,8 @@ public class UserController {
     Long userId = userDetails.getUserId();
     userService.signOut(userId);
 
-    ResponseCookie deleteRefreshTokenCookie = ResponseCookie.from("refreshToken", "")
+    ResponseCookie deleteRefreshTokenCookie =
+        ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
             .secure(false)
             .path("/")
@@ -82,8 +83,8 @@ public class UserController {
     headers.add(HttpHeaders.SET_COOKIE, deleteRefreshTokenCookie.toString());
 
     return ResponseEntity.ok()
-            .headers(headers)
-            .body(new Message<>(StatusCode.OK, "로그아웃 완료 및 쿠키 삭제"));
+        .headers(headers)
+        .body(new Message<>(StatusCode.OK, "로그아웃 완료 및 쿠키 삭제"));
   }
 
   @GetMapping("/check-email")
