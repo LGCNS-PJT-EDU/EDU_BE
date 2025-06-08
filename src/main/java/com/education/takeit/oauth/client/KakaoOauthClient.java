@@ -7,7 +7,6 @@ import com.education.takeit.oauth.dto.OIDCPublicKeysResponse;
 import com.education.takeit.oauth.property.KakaoProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -49,13 +48,13 @@ public class KakaoOauthClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("카카오 토큰 요청 실패: 상태 코드", res.getStatusCode());
-                throw new CustomException(StatusCode.BAD_REQUEST);
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
             (req, res) -> {
               log.error("카카오 토큰 요청 실패: 상태 코드", res.getStatusCode());
-                throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
+              throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
             })
         .body(OAuthTokenResponse.class);
   }
@@ -69,13 +68,13 @@ public class KakaoOauthClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("카카오 OIDC 키 발급 요청 실패: 상태 코드", res.getStatusCode());
-                throw new CustomException(StatusCode.BAD_REQUEST);
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
             (req, res) -> {
               log.error("카카오 OIDC 키 발급 요청 실패: 상태 코드", res.getStatusCode());
-                throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
+              throw new CustomException(StatusCode.OAUTH_SERVER_ERROR);
             })
         .body(OIDCPublicKeysResponse.class);
   }
