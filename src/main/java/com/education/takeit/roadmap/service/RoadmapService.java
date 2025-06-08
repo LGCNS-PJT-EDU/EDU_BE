@@ -366,7 +366,8 @@ public class RoadmapService {
 
     int percent = (int) ((double) completed / total * 100);
 
-    return new MyPageResDto(user.getNickname(), roadmapManagement.getRoadmapNm(),percent,total,completed);
+    return new MyPageResDto(
+        user.getNickname(), roadmapManagement.getRoadmapNm(), percent, total, completed);
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
