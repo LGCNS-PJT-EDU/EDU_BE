@@ -1,4 +1,4 @@
 package com.education.takeit.interview.dto;
 
 public record InterviewContentResDto(
-    Long interviewId, String interviewContent, Long subjectId, int nth) {}
+    Long interviewId, String interviewContent, Long subjectId, String subjectName, int nth) {}
