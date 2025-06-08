@@ -356,7 +356,6 @@ public class RoadmapService {
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
 
     RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
-    if (roadmapManagement == null) return new MyPageResDto(user.getNickname(), 0);
 
     List<Roadmap> roadmaps =
         roadmapRepository.findByRoadmapManagement_RoadmapManagementId(
@@ -367,7 +366,7 @@ public class RoadmapService {
 
     int percent = (int) ((double) completed / total * 100);
 
-    return new MyPageResDto(user.getNickname(), percent);
+    return new MyPageResDto(user.getNickname(), roadmapManagement.getRoadmapNm(),percent,total,completed);
   }
 
   public void updateRoadmap(Long userId, List<SubjectDto> subjects) {
