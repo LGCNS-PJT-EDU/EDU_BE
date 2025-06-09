@@ -48,14 +48,3 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@v2
         with:
           args: -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
-      # 6) 전체 커버리지 가져와서 PR 코멘트 달기
-      - name: Fetch overall coverage
-        run: |
-          COVERAGE=$(curl -s \
-            -u "${{ secrets.SONAR_TOKEN }}:" \
-            "https://sonarcloud.io/api/measures/component?component=LGCNS-PJT-EDU_EDU_BE&metricKeys=coverage" \
-            | jq -r '.component.measures[0].value')
-          echo "Overall Coverage: ${COVERAGE}%"
-          gh pr comment ${{ github.event.pull_request.number }} \
-            --body "🔍 **Overall Coverage**: ${COVERAGE}%"
