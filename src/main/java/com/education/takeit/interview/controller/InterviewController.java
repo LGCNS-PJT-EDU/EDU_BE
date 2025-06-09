@@ -8,12 +8,13 @@ import com.education.takeit.interview.service.InterviewService;
 import com.education.takeit.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -64,9 +65,27 @@ public class InterviewController {
   @GetMapping("/history")
   @Operation(summary = "면접 내역 조회", description = "사용자 면접 기록을 회차별로 조회하는 API")
   public ResponseEntity<Message<List<InterviewHistoryResDto>>> getInterviewHistory(
-      @RequestParam("userId") Long userId) {
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    Long userId = userDetails.getUserId();
     List<InterviewHistoryResDto> interviewHistoryList =
         interviewService.getInterviewHistory(userId);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewHistoryList));
+  }
+
+//  @PostMapping("/privacy")
+//  @Operation(summary = "면접 관련 개인정보 동의 여부", description = "면접 기능을 이용할때 필요한 개인정보 동의를 수락했는지 반영하는 API")
+//  public ResponseEntity<Message<Boolean>> savePrivacy(
+//          @AuthenticationPrincipal CustomUserDetails userDetails) {
+//    Long userId = userDetails.getUserId();
+//
+//  }
+
+  @GetMapping("/subject")
+  @Operation(summary = "과목 정보 조회", description = "로드맵에 있는 과목과 없는 과목을 분류한 모든 과목 ID를 조회하는 API")
+  public ResponseEntity<Message<InterviewAllSubIdResDto>> getSubject(
+      @AuthenticationPrincipal CustomUserDetails userDetails){
+    Long userId = userDetails.getUserId();
+    InterviewAllSubIdResDto interviewAllSubIdResDto = interviewService.getInterviewAllSubId(userId);
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, interviewAllSubIdResDto));
   }
 }

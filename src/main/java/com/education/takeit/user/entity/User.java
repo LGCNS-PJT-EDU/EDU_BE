@@ -47,6 +47,9 @@ public class User {
   @Column(name = "likes_books")
   private Boolean likesBooks; // Y: true, N: false
 
+  @Column(name = "privacy_status")
+  private Boolean privacyStatus = null;
+
   @Builder
   public User(String email, String nickname, String password, LoginType loginType) {
     this.email = email;
