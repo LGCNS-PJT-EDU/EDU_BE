@@ -26,11 +26,12 @@ public class Choice {
   @Column(nullable = false, columnDefinition = "TEXT")
   private String choice;
 
-  @Column(nullable = false, length = 255)
+  @Column(name = "\"value\"", nullable = false, length = 255)
   private String value;
 
   @CreatedDate
   @Column(name = "created_dt", updatable = false)
+  @Builder.Default
   private LocalDateTime createdDt = LocalDateTime.now();
 
   @ManyToOne(fetch = FetchType.LAZY)

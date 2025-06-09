@@ -2,12 +2,13 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
-    //git-hooks
+    /* git-hooks & 포맷터*/
     id 'com.github.jakemarsden.git-hooks' version '0.0.2'
-    //spotless
     id 'com.diffplug.spotless' version '6.25.0'
-    //Flyway 플러그인
+    /* 품질 & 마이그레이션 */
     id 'org.flywaydb.flyway' version '9.22.3'
+    id 'jacoco'
+    id 'org.sonarqube' version '6.2.0.5505'
 }
 
 group = 'com.education'
@@ -41,14 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // Swagger UI
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
-    testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
-    //developmentOnly 'org.springframework.boot:spring-boot-devtools' 캐싱을 위해서 끄기
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //OAuth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
@@ -70,20 +65,32 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
     // MySQL JDBC 드라이버
     implementation 'mysql:mysql-connector-java:8.0.33'
-    // 테스트코드 수행할대 필요한 H2
-    testImplementation 'com.h2database:h2'
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.webjars:stomp-websocket:2.3.3'
+
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // 테스트코드 수행할대 필요한 H2
+    testImplementation 'com.h2database:h2'
+
+}
+
+jacoco {
+    toolVersion = '0.8.13'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy(
+            tasks.named('jacocoTestReport'),
+            tasks.named('jacocoTestCoverageVerification')
+    )
 }
-
 gitHooks {
     // where to install your hooks; you can leave this at the default '.githooks'
     hooksDirectory = file('.git/hooks')
@@ -99,5 +106,80 @@ spotless {
     java {
         googleJavaFormat('1.17.0') // 버전은 최신으로 변경 가능
         target 'src/**/*.java'
+    }
+}
+
+def sonarCoverageIncludes = [
+        '**/service/**/*.java',
+        '**/kafka/**/consumer/**/*.java',
+        '**/kafka/**/producer/**/*.java'
+]
+
+sonarqube {
+    properties {
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
+        property 'sonar.organization', 'lgcns-pjt-edu'
+        property 'sonar.sourceEncoding', 'UTF-8'
+
+        property 'sonar.sources', 'src/main/java'
+        property 'sonar.tests', 'src/test/java'
+        property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
+
+        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+def jacocoIncludePatterns = [
+        '**/service/**',
+        '**/kafka/**/consumer/**',
+        '**/kafka/**/producer/**'
+]
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.required = true
+        html.required = true
+        xml.destination file("$buildDir/reports/jacoco/test/jacocoTestReport.xml")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, include: jacocoIncludePatterns)
+                })
+        )
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = jacocoIncludePatterns
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+        }
     }
 }
