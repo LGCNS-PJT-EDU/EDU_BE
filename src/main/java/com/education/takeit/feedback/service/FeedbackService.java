@@ -38,7 +38,7 @@ public class FeedbackService {
     User user =
         userRepository
             .findByUserId(feedbackResultDto.userId())
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
     Subject subject =
         subjectRepository
             .findBySubId(feedbackResultDto.subjectId())

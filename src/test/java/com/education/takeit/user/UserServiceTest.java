@@ -55,7 +55,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 회원가입_성공() {
+  void 자체_회원가입_성공() {
     // Given (테스트 조건 준비 - 가짜(mock) 객체의 동작 정의 및 입력값 준비)
     when(userRepository.existsByEmailAndLoginType(signupDto.email(), LoginType.LOCAL))
         .thenReturn(false);
@@ -84,7 +84,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 로그인_성공() {
+  void 자체_로그인_성공() {
     // Given
     when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
         .thenReturn(Optional.of(user));
@@ -102,7 +102,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 로그인_비밀번호_불일치시_예외() {
+  void 자체_로그인시_비밀번호_불일치_예외_발생() {
     // Given
     when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
         .thenReturn(Optional.of(user));
@@ -157,8 +157,22 @@ public class UserServiceTest {
 
     // if user is null, return Error
     CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
-    assertEquals(StatusCode.NOT_EXIST_USER, ex.getStatusCode());
+    assertEquals(StatusCode.USER_NOT_FOUND, ex.getStatusCode());
 
     verify(userRepository, times(1)).findByUserId(userId);
+  }
+
+  @Test
+  @DisplayName("로그아웃 성공")
+  void 로그아웃_성공() {
+    // Given
+    Long userId = 99L;
+    String expectedKey = userId + "'s refresh token";
+
+    // When
+    userService.signOut(userId);
+
+    // Then
+    verify(redisTemplate, times(1)).delete(expectedKey);
   }
 }

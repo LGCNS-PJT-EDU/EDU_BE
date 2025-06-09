@@ -81,7 +81,7 @@ public class RecommendService {
     User user =
         userRepository
             .findByUserId(dto.userId())
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
     Subject subject =
         subjectRepository
             .findBySubId(dto.subjectId())

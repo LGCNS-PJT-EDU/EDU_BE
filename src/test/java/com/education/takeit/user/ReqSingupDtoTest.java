@@ -36,7 +36,7 @@ public class ReqSingupDtoTest {
 
   @Test
   @DisplayName("회원가입 실패_비밀번호가 8자 미만이면 실패")
-  void signup_failByPasswordShort() {
+  void 자체_회원가입시_비밀번호_Validation_에러_발생() {
     // given
     UserSignupReqDto dto =
         new UserSignupReqDto(
@@ -53,7 +53,7 @@ public class ReqSingupDtoTest {
 
   @Test
   @DisplayName("회원가입 실패_비밀번호 3가지 문자 미만 포함 실패")
-  void signup_failByPassword3() {
+  void 자체_회원가입시_비밀번호가_3가지_문자_미만일_때_에러_발생() {
     // given
     UserSignupReqDto dto =
         new UserSignupReqDto(
