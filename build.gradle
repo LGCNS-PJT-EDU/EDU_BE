@@ -110,9 +110,15 @@ spotless {
     }
 }
 def includePatterns = [
+        '**/service/**',
+        '**/consumer/**',
+        '**/producer/**'
+]
+
+def sonarIncludePatterns = [
         '**/service/**/*.java',
         '**/consumer/**/*.java',
-        '**/producer/**/*.java',
+        '**/producer/**/*.java'
 ]
 
 sonarqube {
@@ -124,7 +130,7 @@ sonarqube {
 
         property 'sonar.sources', 'src/main/java'
         property 'sonar.tests', 'src/test/java'
-        property 'sonar.inclusions', includePatterns.join(',')
+        property 'sonar.inclusions', sonarIncludePatterns.join(',')
 
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
