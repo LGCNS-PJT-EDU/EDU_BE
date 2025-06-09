@@ -1,10 +1,11 @@
 package com.education.takeit.diagnosis.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "choice")
@@ -31,6 +32,7 @@ public class Choice {
 
   @CreatedDate
   @Column(name = "created_dt", updatable = false)
+  @Builder.Default
   private LocalDateTime createdDt = LocalDateTime.now();
 
   @ManyToOne(fetch = FetchType.LAZY)

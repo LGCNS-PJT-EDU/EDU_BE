@@ -8,6 +8,10 @@ plugins {
     id 'com.diffplug.spotless' version '6.25.0'
     //Flyway 플러그인
     id 'org.flywaydb.flyway' version '9.22.3'
+    //Jacoco
+    id 'jacoco'
+    //SonarQube
+    id 'org.sonarqube' version '6.2.0.5505'
 }
 
 group = 'com.education'
@@ -80,10 +84,14 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+jacoco {
+    toolVersion = '0.8.13'
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
 gitHooks {
     // where to install your hooks; you can leave this at the default '.githooks'
     hooksDirectory = file('.git/hooks')
@@ -99,5 +107,82 @@ spotless {
     java {
         googleJavaFormat('1.17.0') // 버전은 최신으로 변경 가능
         target 'src/**/*.java'
+    }
+}
+def includePatterns = [
+        '**/service/**/*.java',
+        '**/consumer/**/*.java',
+        '**/producer/**/*.java',
+]
+
+sonarqube {
+    properties {
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
+        property 'sonar.organization', 'lgcns-pjt-edu'
+        property 'sonar.sourceEncoding', 'UTF-8'
+
+        property 'sonar.sources', 'src/main/java'
+        property 'sonar.tests', 'src/test/java'
+        property 'sonar.inclusions', includePatterns.join(',')
+
+        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    finalizedBy 'jacocoTestCoverageVerification'
+
+    reports {
+        xml.required  = true
+        html.required = true
+        xml.destination file("$buildDir/reports/jacoco/test/jacocoTestReport.xml")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, include: includePatterns)
+                })
+        )
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+
+    violationRules {
+        rule {
+            enabled  = true
+            element  = 'CLASS'
+            includes = includePatterns   // ← 소문자 변수 사용
+
+            // ① 라인 커버리지
+            limit {
+                counter = 'LINE'
+                value   = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+            // ② 브랜치 커버리지
+            limit {
+                counter = 'BRANCH'
+                value   = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+        }
+
+        rule {
+            enabled  = true
+            element  = 'METHOD'
+            includes = includePatterns
+
+            // ③ 메서드 라인 수 제한
+            limit {
+                counter = 'LINE'
+                value   = 'TOTALCOUNT'
+                maximum = 200
+            }
+        }
     }
 }
