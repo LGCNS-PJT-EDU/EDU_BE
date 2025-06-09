@@ -381,7 +381,7 @@ public class RoadmapService {
     User user =
         userRepository
             .findByUserId(userId)
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
     RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
 

@@ -15,9 +15,10 @@ import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class FeedbackService {
     User user =
         userRepository
             .findByUserId(feedbackResultDto.userId())
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
     Subject subject =
         subjectRepository
             .findBySubId(feedbackResultDto.subjectId())
