@@ -1,9 +1,5 @@
 package com.education.takeit.user;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
@@ -14,7 +10,6 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.education.takeit.user.service.UserServiceImpl;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +19,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -55,7 +56,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 회원가입_성공() {
+  void 자체_회원가입_성공() {
     // Given (테스트 조건 준비 - 가짜(mock) 객체의 동작 정의 및 입력값 준비)
     when(userRepository.existsByEmailAndLoginType(signupDto.email(), LoginType.LOCAL))
         .thenReturn(false);
@@ -84,7 +85,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 로그인_성공() {
+  void 자체_로그인_성공() {
     // Given
     when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
         .thenReturn(Optional.of(user));
@@ -102,7 +103,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void 로그인_비밀번호_불일치시_예외() {
+  void 자체_로그인시_비밀번호_불일치_예외_발생() {
     // Given
     when(userRepository.findByEmailAndLoginType(signinDto.email(), LoginType.LOCAL))
         .thenReturn(Optional.of(user));
@@ -157,8 +158,22 @@ public class UserServiceTest {
 
     // if user is null, return Error
     CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
-    assertEquals(StatusCode.NOT_EXIST_USER, ex.getStatusCode());
+    assertEquals(StatusCode.INVALID_SIGNIN_INFO, ex.getStatusCode());
 
     verify(userRepository, times(1)).findByUserId(userId);
+  }
+
+  @Test
+  @DisplayName("로그아웃 성공")
+  void 로그아웃_성공() {
+    // Given
+    Long userId = 99L;
+    String expectedKey = userId + "'s refresh token";
+
+    // When
+    userService.signOut(userId);
+
+    // Then
+    verify(redisTemplate, times(1)).delete(expectedKey);
   }
 }

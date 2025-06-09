@@ -47,10 +47,10 @@ public class UserServiceImpl implements UserService {
     User user =
         userRepository
             .findByEmailAndLoginType(userSigninReqDto.email(), LoginType.LOCAL)
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
     if (!passwordEncoder.matches(userSigninReqDto.password(), user.getPassword())) {
-      throw new CustomException(StatusCode.NOT_EXIST_USER);
+      throw new CustomException(StatusCode.INVALID_SIGNIN_INFO);
     }
     return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
   }
@@ -73,11 +73,7 @@ public class UserServiceImpl implements UserService {
     User user =
         userRepository
             .findByUserId(userId)
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-
-    if (user == null) {
-      throw new CustomException(StatusCode.NOT_EXIST_USER);
-    }
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
     user.changeActivateStatus();
     // Redis에서 리프레시 토큰 삭제
