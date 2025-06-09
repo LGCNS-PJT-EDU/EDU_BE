@@ -13,12 +13,11 @@ import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -156,17 +155,17 @@ public class InterviewService {
     List<SubjectInfo> allSubjectIds = subjectRepository.findAllSubjectInfos();
     List<SubjectInfo> existingSubjectIds = roadmapRepository.findSubjectInfosByUserId(userId);
 
-    Set<Long> existingSubIdSet = existingSubjectIds.stream()
-            .map(SubjectInfo::subId)
-            .collect(Collectors.toSet());
+    Set<Long> existingSubIdSet =
+        existingSubjectIds.stream().map(SubjectInfo::subId).collect(Collectors.toSet());
 
-    Map<Long, Long> aliasMap = Map.of(
+    Map<Long, Long> aliasMap =
+        Map.of(
             3L, 41L,
             6L, 37L,
-            7L, 38L
-    );
+            7L, 38L);
 
-    List<SubjectInfo> missingSubjectIds = allSubjectIds.stream()
+    List<SubjectInfo> missingSubjectIds =
+        allSubjectIds.stream()
             .filter(s -> !existingSubIdSet.contains(s.subId()))
             .collect(Collectors.toCollection(ArrayList::new));
 
