@@ -13,11 +13,12 @@ import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -158,6 +159,7 @@ public class InterviewService {
     Set<Long> existingSubIdSet =
         existingSubjectIds.stream().map(SubjectInfo::subId).collect(Collectors.toSet());
 
+    // 중복되는 과목들
     Map<Long, Long> aliasMap =
         Map.of(
             3L, 41L,
@@ -169,9 +171,7 @@ public class InterviewService {
             .filter(s -> !existingSubIdSet.contains(s.subId()))
             .collect(Collectors.toCollection(ArrayList::new));
 
-    log.info("existingSubIdSet: {}", existingSubjectIds);
-    log.info("missingSubjectIds: {}", missingSubjectIds);
-
+    // 중복되는 과목 삭제
     for (Map.Entry<Long, Long> entry : aliasMap.entrySet()) {
       Long a = entry.getKey();
       Long b = entry.getValue();
