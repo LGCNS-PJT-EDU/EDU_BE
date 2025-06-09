@@ -77,7 +77,7 @@ class GoogleOAuthServiceTest {
 
     when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId()))
+    when(jwtUtils.generateTokens(savedUser.getUserId(), savedUser.getPrivacyStatus()))
         .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
 
     // when

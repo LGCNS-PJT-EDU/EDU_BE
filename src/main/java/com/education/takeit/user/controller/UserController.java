@@ -42,7 +42,8 @@ public class UserController {
 
   @PostMapping("/signin")
   @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
-  public ResponseEntity<Message<String>> signIn(@RequestBody UserSigninReqDto userSigninReqDto) {
+  public ResponseEntity<Message<UserSigninResDto>> signIn(
+      @RequestBody UserSigninReqDto userSigninReqDto) {
     UserSigninResDto userSigninResDto = userService.signIn(userSigninReqDto);
 
     HttpHeaders headers = new HttpHeaders();
@@ -61,7 +62,7 @@ public class UserController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, userSigninResDto));
   }
 
   @DeleteMapping("/signout")

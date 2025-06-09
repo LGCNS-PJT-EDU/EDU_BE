@@ -70,4 +70,8 @@ public class User {
     this.priceLevel = priceLevel;
     this.likesBooks = likesBooks;
   }
+
+  public void savePrivacyStatus() {
+    privacyStatus = true;
+  }
 }
