@@ -52,7 +52,7 @@ public class GoogleOAuthService implements OAuthService {
                             .loginType(loginType)
                             .build()));
 
-    return jwtUtils.generateTokens(user.getUserId());
+    return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
   }
 
   /**

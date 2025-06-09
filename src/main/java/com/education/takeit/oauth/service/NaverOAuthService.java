@@ -43,7 +43,7 @@ public class NaverOAuthService implements OAuthService {
                             .nickname(userInfo.getNickname())
                             .loginType(LoginType.NAVER)
                             .build()));
-    return jwtUtils.generateTokens(user.getUserId());
+    return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
   }
 
   @Override

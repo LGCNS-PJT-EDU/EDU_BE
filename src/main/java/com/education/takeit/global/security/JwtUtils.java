@@ -1,6 +1,7 @@
 package com.education.takeit.global.security;
 
 import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -22,13 +23,15 @@ public class JwtUtils {
 
   private Key key;
 
+  private UserRepository userRepository;
+
   @PostConstruct
   public void init() {
     this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
   }
 
   // 액세스, 리프레시 토큰 함께 생성
-  public UserSigninResDto generateTokens(Long userId) {
+  public UserSigninResDto generateTokens(Long userId, Boolean privacyStatus) {
     Date now = new Date();
 
     // 액세스 토큰
@@ -61,7 +64,7 @@ public class JwtUtils {
             refreshTokenExpiration,
             TimeUnit.MILLISECONDS);
 
-    return new UserSigninResDto(accessToken, refreshToken);
+    return new UserSigninResDto(accessToken, refreshToken, privacyStatus);
   }
 
   //  엑세스 토큰 검증

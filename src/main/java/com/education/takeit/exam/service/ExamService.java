@@ -7,8 +7,10 @@ import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.dto.FeedbackRequestDto;
-import com.education.takeit.kafka.producer.FeedbackKafkaProducer;
+import com.education.takeit.kafka.feedback.dto.FeedbackRequestDto;
+import com.education.takeit.kafka.feedback.producer.FeedbackKafkaProducer;
+import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommand.producer.RecomKafkaProducer;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
@@ -36,6 +38,7 @@ public class ExamService {
   private final RoadmapRepository roadmapRepository;
   private final ExamLevelCalculator examLevelCalculator;
   private final FeedbackKafkaProducer feedbackKafkaProducer;
+  private final RecomKafkaProducer recomKafkaProducer;
   private final UserRepository userRepository;
   private final SubjectRepository subjectRepository;
   private final ExamRepository examRepository;
@@ -85,12 +88,16 @@ public class ExamService {
 
     roadmapRepository.save(roadmap);
 
-    // 결과 저장 성공 직후
     Long subjectId = roadmap.getSubject().getSubId();
     String type = "pre";
     int nth = roadmap.getPreSubmitCount();
-    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
-    feedbackKafkaProducer.publish(event);
+    FeedbackRequestDto feedbackRequestDto = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(feedbackRequestDto);
+    log.info("피드백 생성 이벤트 발행");
+
+    RecomRequestDto recomRequestDto = new RecomRequestDto(userId, subjectId);
+    recomKafkaProducer.publish(recomRequestDto);
+    log.info("추천 컨텐츠 생성 이벤트 발행");
 
     saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
@@ -147,8 +154,8 @@ public class ExamService {
     Long subjectId = roadmap.getSubject().getSubId();
     String type = "post";
     int nth = roadmap.getPostSubmitCount();
-    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
-    feedbackKafkaProducer.publish(event);
+    FeedbackRequestDto feedbackRequestDto = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(feedbackRequestDto);
 
     saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
@@ -267,7 +274,7 @@ public class ExamService {
     for (ExamAnswerDto answer : answers) {
       Exam exam =
           examRepository
-              .findById(answer.examId())
+              .findByExamContent(answer.examContent())
               .orElseThrow(() -> new CustomException(StatusCode.EXAM_NOT_FOUND));
 
       UserExamAnswer entity =

@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     if (!passwordEncoder.matches(userSigninReqDto.password(), user.getPassword())) {
       throw new CustomException(StatusCode.NOT_EXIST_USER);
     }
-    return jwtUtils.generateTokens(user.getUserId());
+    return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
   }
 
   @Override

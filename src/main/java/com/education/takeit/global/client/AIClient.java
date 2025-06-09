@@ -7,12 +7,13 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.interview.dto.InterviewAllReplyReqDto;
+import com.education.takeit.interview.dto.InterviewFeedbackResDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
@@ -48,7 +49,7 @@ public class AIClient {
                 status -> status.is4xxClientError(),
                 (req, res) -> {
                   log.warn("FastAPI GET 실패: 상태코드 = {}", res.getStatusCode());
-                  throw new BadRequestException("잘못된 요청입니다.");
+                  throw new CustomException(StatusCode.BAD_REQUEST);
                 })
             .onStatus(
                 status -> status.is5xxServerError(),
@@ -73,7 +74,7 @@ public class AIClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-              throw new BadRequestException("잘못된 요청입니다.");
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
@@ -96,7 +97,7 @@ public class AIClient {
                 status -> status.is4xxClientError(),
                 (req, res) -> {
                   log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-                  throw new BadRequestException("잘못된 요청입니다.");
+                  throw new CustomException(StatusCode.BAD_REQUEST);
                 })
             .onStatus(
                 status -> status.is5xxServerError(),
@@ -122,7 +123,7 @@ public class AIClient {
             status -> status.is4xxClientError(),
             (req, res) -> {
               log.warn("FastAPI POST 실패: 상태코드 = {}", res.getStatusCode());
-              throw new BadRequestException("잘못된 요청입니다.");
+              throw new CustomException(StatusCode.BAD_REQUEST);
             })
         .onStatus(
             status -> status.is5xxServerError(),
@@ -134,8 +135,12 @@ public class AIClient {
   }
 
   /** 사용자 피드백 조회 */
-  public List<FeedbackResponseDto> getFeedback(Long userId) {
-    return getForList("/api/feedback?userId={userId}", FeedbackResponseDto[].class, userId);
+  public List<FeedbackResponseDto> getFeedback(Long userId, Long subjectId) {
+    return getForList(
+        "/api/feedback?userId={userId}&subjectId={subjectId}",
+        FeedbackResponseDto[].class,
+        userId,
+        subjectId);
   }
 
   /** 사전 평가 문제 조회 */
@@ -171,6 +176,11 @@ public class AIClient {
         UserContentResDto[].class,
         userId,
         subjectId);
+  }
+
+  public List<InterviewFeedbackResDto> getInterviewFeedback(
+      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
+    return postForList("fastAPI요청경로", InterviewFeedbackResDto[].class, userId);
   }
 
   public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {

@@ -42,7 +42,8 @@ public class UserController {
 
   @PostMapping("/signin")
   @Operation(summary = "로그인", description = "자체 서비스 로그인 API")
-  public ResponseEntity<Message<String>> signIn(@RequestBody UserSigninReqDto userSigninReqDto) {
+  public ResponseEntity<Message<UserSigninResDto>> signIn(
+      @RequestBody UserSigninReqDto userSigninReqDto) {
     UserSigninResDto userSigninResDto = userService.signIn(userSigninReqDto);
 
     HttpHeaders headers = new HttpHeaders();
@@ -61,7 +62,7 @@ public class UserController {
 
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message<>(StatusCode.OK, "accessToken : " + userSigninResDto.accessToken()));
+        .body(new Message<>(StatusCode.OK, userSigninResDto));
   }
 
   @DeleteMapping("/signout")
@@ -70,7 +71,21 @@ public class UserController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     Long userId = userDetails.getUserId();
     userService.signOut(userId);
-    return ResponseEntity.ok(new Message<>(StatusCode.OK));
+
+    ResponseCookie deleteRefreshTokenCookie =
+        ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false)
+            .path("/")
+            .maxAge(0) // 쿠키 즉시 삭제 (쿠키 유효 시간 0으로 설정)
+            .sameSite("Lax")
+            .build();
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.SET_COOKIE, deleteRefreshTokenCookie.toString());
+
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(new Message<>(StatusCode.OK, "로그아웃 완료 및 쿠키 삭제"));
   }
 
   @GetMapping("/check-email")

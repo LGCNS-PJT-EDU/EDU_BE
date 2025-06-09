@@ -1,8 +1,10 @@
 package com.education.takeit.recommend.service;
 
+import com.education.takeit.exam.service.ExamService;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.kafka.recommand.dto.RecomResultDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import com.education.takeit.recommend.entity.UserContent;
@@ -15,15 +17,18 @@ import com.education.takeit.user.repository.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecommendService {
   private final UserContentRepository userContentRepository;
-  private final TotalContentRepository totalContentRepository;
   private final UserRepository userRepository;
   private final SubjectRepository subjectRepository;
+  private final TotalContentRepository totalContentRepository;
+  private final ExamService examService;
   private final AIClient aiClient;
 
   // 마이페이지에서 사용자 추천 컨텐츠 조회
@@ -72,37 +77,33 @@ public class RecommendService {
         .collect(Collectors.toList());
   }
 
-  // 추천 컨텐츠 요청
-  public List<UserContentResDto> fetchAndSaveRecommendation(Long userId, Long subjectId) {
-    List<UserContentResDto> recommendationList = aiClient.getRecommendation(userId, subjectId);
-    saveUserContent(userId, recommendationList);
-    return recommendationList;
-  }
-
-  // DB에 저장
-  private void saveUserContent(Long userId, List<UserContentResDto> userContentList) {
+  public void saveUserContents(RecomResultDto dto) {
     User user =
         userRepository
-            .findById(userId)
+            .findByUserId(dto.userId())
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+    Subject subject =
+        subjectRepository
+            .findBySubId(dto.subjectId())
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_SUBJECT));
 
-    List<UserContent> contentList =
-        userContentList.stream()
+    List<UserContent> recommendations =
+        dto.recommendation().stream()
             .map(
-                dto -> {
+                userContentResDto -> {
                   TotalContent totalContent =
                       totalContentRepository
-                          .findById(dto.contentId())
+                          .findById(userContentResDto.contentId())
                           .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
-                  Subject subject =
-                      subjectRepository
-                          .findById(dto.subjectId())
-                          .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(
-                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
+                  return UserContent.builder()
+                      .totalContent(totalContent)
+                      .subject(subject)
+                      .user(user)
+                      .isAiRecommended(userContentResDto.isAiRecommendation())
+                      .aiRecommendReason(userContentResDto.comment())
+                      .build();
                 })
             .toList();
-
-    userContentRepository.saveAll(contentList);
+    userContentRepository.saveAll(recommendations);
   }
 }
