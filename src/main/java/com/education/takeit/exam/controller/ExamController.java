@@ -63,7 +63,6 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPreExam(userId, examAnswerRes);
-    recommendService.fetchAndSaveRecommendation(userId, examAnswerRes.subjectId());
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 
