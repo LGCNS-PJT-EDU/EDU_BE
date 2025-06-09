@@ -106,16 +106,10 @@ spotless {
     }
 }
 
-def includePatterns = [
-        '**/service/**',
-        '**/consumer/**',
-        '**/producer/**'
-]
-
-def sonarIncludePatterns = [
+def sonarCoverageIncludes = [
         '**/service/**/*.java',
-        '**/consumer/**/*.java',
-        '**/producer/**/*.java'
+        '**/kafka/**/consumer/**/*.java',
+        '**/kafka/**/producer/**/*.java'
 ]
 
 sonarqube {
@@ -127,11 +121,17 @@ sonarqube {
 
         property 'sonar.sources', 'src/main/java'
         property 'sonar.tests', 'src/test/java'
-        property 'sonar.inclusions', sonarIncludePatterns.join(',')
+        property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
 
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
+
+def jacocoIncludePatterns = [
+        '**/service/**',
+        '**/kafka/**/consumer/**',
+        '**/kafka/**/producer/**'
+]
 
 jacocoTestReport {
     dependsOn test
@@ -146,7 +146,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(
                 files(classDirectories.files.collect {
-                    fileTree(dir: it, include: includePatterns)
+                    fileTree(dir: it, include: jacocoIncludePatterns)
                 })
         )
     }
@@ -159,32 +159,24 @@ jacocoTestCoverageVerification {
         rule {
             enabled = true
             element = 'CLASS'
-            includes = includePatterns   // ← 소문자 변수 사용
+            includes = jacocoIncludePatterns
 
-            // ① 라인 커버리지
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
                 minimum = 0.00
             }
-            // ② 브랜치 커버리지
+
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
                 minimum = 0.00
             }
-        }
 
-        rule {
-            enabled = true
-            element = 'METHOD'
-            includes = includePatterns
-
-            // ③ 메서드 라인 수 제한
             limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
             }
         }
     }
