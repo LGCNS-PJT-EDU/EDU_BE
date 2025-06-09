@@ -13,6 +13,7 @@ import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -181,5 +182,14 @@ public class InterviewService {
       }
     }
     return new InterviewAllSubIdResDto(existingSubjectIds, missingSubjectIds);
+  }
+
+  @Transactional
+  public void savePrivacy(Long userId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    user.savePrivacyStatus();
   }
 }

@@ -65,7 +65,7 @@ public class NaverOAuthServiceTest {
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(mockUser.getUserId()))
+    when(jwtUtils.generateTokens(mockUser.getUserId(), mockUser.getPrivacyStatus()))
         .thenReturn(new UserSigninResDto("mock-access-token", "mock-refresh-token"));
 
     UserSigninResDto tokens = naverOAuthService.login(loginRequest);
@@ -78,7 +78,7 @@ public class NaverOAuthServiceTest {
     verify(naverOauthClient).getToken("mock-code", "mock-state");
     verify(naverOauthClient).getUserInfo("mock-access-token");
     verify(userRepository).findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER);
-    verify(jwtUtils).generateTokens(mockUser.getUserId());
+    verify(jwtUtils).generateTokens(mockUser.getUserId(), mockUser.getPrivacyStatus());
   }
 
   @Test
@@ -97,7 +97,7 @@ public class NaverOAuthServiceTest {
     // 토큰 요청 실패했을 때는 한번도 실행되면 안됨
     verify(naverOauthClient, never()).getUserInfo(any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(any());
+    verify(jwtUtils, never()).generateTokens(any(), any());
   }
 
   @Test
@@ -110,7 +110,7 @@ public class NaverOAuthServiceTest {
 
     verify(naverOauthClient, never()).getToken(any(), any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(any());
+    verify(jwtUtils, never()).generateTokens(any(), any());
   }
 
   @Test
@@ -135,6 +135,6 @@ public class NaverOAuthServiceTest {
     verify(naverOauthClient).getToken("mock-code", "mock-state");
     verify(naverOauthClient).getUserInfo("mock-access-token");
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(any());
+    verify(jwtUtils, never()).generateTokens(any(), any());
   }
 }

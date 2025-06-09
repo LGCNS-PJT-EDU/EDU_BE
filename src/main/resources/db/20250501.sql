@@ -27,7 +27,8 @@ CREATE TABLE users (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   lecture_amount VARCHAR(255),
   price_level VARCHAR(255),
-  likes_books BOOLEAN
+  likes_books BOOLEAN,
+  privacy_status BOOLEAN
 );
 
 -- diagnosis 테이블 생성
