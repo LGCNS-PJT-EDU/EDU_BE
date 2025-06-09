@@ -109,6 +109,7 @@ spotless {
         target 'src/**/*.java'
     }
 }
+
 def includePatterns = [
         '**/service/**',
         '**/consumer/**',
