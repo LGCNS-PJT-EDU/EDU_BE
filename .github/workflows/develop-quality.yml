@@ -10,22 +10,23 @@ on:
 
 jobs:
   build-and-analyze:
+    name: Build → Test → Coverage → SonarCloud
     runs-on: ubuntu-latest
+
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # PR 코멘트용
 
     steps:
       # 1) 소스 체크아웃
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0        # 히스토리 전체(분석 정확도 ↑)
 
-      # 2) JDK 21 설치
+      # 2) JDK 21 (Temurin)
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
           java-version: 21
+          distribution: temurin
 
       # 3) 캐시: Sonar + Gradle
       - name: Cache Sonar packages
@@ -33,19 +34,17 @@ jobs:
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle
 
-      # 4) 빌드·테스트·커버리지 리포트 생성 (Spotless 체크 제외)
-      - name: Build, Test & Generate Coverage
-        run: ./gradlew clean test jacocoTestReport -x spotlessJavaCheck
-
-      # 5) SonarCloud 스캔 (Jacoco XML 자동 감지)
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v2
-        with:
-          args: -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # 4) Gradle 빌드(+테스트·커버리지) & SonarCloud 업로드
+      #    build 태스크 → test → jacocoTestReport → jacocoTestCoverageVerification
+      #    끝나면 sonar 태스크로 업로드
+      - name: Build and SonarCloud analyze
+        run: ./gradlew build -x spotlessJavaCheck sonar --info
