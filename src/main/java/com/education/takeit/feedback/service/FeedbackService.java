@@ -7,7 +7,7 @@ import com.education.takeit.feedback.repository.FeedbackRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.dto.FeedbackResultDto;
+import com.education.takeit.kafka.feedback.dto.FeedbackResultDto;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;

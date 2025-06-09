@@ -11,11 +11,12 @@ import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.solution.service.SolutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/exam")
@@ -63,7 +64,6 @@ public class ExamController {
     }
     Long userId = userDetails.getUserId();
     examService.submitPreExam(userId, examAnswerRes);
-    recommendService.fetchAndSaveRecommendation(userId, examAnswerRes.subjectId());
     return ResponseEntity.ok(new Message<>(StatusCode.OK));
   }
 

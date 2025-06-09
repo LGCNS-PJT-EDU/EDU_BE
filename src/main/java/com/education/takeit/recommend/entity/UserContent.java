@@ -4,6 +4,7 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_content")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 public class UserContent {
   @Id

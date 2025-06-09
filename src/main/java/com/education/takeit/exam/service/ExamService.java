@@ -7,13 +7,10 @@ import com.education.takeit.exam.repository.ExamRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.dto.FeedbackRequestDto;
-import com.education.takeit.kafka.producer.FeedbackKafkaProducer;
-import com.education.takeit.recommend.dto.UserContentResDto;
-import com.education.takeit.recommend.entity.TotalContent;
-import com.education.takeit.recommend.entity.UserContent;
-import com.education.takeit.recommend.repository.TotalContentRepository;
-import com.education.takeit.recommend.repository.UserContentRepository;
+import com.education.takeit.kafka.feedback.dto.FeedbackRequestDto;
+import com.education.takeit.kafka.feedback.producer.FeedbackKafkaProducer;
+import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommand.producer.RecomKafkaProducer;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
@@ -23,13 +20,14 @@ import com.education.takeit.solution.repository.UserExamAnswerRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,12 +39,11 @@ public class ExamService {
   private final RoadmapRepository roadmapRepository;
   private final ExamLevelCalculator examLevelCalculator;
   private final FeedbackKafkaProducer feedbackKafkaProducer;
+  private final RecomKafkaProducer recomKafkaProducer;
   private final UserRepository userRepository;
   private final SubjectRepository subjectRepository;
   private final ExamRepository examRepository;
   private final UserExamAnswerRepository userExamAnswerRepository;
-  private final TotalContentRepository totalContentRepository;
-  private final UserContentRepository userContentRepository;
 
   /**
    * 사전 평가 문제 조회
@@ -92,12 +89,16 @@ public class ExamService {
 
     roadmapRepository.save(roadmap);
 
-    // 결과 저장 성공 직후
     Long subjectId = roadmap.getSubject().getSubId();
     String type = "pre";
     int nth = roadmap.getPreSubmitCount();
-    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
-    feedbackKafkaProducer.publish(event);
+    FeedbackRequestDto feedbackRequestDto = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(feedbackRequestDto);
+    log.info("피드백 생성 이벤트 발행");
+
+    RecomRequestDto recomRequestDto = new RecomRequestDto(userId, subjectId);
+    recomKafkaProducer.publish(recomRequestDto);
+    log.info("추천 컨텐츠 생성 이벤트 발행");
 
     saveUserExamAnswer(userId, answers, true, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
@@ -154,8 +155,8 @@ public class ExamService {
     Long subjectId = roadmap.getSubject().getSubId();
     String type = "post";
     int nth = roadmap.getPostSubmitCount();
-    FeedbackRequestDto event = new FeedbackRequestDto(userId, subjectId, type, nth);
-    feedbackKafkaProducer.publish(event);
+    FeedbackRequestDto feedbackRequestDto = new FeedbackRequestDto(userId, subjectId, type, nth);
+    feedbackKafkaProducer.publish(feedbackRequestDto);
 
     saveUserExamAnswer(userId, answers, false, subject.submitCnt(), examAnswerRes.subjectId());
     return ResponseEntity.noContent().build();
@@ -289,32 +290,5 @@ public class ExamService {
 
       userExamAnswerRepository.save(entity);
     }
-  }
-
-  // DB에 저장
-  public void saveUserContent(Long userId, List<UserContentResDto> userContentList) {
-    User user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-
-    List<UserContent> contentList =
-        userContentList.stream()
-            .map(
-                dto -> {
-                  TotalContent totalContent =
-                      totalContentRepository
-                          .findById(dto.contentId())
-                          .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
-                  Subject subject =
-                      subjectRepository
-                          .findById(dto.subjectId())
-                          .orElseThrow(() -> new CustomException(StatusCode.SUBJECT_NOT_FOUND));
-                  return new UserContent(
-                      null, totalContent, subject, user, dto.isAiRecommendation(), dto.comment());
-                })
-            .toList();
-
-    userContentRepository.saveAll(contentList);
   }
 }
