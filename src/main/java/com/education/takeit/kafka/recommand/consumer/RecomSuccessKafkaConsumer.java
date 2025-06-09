@@ -22,9 +22,6 @@ public class RecomSuccessKafkaConsumer {
   public void consumeSuccess(@Payload RecomResultDto payload, Acknowledgment acknowledgment) {
     log.info("추천 컨텐츠 수신: {}", payload);
     try {
-      if (true) {
-        throw new RuntimeException("강제 예외 발생: Test");
-      }
       recommendService.saveUserContents(payload);
       acknowledgment.acknowledge();
       log.info("추천 컨텐츠 저장 성공");
