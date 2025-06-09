@@ -9,11 +9,12 @@ import com.education.takeit.interview.entity.Interview;
 import com.education.takeit.interview.entity.UserInterviewReply;
 import com.education.takeit.interview.repository.InterviewRepository;
 import com.education.takeit.interview.repository.UserInterviewReplyRepository;
+import com.education.takeit.roadmap.repository.RoadmapRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class InterviewService {
   private final OpenAiRestClient openAiRestClient;
   private final AIClient aiClient;
   private final UserRepository userRepository;
+  private final RoadmapRepository roadmapRepository;
 
   public List<InterviewContentResDto> getInterview(List<Long> subjectIds, Long userId) {
     int currentNth = replyRepository.findMaxNthByUserId(userId).orElse(0) + 1;
@@ -147,5 +149,37 @@ public class InterviewService {
       log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
       return Collections.emptyList();
     }
+  }
+
+  public InterviewAllSubIdResDto getInterviewAllSubId(Long userId) {
+    List<SubjectInfo> allSubjectIds = subjectRepository.findAllSubjectInfos();
+    List<SubjectInfo> existingSubjectIds = roadmapRepository.findSubjectInfosByUserId(userId);
+
+    Set<Long> existingSubIdSet =
+        existingSubjectIds.stream().map(SubjectInfo::subId).collect(Collectors.toSet());
+
+    // 중복되는 과목들
+    Map<Long, Long> aliasMap =
+        Map.of(
+            3L, 41L,
+            6L, 37L,
+            7L, 38L);
+
+    List<SubjectInfo> missingSubjectIds =
+        allSubjectIds.stream()
+            .filter(s -> !existingSubIdSet.contains(s.subId()))
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    // 중복되는 과목 삭제
+    for (Map.Entry<Long, Long> entry : aliasMap.entrySet()) {
+      Long a = entry.getKey();
+      Long b = entry.getValue();
+      if (existingSubIdSet.contains(a)) {
+        missingSubjectIds.removeIf(s -> s.subId().equals(b));
+      } else if (existingSubIdSet.contains(b)) {
+        missingSubjectIds.removeIf(s -> s.subId().equals(a));
+      }
+    }
+    return new InterviewAllSubIdResDto(existingSubjectIds, missingSubjectIds);
   }
 }
