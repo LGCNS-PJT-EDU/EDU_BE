@@ -1,10 +1,11 @@
 package com.education.takeit.diagnosis.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "choice")
@@ -26,7 +27,7 @@ public class Choice {
   @Column(nullable = false, columnDefinition = "TEXT")
   private String choice;
 
-  @Column(nullable = false, length = 255)
+  @Column(name = "\"value\"", nullable = false, length = 255)
   private String value;
 
   @CreatedDate
