@@ -1,9 +1,5 @@
 package com.education.takeit.user;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
@@ -14,7 +10,6 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.education.takeit.user.service.UserServiceImpl;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +19,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -157,7 +158,7 @@ public class UserServiceTest {
 
     // if user is null, return Error
     CustomException ex = assertThrows(CustomException.class, () -> userService.withdraw(userId));
-    assertEquals(StatusCode.INVALID_SIGNIN_INFO, ex.getStatusCode());
+    assertEquals(StatusCode.USER_NOT_FOUND, ex.getStatusCode());
 
     verify(userRepository, times(1)).findByUserId(userId);
   }
