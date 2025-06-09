@@ -1,43 +1,49 @@
-# .github/workflows/develop-quality.yml
-name: Develop Quality
+# .github/workflows/quality.yml
+name: SonarCloud Quality Gate
 
 on:
   push:
     branches: [ develop ]
   pull_request:
-    branches: [ develop ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
-  quality-gate:
+  build-and-analyze:
+    name: Build → Test → Coverage → SonarCloud
     runs-on: ubuntu-latest
 
     env:
-      # SonarCloud Action이 필요로 하는 토큰
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
-    # 1) 코드 체크아웃
-    - uses: actions/checkout@v3
+      # 1) 소스 체크아웃
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # 히스토리 전체(분석 정확도 ↑)
 
-    # 2) JDK 21 (Temurin)
-    - uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 21
+      # 2) JDK 21 (Temurin)
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
 
-    # 3) Gradle + Sonar 캐시 (공식 액션 하나로 끝)
-    - uses: gradle/gradle-build-action@v3
-      with:
-        cache-read-only: false            # develop 브랜치는 쓰기 허용
-        # 테스트·커버리지·빌드까지 묶어서 실행
-        arguments: |
-          clean test                     \
-          jacocoTestReport              \
-          jacocoTestCoverageVerification
+      # 3) 캐시: Sonar + Gradle
+      - name: Cache Sonar packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-    # 4) SonarCloud 스캔 (커버리지 XML을 자동 인식)
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@v2
-      with:
-        args: >
-          -Dsonar.login=${{ env.SONAR_TOKEN }}
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      # 4) Gradle 빌드(+테스트·커버리지) & SonarCloud 업로드
+      #    build 태스크 → test → jacocoTestReport → jacocoTestCoverageVerification
+      #    끝나면 sonar 태스크로 업로드
+      - name: Build and SonarCloud analyze
+        run: ./gradlew build sonar --info
