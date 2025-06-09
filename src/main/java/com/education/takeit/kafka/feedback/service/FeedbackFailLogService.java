@@ -14,6 +14,7 @@ public class FeedbackFailLogService {
 
   /**
    * 피드백 생성 실패 DB 로그 적재
+   *
    * @param dto
    */
   public void saveFailLog(FeedbackFailDto dto) {

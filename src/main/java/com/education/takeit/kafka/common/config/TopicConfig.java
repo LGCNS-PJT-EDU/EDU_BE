@@ -12,6 +12,7 @@ public class TopicConfig {
 
   /**
    * 피드백 생성 요청 이벤트 토픽
+   *
    * @return
    */
   @Bean
@@ -21,6 +22,7 @@ public class TopicConfig {
 
   /**
    * 피드백 생성 성공 이벤트 토픽
+   *
    * @return
    */
   @Bean
@@ -30,6 +32,7 @@ public class TopicConfig {
 
   /**
    * 피드백 생성 실패 이벤트 토픽
+   *
    * @return
    */
   @Bean
@@ -39,6 +42,7 @@ public class TopicConfig {
 
   /**
    * 추천 컨텐츠 생성 요청 이벤트 토픽
+   *
    * @return
    */
   @Bean
@@ -48,6 +52,7 @@ public class TopicConfig {
 
   /**
    * 추천 컨텐츠 생성 성공 이벤트 토픽
+   *
    * @return
    */
   @Bean
@@ -57,6 +62,7 @@ public class TopicConfig {
 
   /**
    * 추천 컨텐츠 생성 실패 이벤트 토픽
+   *
    * @return
    */
   @Bean

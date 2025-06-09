@@ -10,21 +10,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RecomFailLogService {
 
-    private final RecomFailRepository repository;
+  private final RecomFailRepository repository;
 
-    /**
-     * 추천 컨텐츠 생성 실패 로그 적재
-     * @param dto
-     */
-    public void saveFailLog(RecomFailDto dto) {
-        RecomFailLog entity =
-                RecomFailLog.builder()
-                        .userId(dto.userId())
-                        .subjectId(dto.subjectId())
-                        .errorCode(dto.errorCode())
-                        .errorMessage(dto.errorMessage())
-                        .build();
+  /**
+   * 추천 컨텐츠 생성 실패 로그 적재
+   *
+   * @param dto
+   */
+  public void saveFailLog(RecomFailDto dto) {
+    RecomFailLog entity =
+        RecomFailLog.builder()
+            .userId(dto.userId())
+            .subjectId(dto.subjectId())
+            .errorCode(dto.errorCode())
+            .errorMessage(dto.errorMessage())
+            .build();
 
-        repository.save(entity);
-    }
+    repository.save(entity);
+  }
 }

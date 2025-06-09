@@ -6,6 +6,8 @@ import com.education.takeit.kafka.feedback.recoverer.FeedbackFailRecoverer;
 import com.education.takeit.kafka.recommand.consumer.RecomFailRecoverer;
 import com.education.takeit.kafka.recommand.dto.RecomFailDto;
 import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,9 +23,6 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class KafkaConsumerConfig {
 
@@ -34,6 +33,7 @@ public class KafkaConsumerConfig {
 
   /**
    * 피드백 생성 실패 커스텀 에러 핸들러
+   *
    * @param feedbackFailKafkaTemplate
    * @return
    */
@@ -55,12 +55,13 @@ public class KafkaConsumerConfig {
 
   /**
    * 추천 컨텐츠 생성 실패 커스텀 에러 핸들러
+   *
    * @param recomFailKafkaTemplate
    * @return
    */
   @Bean
   public DefaultErrorHandler recomErrorHandler(
-          @Qualifier("recomFailKafkaTemplate")
+      @Qualifier("recomFailKafkaTemplate")
           KafkaOperations<String, RecomFailDto> recomFailKafkaTemplate) {
     RecomFailRecoverer recoverer = new RecomFailRecoverer(recomFailKafkaTemplate);
     ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(3);
@@ -76,6 +77,7 @@ public class KafkaConsumerConfig {
 
   /**
    * 피드백 생성 성공 컨슈머
+   *
    * @return
    */
   @Bean
@@ -98,6 +100,7 @@ public class KafkaConsumerConfig {
 
   /**
    * 피드백 생성 실패 컨슈머
+   *
    * @return
    */
   @Bean
@@ -119,12 +122,12 @@ public class KafkaConsumerConfig {
 
   /**
    * 추천 컨텐츠 생성 성공 컨슈머
+   *
    * @return
    */
   @Bean
   public ConsumerFactory<String, RecomResultDto> recomSuccessConsumerFactory() {
-    JsonDeserializer<RecomResultDto> deserializer =
-            new JsonDeserializer<>(RecomResultDto.class);
+    JsonDeserializer<RecomResultDto> deserializer = new JsonDeserializer<>(RecomResultDto.class);
     deserializer.addTrustedPackages(TRUSTED_PACKAGE);
     deserializer.setUseTypeHeaders(false);
 
@@ -141,6 +144,7 @@ public class KafkaConsumerConfig {
 
   /**
    * 추천 컨텐츠 생성 실패 컨슈머
+   *
    * @return
    */
   @Bean
@@ -184,10 +188,10 @@ public class KafkaConsumerConfig {
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, RecomResultDto>
-  recomSuccessKafkaListenerContainerFactory(
+      recomSuccessKafkaListenerContainerFactory(
           @Qualifier("recomErrorHandler") DefaultErrorHandler errorHandler) {
     ConcurrentKafkaListenerContainerFactory<String, RecomResultDto> factory =
-            new ConcurrentKafkaListenerContainerFactory<>();
+        new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(recomSuccessConsumerFactory());
     factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
     factory.setCommonErrorHandler(errorHandler);
@@ -196,9 +200,9 @@ public class KafkaConsumerConfig {
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, RecomFailDto>
-  recomFailKafkaListenerContainerFactory() {
+      recomFailKafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, RecomFailDto> factory =
-            new ConcurrentKafkaListenerContainerFactory<>();
+        new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(recomFailConsumerFactory());
     factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
     return factory;

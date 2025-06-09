@@ -14,25 +14,23 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecomSuccessKafkaConsumer {
 
-    private final RecommendService recommendService;
+  private final RecommendService recommendService;
 
-    @KafkaListener(
-            topics = "recom.result.success",
-            containerFactory = "recomSuccessKafkaListenerContainerFactory"
-    )
-    public void consumeSuccess(@Payload RecomResultDto payload, Acknowledgment acknowledgment) {
-        log.info("추천 컨텐츠 수신: {}", payload);
-        try {
-            if(true) {
-                throw new RuntimeException("강제 예외 발생: Test");
-            }
-            recommendService.saveUserContents(payload);
-            acknowledgment.acknowledge();
-            log.info("추천 컨텐츠 저장 성공");
-        } catch (Exception e) {
-            log.error("추천 컨텐츠 저장 실패", e);
-            throw new RuntimeException(e);
-        }
+  @KafkaListener(
+      topics = "recom.result.success",
+      containerFactory = "recomSuccessKafkaListenerContainerFactory")
+  public void consumeSuccess(@Payload RecomResultDto payload, Acknowledgment acknowledgment) {
+    log.info("추천 컨텐츠 수신: {}", payload);
+    try {
+      if (true) {
+        throw new RuntimeException("강제 예외 발생: Test");
+      }
+      recommendService.saveUserContents(payload);
+      acknowledgment.acknowledge();
+      log.info("추천 컨텐츠 저장 성공");
+    } catch (Exception e) {
+      log.error("추천 컨텐츠 저장 실패", e);
+      throw new RuntimeException(e);
     }
-
+  }
 }

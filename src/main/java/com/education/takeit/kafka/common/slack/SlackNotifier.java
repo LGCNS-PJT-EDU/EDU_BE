@@ -1,13 +1,12 @@
 package com.education.takeit.kafka.common.slack;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -21,6 +20,7 @@ public class SlackNotifier {
 
   /**
    * Slack 관리자 알림 발송
+   *
    * @param message
    */
   public void send(String message) {

@@ -14,12 +14,11 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,32 +78,32 @@ public class RecommendService {
   }
 
   public void saveUserContents(RecomResultDto dto) {
-      User user =
-              userRepository
-                      .findByUserId(dto.userId())
-                      .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
-      Subject subject =
-              subjectRepository
-                      .findBySubId(dto.subjectId())
-                      .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_SUBJECT));
+    User user =
+        userRepository
+            .findByUserId(dto.userId())
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_USER));
+    Subject subject =
+        subjectRepository
+            .findBySubId(dto.subjectId())
+            .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_SUBJECT));
 
-      List<UserContent> recommendations =
-              dto.recommendation().stream()
-                      .map(
-                              userContentResDto -> {
-                                  TotalContent totalContent =
-                                          totalContentRepository
-                                                  .findById(userContentResDto.contentId())
-                                                  .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
-                                  return UserContent.builder()
-                                          .totalContent(totalContent)
-                                          .subject(subject)
-                                          .user(user)
-                                          .isAiRecommended(userContentResDto.isAiRecommendation())
-                                          .aiRecommendReason(userContentResDto.comment())
-                                          .build();
-                              }
-                      ).toList();
-      userContentRepository.saveAll(recommendations);
+    List<UserContent> recommendations =
+        dto.recommendation().stream()
+            .map(
+                userContentResDto -> {
+                  TotalContent totalContent =
+                      totalContentRepository
+                          .findById(userContentResDto.contentId())
+                          .orElseThrow(() -> new CustomException(StatusCode.CONTENTS_NOT_FOUND));
+                  return UserContent.builder()
+                      .totalContent(totalContent)
+                      .subject(subject)
+                      .user(user)
+                      .isAiRecommended(userContentResDto.isAiRecommendation())
+                      .aiRecommendReason(userContentResDto.comment())
+                      .build();
+                })
+            .toList();
+    userContentRepository.saveAll(recommendations);
   }
 }

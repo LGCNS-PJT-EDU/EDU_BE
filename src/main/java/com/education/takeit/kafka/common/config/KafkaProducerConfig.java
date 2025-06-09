@@ -4,6 +4,8 @@ import com.education.takeit.kafka.feedback.dto.FeedbackFailDto;
 import com.education.takeit.kafka.feedback.dto.FeedbackRequestDto;
 import com.education.takeit.kafka.recommand.dto.RecomFailDto;
 import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +16,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class KafkaProducerConfig {
 
@@ -25,6 +24,7 @@ public class KafkaProducerConfig {
 
   /**
    * 피드백 생성 요청 템플릿
+   *
    * @return
    */
   @Bean
@@ -34,6 +34,7 @@ public class KafkaProducerConfig {
 
   /**
    * 피드백 생성 실패 템플릿
+   *
    * @return
    */
   @Bean
@@ -43,6 +44,7 @@ public class KafkaProducerConfig {
 
   /**
    * 추천 컨텐츠 생성 요청 템플릿
+   *
    * @return
    */
   @Bean
@@ -52,6 +54,7 @@ public class KafkaProducerConfig {
 
   /**
    * 추천 컨텐츠 생성 실패 템플릿
+   *
    * @return
    */
   @Bean
