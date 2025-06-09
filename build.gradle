@@ -86,7 +86,10 @@ jacoco {
 
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy 'jacocoTestReport'
+    finalizedBy(
+            tasks.named('jacocoTestReport'),
+            tasks.named('jacocoTestCoverageVerification')
+    )
 }
 gitHooks {
     // where to install your hooks; you can leave this at the default '.githooks'
@@ -135,7 +138,6 @@ def jacocoIncludePatterns = [
 
 jacocoTestReport {
     dependsOn test
-    finalizedBy 'jacocoTestCoverageVerification'
 
     reports {
         xml.required = true
