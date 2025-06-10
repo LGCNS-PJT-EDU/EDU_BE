@@ -209,7 +209,7 @@ public class RoadmapServiceTest {
     List<SubjectDto> subjects =
         List.of(new SubjectDto(1L, "HTML", 1), new SubjectDto(2L, "CSS", 2));
 
-    RoadmapSaveResDto roadmapSaveResDto = new RoadmapSaveResDto(null, 1L, subjects);
+    RoadmapSaveResDto roadmapSaveResDto = new RoadmapSaveResDto(null, "로드맵이름", 1L, subjects);
 
     RoadmapManagement existingRoadmapManagement = mock(RoadmapManagement.class);
 
@@ -221,7 +221,7 @@ public class RoadmapServiceTest {
     doReturn(roadmapSaveResDto).when(roadmapService).createRoadmap(answers);
 
     // saveRoadmap은 단순히 호출 여부만 검증
-    doNothing().when(roadmapService).saveRoadmap(anyLong(), anyList(), anyList());
+    doNothing().when(roadmapService).saveRoadmap(anyLong(), anyString(), anyList(), anyList());
 
     // when
     RoadmapSaveResDto result = roadmapService.selectRoadmap(userId, answers);
@@ -232,7 +232,7 @@ public class RoadmapServiceTest {
     assertThat(result.subjects().getFirst().subjectName()).isEqualTo("HTML");
 
     verify(roadmapTransactionalService, times(1)).deleteRoadmap(userId);
-    verify(roadmapService).saveRoadmap(eq(userId), anyList(), eq(answers));
+    verify(roadmapService).saveRoadmap(eq(userId), anyString(), anyList(), eq(answers));
   }
 
   @Test
@@ -325,7 +325,7 @@ public class RoadmapServiceTest {
     when(subjectRepository.findAllById(subjectIds)).thenReturn(List.of(subject1, subject2));
 
     // When
-    roadmapService.saveRoadmap(userId, subjectIds, answers);
+    roadmapService.saveRoadmap(userId, "테스트용 로드맵", subjectIds, answers);
 
     // Then
     verify(roadmapManagementRepository).save(any(RoadmapManagement.class));
@@ -382,7 +382,7 @@ public class RoadmapServiceTest {
         .when(objectMapper.readValue(anyString(), any(TypeReference.class)))
         .thenReturn(parsedAnswers);
     when(subjectRepository.findAllById(subjectIds)).thenReturn(subjects);
-    doNothing().when(roadmapService).saveRoadmap(userId, subjectIds, parsedAnswers);
+    doNothing().when(roadmapService).saveRoadmap(userId, "게스트 로드맵", subjectIds, parsedAnswers);
 
     // When
     RoadmapSaveResDto result = roadmapService.saveGuestRoadmap(uuid, userId);
@@ -776,7 +776,7 @@ public class RoadmapServiceTest {
     when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
 
     RoadmapSaveResDto saved =
-        new RoadmapSaveResDto(uuid, 1L, List.of(new SubjectDto(1L, "HTML", 1)));
+        new RoadmapSaveResDto(uuid, "테스트용 로드맵", 1L, List.of(new SubjectDto(1L, "HTML", 1)));
 
     doReturn(saved).when(roadmapService).saveGuestRoadmap(uuid, userId);
 
