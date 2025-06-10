@@ -5,10 +5,9 @@ import com.education.takeit.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "feedback")
@@ -48,8 +47,7 @@ public class Feedback {
   @Column(name = "created_at", nullable = false)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @JsonProperty("date")
-  private LocalDate createdAt = LocalDate.now();  // 기본값: 현재 날짜
-
+  private LocalDate createdAt = LocalDate.now(); // 기본값: 현재 날짜
 
   public Feedback(
       String feedbackContent,
