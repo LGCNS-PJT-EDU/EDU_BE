@@ -33,6 +33,9 @@ public class InterviewService {
   private final RoadmapRepository roadmapRepository;
 
   public List<InterviewContentResDto> getInterview(List<Long> subjectIds, Long userId) {
+    if (subjectIds == null || subjectIds.isEmpty()) {
+      throw new CustomException(StatusCode.SUBJECT_ID_REQUIRED);
+    }
     int currentNth = replyRepository.findMaxNthByUserId(userId).orElse(0) + 1;
     List<Interview> interviewList = interviewRepository.findBySubject_SubIdIn(subjectIds);
 
@@ -169,6 +172,7 @@ public class InterviewService {
     List<SubjectInfo> missingSubjectIds =
         allSubjectIds.stream()
             .filter(s -> !existingSubIdSet.contains(s.subId()))
+            .map(s -> new SubjectInfo(s.subId(), s.subjectNm(), false))
             .collect(Collectors.toCollection(ArrayList::new));
 
     // 중복되는 과목 삭제

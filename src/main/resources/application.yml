@@ -2,7 +2,8 @@ spring:
   application:
     name: takeit
   profiles:
-    active: local
+    active: dev
+
 springdoc:
   api-docs:
     path: /api-docs
