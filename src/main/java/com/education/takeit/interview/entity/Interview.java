@@ -3,6 +3,7 @@ package com.education.takeit.interview.entity;
 import com.education.takeit.roadmap.entity.Subject;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class Interview {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

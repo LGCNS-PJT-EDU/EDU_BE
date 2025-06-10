@@ -1,3 +1,3 @@
 package com.education.takeit.interview.dto;
 
-public record SubjectInfo(Long subId, String subjectNm) {}
+public record SubjectInfo(Long subId, String subjectNm, Boolean isComplete) {}

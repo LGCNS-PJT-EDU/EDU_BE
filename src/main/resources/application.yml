@@ -3,6 +3,7 @@ spring:
     name: takeit
   profiles:
     active: dev
+
 springdoc:
   api-docs:
     path: /api-docs

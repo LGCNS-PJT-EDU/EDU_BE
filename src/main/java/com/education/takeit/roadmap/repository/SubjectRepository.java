@@ -13,6 +13,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
   Optional<Subject> findBySubId(Long subId);
 
   @Query(
-      "SELECT new com.education.takeit.interview.dto.SubjectInfo(s.subId, s.subNm) FROM Subject s")
+      "SELECT new com.education.takeit.interview.dto.SubjectInfo(s.subId, s.subNm, false) FROM Subject s")
   List<SubjectInfo> findAllSubjectInfos();
 }
