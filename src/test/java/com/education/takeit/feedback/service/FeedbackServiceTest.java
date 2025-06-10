@@ -11,11 +11,6 @@ import com.education.takeit.feedback.repository.FeedbackRepository;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.education.takeit.kafka.feedback.dto.FeedbackResultDto;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.entity.Track;
@@ -25,6 +20,10 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +44,8 @@ class FeedbackServiceTest {
 
   private final Track track = new Track();
   private final User dummyUser = new User("test@test.com", "testUser", "test", LoginType.LOCAL);
-  private final Subject dummySubject = Subject.builder()
+  private final Subject dummySubject =
+      Subject.builder()
           .subNm("Java")
           .subId(1L)
           .track(track)
@@ -64,13 +64,7 @@ class FeedbackServiceTest {
   }
 
   private FeedbackResultDto createSaveDto() {
-    return new FeedbackResultDto(
-            1L,
-            1L,
-            "pre",
-            1,
-            createDummyDto(1L, "Java")
-    );
+    return new FeedbackResultDto(1L, 1L, "pre", 1, createDummyDto(1L, "Java"));
   }
 
   @Test
@@ -147,16 +141,18 @@ class FeedbackServiceTest {
     // Then
     then(userRepository).should().findByUserId(1L);
     then(subjectRepository).should().findBySubId(1L);
-    then(feedbackRepository).should()
-            .save(argThat(feedback ->
-                    feedback.getFeedbackContent().equals("final") &&
-                            feedback.getUser().equals(dummyUser) &&
-                            feedback.getSubject().equals(dummySubject) &&
-                            feedback.getNth() == 1 &&
-                            feedback.isPre() &&
-                            feedback.getStrenth().equals("{json}") &&
-                            feedback.getWeakness().equals("{json}")
-            ));
+    then(feedbackRepository)
+        .should()
+        .save(
+            argThat(
+                feedback ->
+                    feedback.getFeedbackContent().equals("final")
+                        && feedback.getUser().equals(dummyUser)
+                        && feedback.getSubject().equals(dummySubject)
+                        && feedback.getNth() == 1
+                        && feedback.isPre()
+                        && feedback.getStrenth().equals("{json}")
+                        && feedback.getWeakness().equals("{json}")));
   }
 
   @Test
@@ -167,9 +163,9 @@ class FeedbackServiceTest {
     given(subjectRepository.findBySubId(1L)).willReturn(Optional.empty());
 
     assertThatThrownBy(() -> feedbackService.saveFeedback(dto))
-            .isInstanceOf(CustomException.class)
-            .extracting("statusCode")
-            .isEqualTo(StatusCode.NOT_EXIST_SUBJECT);
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.NOT_EXIST_SUBJECT);
   }
 
   @Test
@@ -181,8 +177,7 @@ class FeedbackServiceTest {
     given(objectMapper.writeValueAsString(any())).willThrow(JsonProcessingException.class);
 
     assertThatThrownBy(() -> feedbackService.saveFeedback(dto))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("JSON 직렬화 실패");
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("JSON 직렬화 실패");
   }
-
 }
