@@ -148,8 +148,7 @@ class DiagnosisServiceTest {
     RoadmapSaveResDto roadmap =
         new RoadmapSaveResDto(
             UUID.fromString("cc6d893c-637f-44ce-9a82-69c7137b3a81").toString(),
-            "로드맵 이름"
-            ,
+            "로드맵 이름",
             1L,
             List.of(
                 new SubjectDto(35L, "리눅스 명령어", 1),
