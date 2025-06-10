@@ -37,7 +37,7 @@ public class Feedback {
   private Subject subject;
 
   @Column(name = "strenth", nullable = false, columnDefinition = "LONGTEXT")
-  private String strenth;
+  private String strength;
 
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
   private String weakness;
@@ -57,7 +57,7 @@ public class Feedback {
       boolean isPre,
       User user,
       Subject subject,
-      String strenth,
+      String strength,
       String weakness,
       String scores) {
     this.feedbackContent = feedbackContent;
@@ -65,7 +65,7 @@ public class Feedback {
     this.isPre = isPre;
     this.user = user;
     this.subject = subject;
-    this.strenth = strenth;
+    this.strength = strength;
     this.weakness = weakness;
     this.scores = scores;
   }
