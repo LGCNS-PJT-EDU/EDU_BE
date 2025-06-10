@@ -33,7 +33,7 @@ public class InterviewService {
   private final RoadmapRepository roadmapRepository;
 
   public List<InterviewContentResDto> getInterview(List<Long> subjectIds, Long userId) {
-    if(subjectIds == null || subjectIds.isEmpty()){
+    if (subjectIds == null || subjectIds.isEmpty()) {
       throw new CustomException(StatusCode.SUBJECT_ID_REQUIRED);
     }
     int currentNth = replyRepository.findMaxNthByUserId(userId).orElse(0) + 1;
