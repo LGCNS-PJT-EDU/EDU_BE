@@ -1,8 +1,10 @@
 package com.education.takeit.interview.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
+import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.InterviewContentResDto;
 import com.education.takeit.interview.dto.InterviewHistoryResDto;
 import com.education.takeit.interview.entity.Interview;
@@ -78,12 +80,16 @@ public class InterviewServiceTest {
   }
 
   @Test
-  @DisplayName("과목 ID 리스트가 비어있을 경우 빈 질문 리스트 반환")
+  @DisplayName("과목 ID 리스트가 비어있을 경우 예외 발생")
   void testGetInterviewWithEmptySubjectIds() {
-    List<InterviewContentResDto> result =
-        interviewService.getInterview(Collections.emptyList(), 100L);
-    assertThat(result).isEmpty();
+    List<Long> emptySubjectIds = Collections.emptyList();
+    Long userId = 100L;
+
+    assertThatThrownBy(() -> interviewService.getInterview(emptySubjectIds, userId))
+            .isInstanceOf(CustomException.class)
+            .hasMessage("면접 볼 과목을 1개 이상 선택해야 합니다");
   }
+
 
   @Test
   @DisplayName("사용자의 역대 면접 기록을 회차별로 조회 및 반환")
