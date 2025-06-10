@@ -172,6 +172,7 @@ public class InterviewService {
     List<SubjectInfo> missingSubjectIds =
         allSubjectIds.stream()
             .filter(s -> !existingSubIdSet.contains(s.subId()))
+                .map(s-> new SubjectInfo(s.subId(),s.subjectNm(),false))
             .collect(Collectors.toCollection(ArrayList::new));
 
     // 중복되는 과목 삭제

@@ -18,7 +18,7 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
 
   @Query(
       """
-    SELECT new com.education.takeit.interview.dto.SubjectInfo(s.subId, s.subNm)
+    SELECT new com.education.takeit.interview.dto.SubjectInfo(s.subId, s.subNm, r.isComplete)
     FROM Roadmap r
     JOIN r.subject s
     WHERE r.roadmapManagement.userId = :userId
