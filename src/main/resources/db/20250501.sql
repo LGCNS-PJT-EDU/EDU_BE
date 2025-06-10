@@ -4283,7 +4283,7 @@ INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option
     (3023, 'Flask에서 URL 경로 매개변수에 타입을 지정하는 이유는?', 4, 'high', '디버깅 편의를 위해', '라우팅 속도를 높이기 위해', '템플릿 자동 생성에 필요', '뷰 함수로 전달되기 전에 형 변환 처리를 하기 위해',49, 'Flask는 <int:id>와 같이 URL 매개변수에 타입을 지정하면 자동으로 해당 타입으로 변환해준다.'),
     (3024, '다음 중 Flask에서 route 데코레이터를 통해 정의할 수 없는 것은?', 2, 'high', 'HTTP 메서드(GET, POST 등) 제한', '세션 유지 시간 설정', 'URL 경로 정의', '동적 URL 매개변수 지정',49, 'route()는 URL과 메서드를 정의하는 데 사용되며, 세션 설정은 전혀 다른 방식으로 처리된다.'),
     (3025, 'Flask에서 여러 route가 동일한 뷰 함수를 공유할 수 있는 방법은?', 1, 'high',  'route() 데코레이터를 중첩하거나 다중 선언한다.', '뷰 함수 안에서 URL을 분기한다.', '클래스 기반 뷰로만 가능하다.', 'Blueprint를 반드시 사용해야 한다.',49, 'Flask에서는 하나의 뷰 함수에 여러 @app.route() 데코레이터를 붙여 여러 URL에 대응하게 할 수 있다.'),
-    (3026, 'Jinja2에서 `{{ user.name | default('익명') }}`의 동작은?', 3, 'high', 'user.name이 항상 "익명"으로 출력된다.', '템플릿에서 변수를 삭제한다.', 'user.name이 None 또는 undefined일 경우 "익명"을 출력한다.', 'user.name이 문자열이면 익명으로 치환한다.',49, 'default 필터는 값이 None이거나 정의되지 않았을 경우 대체 값을 출력하도록 한다.'),
+    (3026, 'Jinja2에서 `{{ user.name | default(''익명'') }}`의 동작은?', 3, 'high', 'user.name이 항상 "익명"으로 출력된다.', '템플릿에서 변수를 삭제한다.', 'user.name이 None 또는 undefined일 경우 "익명"을 출력한다.', 'user.name이 문자열이면 익명으로 치환한다.',49, 'default 필터는 값이 None이거나 정의되지 않았을 경우 대체 값을 출력하도록 한다.'),
     (3027, '다음 중 Jinja2 템플릿 상속과 관련된 설명으로 옳은 것은?', 1, 'high', '`{% block %}` 태그를 사용하여 자식 템플릿에서 내용을 재정의할 수 있다.', '상속은 파이썬 클래스처럼 다중 상속이 가능하다.', '부모 템플릿은 반드시 HTML 전체 구조를 포함해야 한다.', 'Jinja2는 상속을 지원하지 않으며 include만 제공한다.',49, 'block 태그는 상속 구조에서 자식 템플릿이 내용을 덮어쓸 수 있도록 해준다.'),
     (3028, 'Jinja2 템플릿에서 `{% with %}` 블록의 용도는?', 4, 'high', '변수를 삭제하기 위해', '템플릿을 조건부로 렌더링하기 위해', '반복문 중간에 변수 초기화하기 위해', '일시적으로 변수에 값을 할당하고 블록 내에서만 사용할 수 있게 하기 위해',49, '`with` 블록은 블록 내부에서만 사용할 수 있는 임시 변수를 선언하는 데 사용된다.'),
     (3029, 'Flask-SQLAlchemy에서 데이터베이스 모델 클래스는 어떤 클래스를 상속받아야 하는가?', 2, 'low', 'ModelBase', 'db.Model', 'BaseModel', 'FlaskModel',49, 'SQLAlchemy의 모델 클래스는 db.Model을 상속받아야 SQLAlchemy가 인식할 수 있다.'),
@@ -4342,7 +4342,7 @@ INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option
     (3082, '다음 중 LEFT OUTER JOIN을 사용하는 이유로 가장 적절한 것은?', 3, 'high', '두 테이블의 교집합을 얻기 위해', 'NULL 값을 제거하기 위해', '왼쪽 테이블의 모든 값을 포함하면서 조건에 맞는 오른쪽 테이블의 값만 포함하기 위해', '서브쿼리를 대체하기 위해',43, 'LEFT OUTER JOIN은 왼쪽 테이블의 모든 행을 유지하면서 오른쪽 테이블의 조건에 맞는 값을 가져온다.'),
     (3083, '다음 SQL 중 상관 서브쿼리를 사용하는 것은?', 1, 'high', 'SELECT name FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id);', 'SELECT name FROM employees WHERE id IN (SELECT manager_id FROM departments);', 'SELECT * FROM employees WHERE department_id = (SELECT MAX(department_id) FROM departments);', 'SELECT * FROM employees WHERE EXISTS (SELECT 1 FROM departments);',43, '상관 서브쿼리는 외부 쿼리의 값을 내부 쿼리에서 참조하는 구조로, 예제 1이 해당된다.'),
     (3084, '다음 중 두 테이블의 교집합을 구하는 SQL 문은?', 2, 'high', 'SELECT * FROM A FULL JOIN B;', 'SELECT * FROM A INTERSECT SELECT * FROM B;', 'SELECT * FROM A UNION SELECT * FROM B;', 'SELECT * FROM A LEFT JOIN B;',43, '`INTERSECT`는 두 SELECT 결과의 공통된 행만 반환한다.'),
-    (3085, '다음 중 CSS 선택자 우선순위가 가장 높은 것은?', 2, 'high', '태그 선택자', '인라인 스타일', '클래스 선택자', 'id 선택자',0, '인라인 스타일은 우선순위에서 가장 높으며, 그 다음은 id > class > tag 순이다.'),
+    (3085, '다음 중 CSS 선택자 우선순위가 가장 높은 것은?', 2, 'high', '태그 선택자', '인라인 스타일', '클래스 선택자', 'id 선택자',20, '인라인 스타일은 우선순위에서 가장 높으며, 그 다음은 id > class > tag 순이다.'),
     (3086, '다음 중 box-sizing: border-box가 적용되었을 때 width 계산 방식으로 올바른 것은?', 3, 'high', 'width는 content 영역만 포함한다.', 'width는 content + padding만 포함한다.', 'width는 content + padding + border를 모두 포함한다.', 'width는 margin까지 포함한다.',20, 'border-box는 padding과 border를 포함한 전체 너비를 width로 계산한다.'),
     (3087, '다음 중 CSS Grid에서 특정 영역을 2행 2열로 병합할 때 사용하는 문법은?', 4, 'high', 'grid-area: span 2;', 'grid-template: repeat(2, auto);', 'grid-column: auto / span 2;', 'grid-column: span 2; grid-row: span 2;',20, 'grid-column과 grid-row를 각각 span 2로 지정하면 셀을 2x2 크기로 병합할 수 있다.'),
     (3088, '다음 중 화면 너비가 768px 이하일 때 스타일을 적용하는 미디어 쿼리 문법은?', 1, 'high',  '@media screen and (max-width: 768px)', '@media screen or (width <= 768px)', '@media only if width < 768px', '@media mobile-width: 768px',20, '올바른 문법은 @media screen and (max-width: 768px)이며, 반응형 설계에서 자주 사용된다.'),
@@ -4358,8 +4358,9 @@ CREATE TABLE feedback (
   is_pre BOOLEAN NOT NULL,
   user_id BIGINT NOT NULL,
   sub_id BIGINT NOT NULL,
-  strenth LONGTEXT NOT NULL,
+  strength LONGTEXT NOT NULL,
   weakness LONGTEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
   CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
