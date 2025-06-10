@@ -86,10 +86,9 @@ public class InterviewServiceTest {
     Long userId = 100L;
 
     assertThatThrownBy(() -> interviewService.getInterview(emptySubjectIds, userId))
-            .isInstanceOf(CustomException.class)
-            .hasMessage("면접 볼 과목을 1개 이상 선택해야 합니다");
+        .isInstanceOf(CustomException.class)
+        .hasMessage("면접 볼 과목을 1개 이상 선택해야 합니다");
   }
-
 
   @Test
   @DisplayName("사용자의 역대 면접 기록을 회차별로 조회 및 반환")
