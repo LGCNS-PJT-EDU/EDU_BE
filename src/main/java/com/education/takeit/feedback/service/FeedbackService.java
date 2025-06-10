@@ -2,6 +2,7 @@ package com.education.takeit.feedback.service;
 
 import com.education.takeit.feedback.dto.FeedbackDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
+import com.education.takeit.feedback.dto.InfoDto;
 import com.education.takeit.feedback.entity.Feedback;
 import com.education.takeit.feedback.repository.FeedbackRepository;
 import com.education.takeit.global.client.AIClient;
@@ -13,11 +14,14 @@ import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +34,33 @@ public class FeedbackService {
   private final ObjectMapper objectMapper;
 
   public List<FeedbackResponseDto> findFeedback(Long userId, Long subjectId) {
-    return aiClient.getFeedback(userId, subjectId);
+    List<Feedback> feedbacks = feedbackRepository.findByUser_UserIdAndSubject_SubId(userId, subjectId);
+
+    List<FeedbackResponseDto> result = feedbacks.stream().map(feedback -> {
+      InfoDto info = new InfoDto(
+              feedback.getUser().getUserId(),
+              feedback.getCreatedAt(),
+              feedback.getSubject().getSubNm()
+      );
+      Map<String, Integer> scoreMap = parseJson(feedback.getScores());
+
+      Map<String, String> strengthMap = Map.of(
+              "content", feedback.getStrenth()
+      );
+      Map<String, String> weaknessMap = Map.of(
+              "content", feedback.getWeakness()
+      );
+
+      FeedbackDto feedbackDto = new FeedbackDto(
+              strengthMap,
+              weaknessMap,
+              feedback.getFeedbackContent()
+      );
+
+      return new FeedbackResponseDto(info, scoreMap, feedbackDto);
+    }).toList();
+
+    return result;
   }
 
   @Transactional
@@ -45,7 +75,8 @@ public class FeedbackService {
             .orElseThrow(() -> new CustomException(StatusCode.NOT_EXIST_SUBJECT));
 
     FeedbackDto feedbackDto = feedbackResultDto.feedback().feedback();
-
+    Map<String, Integer> scores = feedbackResultDto.feedback().scores();
+    String scoreJson = toJson(scores);
     String strengthJson = toJson(feedbackDto.strength());
     String weaknessJson = toJson(feedbackDto.weakness());
 
@@ -57,7 +88,8 @@ public class FeedbackService {
             user,
             subject,
             strengthJson,
-            weaknessJson);
+            weaknessJson,
+                scoreJson);
 
     feedbackRepository.save(feedback);
   }
@@ -69,4 +101,14 @@ public class FeedbackService {
       throw new RuntimeException("JSON 직렬화 실패.", e);
     }
   }
+
+
+  private Map<String, Integer> parseJson(String json) {
+    try {
+      return objectMapper.readValue(json, new TypeReference<>() {});
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("JSON 역직렬화 실패", e);
+    }
+  }
+
 }

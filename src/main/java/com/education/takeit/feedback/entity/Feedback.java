@@ -2,9 +2,13 @@ package com.education.takeit.feedback.entity;
 
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "feedback")
@@ -38,6 +42,15 @@ public class Feedback {
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
   private String weakness;
 
+  @Column(name = "scores", nullable = false, columnDefinition = "LONGTEXT")
+  private String scores;
+
+  @Column(name = "created_at", nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @JsonProperty("date")
+  private LocalDate createdAt = LocalDate.now();  // 기본값: 현재 날짜
+
+
   public Feedback(
       String feedbackContent,
       int nth,
@@ -45,7 +58,8 @@ public class Feedback {
       User user,
       Subject subject,
       String strenth,
-      String weakness) {
+      String weakness,
+      String scores) {
     this.feedbackContent = feedbackContent;
     this.nth = nth;
     this.isPre = isPre;
@@ -53,5 +67,6 @@ public class Feedback {
     this.subject = subject;
     this.strenth = strenth;
     this.weakness = weakness;
+    this.scores = scores;
   }
 }
