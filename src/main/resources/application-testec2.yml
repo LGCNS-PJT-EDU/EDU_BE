@@ -4,10 +4,10 @@ spring:
       on-profile: testec2
     import: optional:file:.env.testec2.properties
   datasource:
-    url: jdbc:mysql://${MYSQL_ENDPOINT}:${MYSQL_PORT}/${MYSQL_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://${TEST_MYSQL_ENDPOINT}:${TEST_MYSQL_PORT}/${TEST_MYSQL_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
+    username: ${TEST_MYSQL_USERNAME}
+    password: ${TEST_MYSQL_PASSWORD}
 
   jpa:
     hibernate:
