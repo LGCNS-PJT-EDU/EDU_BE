@@ -5,9 +5,10 @@ import com.education.takeit.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "feedback")
@@ -35,7 +36,7 @@ public class Feedback {
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
 
-  @Column(name = "strenth", nullable = false, columnDefinition = "LONGTEXT")
+  @Column(name = "strength", nullable = false, columnDefinition = "LONGTEXT")
   private String strength;
 
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
