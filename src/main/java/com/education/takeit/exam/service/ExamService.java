@@ -167,7 +167,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  private SubjectResultDto calculateSubjectResultForPre(ExamAnswerResDto examAnswerRes) {
+  SubjectResultDto calculateSubjectResultForPre(ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
     Long subjectId = examAnswerRes.subjectId();
     String startDate = examAnswerRes.startDate();
@@ -186,8 +186,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  private SubjectResultDto calculateSubjectResultForPost(
-      Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
+  SubjectResultDto calculateSubjectResultForPost(Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
     Long subjectId = examAnswerRes.subjectId();
     String startDate = examAnswerRes.startDate();
@@ -238,7 +237,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  private List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> examAnswerRes) {
+  List<ChapterResultDto> calculateChapterResults(List<ExamAnswerDto> examAnswerRes) {
     return examAnswerRes.stream()
         .collect(Collectors.groupingBy(ExamAnswerDto::chapterNum))
         .entrySet()
