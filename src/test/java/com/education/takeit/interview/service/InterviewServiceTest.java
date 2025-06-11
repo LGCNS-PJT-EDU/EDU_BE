@@ -164,20 +164,20 @@ public class InterviewServiceTest {
     @DisplayName("모든 과목을 반환, 사용자의 로드맵에 있는 과목과 없는 과목을 구분하여 반환")
     void testGetAllInterviewSubjects(){
         Long userId=1L;
-
+// (Long subId, String subjectNm, Boolean isComplete)
         List<SubjectInfo> allSubjects = List.of(
-                new SubjectInfo(3L, "과목 3"),
-                new SubjectInfo(41L, "과목 41"),
-                new SubjectInfo(6L, "과목 6"),
-                new SubjectInfo(37L, "과목 37"),
-                new SubjectInfo(7L, "과목 7"),
-                new SubjectInfo(38L, "과목 38"),
-                new SubjectInfo(50L, "과목 50")
+                new SubjectInfo(3L, "과목 3",true),
+                new SubjectInfo(41L, "과목 41",true),
+                new SubjectInfo(6L, "과목 6",true),
+                new SubjectInfo(37L, "과목 37",true),
+                new SubjectInfo(7L, "과목 7",true),
+                new SubjectInfo(38L, "과목 38",true),
+                new SubjectInfo(50L, "과목 50",true)
         );
 
         List<SubjectInfo> existingSubjects = List.of(
-                new SubjectInfo(3L, "과목 3"),
-                new SubjectInfo(38L, "과목 38")
+                new SubjectInfo(3L, "과목 3",true),
+                new SubjectInfo(38L, "과목 38",true)
         );
 
         when(subjectRepository.findAllSubjectInfos()).thenReturn(allSubjects);

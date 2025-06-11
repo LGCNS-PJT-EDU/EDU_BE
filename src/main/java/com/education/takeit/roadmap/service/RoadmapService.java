@@ -71,7 +71,10 @@ public class RoadmapService {
 
       System.out.println("guest roadmap create: " + guestUuid);
       return new RoadmapSaveResDto(
-          guestUuid, roadmapSaveResDto.userLocationSubjectId(), roadmapSaveResDto.subjects());
+          guestUuid,
+          roadmapSaveResDto.roadmapName(),
+          roadmapSaveResDto.userLocationSubjectId(),
+          roadmapSaveResDto.subjects());
 
     } else {
       RoadmapManagement roadmapManagement = roadmapManagementRepository.findByUserId(userId);
@@ -85,7 +88,7 @@ public class RoadmapService {
               .map(SubjectDto::subjectId)
               .collect(Collectors.toList());
 
-      saveRoadmap(userId, subjectIds, answers);
+      saveRoadmap(userId, roadmapSaveResDto.roadmapName(), subjectIds, answers);
 
       return roadmapSaveResDto;
     }
@@ -235,7 +238,10 @@ public class RoadmapService {
             .map(s -> new SubjectDto(s.getSubId(), s.getSubNm(), s.getBaseSubOrder()))
             .collect(Collectors.toList());
 
-    return new RoadmapSaveResDto("사용자는 uuid가 없어요", defaultLocationSubjectId, subjects);
+    String randomRoadmapName =
+        ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
+    return new RoadmapSaveResDto(
+        "사용자는 uuid가 없어요", randomRoadmapName, defaultLocationSubjectId, subjects);
   }
 
   // 로드맵 이름 임의로 만들어둠
@@ -263,18 +269,18 @@ public class RoadmapService {
           "삐진 햄스터");
 
   public void saveRoadmap(
-      Long userId, List<Long> subjectIds, List<DiagnosisAnswerRequest> answers) {
+      Long userId,
+      String roadmapName,
+      List<Long> subjectIds,
+      List<DiagnosisAnswerRequest> answers) {
 
     if (roadmapManagementRepository.findByUserId(userId) != null) {
       throw new CustomException(StatusCode.ALREADY_EXIST_ROADMAP);
     }
 
-    String randomRoadmapName =
-        ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
-
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
-            .roadmapNm(randomRoadmapName)
+            .roadmapNm(roadmapName)
             .roadmapTimestamp(LocalDateTime.now())
             .userId(userId)
             .build();
@@ -369,12 +375,12 @@ public class RoadmapService {
 
     Long userLocationSubjectId = subjectDtos.isEmpty() ? null : subjectDtos.getFirst().subjectId();
 
-    saveRoadmap(userId, subjectIds, answers);
+    saveRoadmap(userId, "게스트 로드맵", subjectIds, answers);
 
     redisTemplate.delete("guest:" + uuid + ":subjects");
     redisTemplate.delete("guest:" + uuid + ":answers");
 
-    return new RoadmapSaveResDto("uuid로 로드맵 생성 완료", userLocationSubjectId, subjectDtos);
+    return new RoadmapSaveResDto("uuid로 로드맵 생성 완료", "게스트 로드맵", userLocationSubjectId, subjectDtos);
   }
 
   public MyPageResDto getProgressPercentage(Long userId) {
@@ -537,7 +543,10 @@ public class RoadmapService {
     }
 
     return new RoadmapSaveResDto(
-        "user Default Roadmap", userLocationSubjectId, getDefaultRoadmap(roadmapType).subjects());
+        "user Default Roadmap",
+        "기본 로드맵",
+        userLocationSubjectId,
+        getDefaultRoadmap(roadmapType).subjects());
   }
 
   public RoadmapFindResDto findUserRoadmap(RoadmapManagement userRoadmapManagement) {
