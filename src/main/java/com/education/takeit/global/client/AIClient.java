@@ -178,6 +178,8 @@ public class AIClient {
         subjectId);
   }
 
+  //  localhost:8000/api/question/evaluate?user_id={user_id}&subject_id={subject_id}
+
   public List<InterviewFeedbackResDto> getInterviewFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
     return postForList("fastAPI요청경로", InterviewFeedbackResDto[].class, userId);
