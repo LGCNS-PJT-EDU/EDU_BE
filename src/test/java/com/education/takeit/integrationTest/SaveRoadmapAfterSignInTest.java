@@ -1,5 +1,11 @@
 package com.education.takeit.integrationTest;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.repository.RoadmapManagementRepository;
@@ -16,77 +22,76 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("testec2")
 @Transactional
 public class SaveRoadmapAfterSignInTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    @Autowired
-    private RoadmapManagementRepository roadmapManagementRepository;
+  @Autowired private RoadmapManagementRepository roadmapManagementRepository;
 
-    @Test
-    void 회원가입_및_로그인_후_사전진단과_로드맵_생성_및_저장() throws Exception {
-        // 1. 회원가입
-       String email = "test@test.com";
-       String nickname = "test";
-       String password = "test1234!";
-       String loginType = "LOCAL";
+  @Test
+  void 회원가입_및_로그인_후_사전진단과_로드맵_생성_및_저장() throws Exception {
+    // 1. 회원가입
+    String email = "test@test.com";
+    String nickname = "test";
+    String password = "test1234!";
+    String loginType = "LOCAL";
 
-        String signUpJson = """
+    String signUpJson =
+        """
         {
           "email" : "%s",
           "nickname" : "%s",
           "password" : "%s",
           "loginType" : "%s"
         }
-        """.formatted(email, nickname, password, loginType);
+        """
+            .formatted(email, nickname, password, loginType);
 
-        mockMvc.perform(post("/api/user/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(signUpJson))
-                .andExpect(status().isOk());
+    mockMvc
+        .perform(
+            post("/api/user/signup").contentType(MediaType.APPLICATION_JSON).content(signUpJson))
+        .andExpect(status().isOk());
 
-        assertThat(userRepository.findByEmailAndLoginType(email, LoginType.LOCAL)).isPresent();
+    assertThat(userRepository.findByEmailAndLoginType(email, LoginType.LOCAL)).isPresent();
 
-        // 2. 로그인
-        String signInJson = """
+    // 2. 로그인
+    String signInJson =
+        """
         {
             "email" : "%s",
             "password" : "%s"
         }
-        """.formatted(email, password);
+        """
+            .formatted(email, password);
 
-        String signinResponse = mockMvc.perform(post("/api/user/signin")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(signInJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    String signinResponse =
+        mockMvc
+            .perform(
+                post("/api/user/signin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(signInJson))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
-        String accessToken = JsonPath.read(signinResponse, "$.data.accessToken");
+    String accessToken = JsonPath.read(signinResponse, "$.data.accessToken");
 
-        // 3. 사전진단 문제 요청
-        mockMvc.perform(get("/api/diagnosis")
-                        .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk());
+    // 3. 사전진단 문제 요청
+    mockMvc
+        .perform(get("/api/diagnosis").header("Authorization", "Bearer " + accessToken))
+        .andExpect(status().isOk());
 
-        // 4. 사전진단 응답 제출
-        String diagnosisSubmitJson = """
+    // 4. 사전진단 응답 제출
+    String diagnosisSubmitJson =
+        """
          [
             {
                 "questionId" : 1,
@@ -127,17 +132,21 @@ public class SaveRoadmapAfterSignInTest {
          ]
          """;
 
-        mockMvc.perform(post("/api/diagnosis")
-                        .header("Authorization", "Bearer " + accessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(diagnosisSubmitJson))
-                .andExpect(status().isOk());
+    mockMvc
+        .perform(
+            post("/api/diagnosis")
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(diagnosisSubmitJson))
+        .andExpect(status().isOk());
 
-        // 5. 로드맵이 저장됐는지 확인
-        User user = userRepository.findByEmailAndLoginType(email, LoginType.LOCAL)
-                .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
-        Long userId = user.getUserId();
+    // 5. 로드맵이 저장됐는지 확인
+    User user =
+        userRepository
+            .findByEmailAndLoginType(email, LoginType.LOCAL)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    Long userId = user.getUserId();
 
-        assertThat(roadmapManagementRepository.findByUserId(userId)).isNotNull();
-    }
+    assertThat(roadmapManagementRepository.findByUserId(userId)).isNotNull();
+  }
 }
