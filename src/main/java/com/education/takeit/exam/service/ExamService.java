@@ -186,8 +186,7 @@ public class ExamService {
    * @param examAnswerRes
    * @return
    */
-  SubjectResultDto calculateSubjectResultForPost(
-          Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
+  SubjectResultDto calculateSubjectResultForPost(Roadmap roadmap, ExamAnswerResDto examAnswerRes) {
     List<ExamAnswerDto> answers = examAnswerRes.answers();
     Long subjectId = examAnswerRes.subjectId();
     String startDate = examAnswerRes.startDate();
