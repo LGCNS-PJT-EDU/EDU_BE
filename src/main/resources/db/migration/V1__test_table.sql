@@ -4358,7 +4358,7 @@ CREATE TABLE feedback (
                           is_pre BOOLEAN NOT NULL,
                           user_id BIGINT NOT NULL,
                           sub_id BIGINT NOT NULL,
-                          strenth LONGTEXT NOT NULL,
+                          strength LONGTEXT NOT NULL,
                           weakness LONGTEXT NOT NULL,
                           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
