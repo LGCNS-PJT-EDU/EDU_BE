@@ -209,20 +209,21 @@ public class ExamServiceTest {
         when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
 
 
-        when(examRepository.findByExamContent("문제1")).thenReturn(Optional.of(
-                Exam.builder()
-                        .examId(1L)
-                        .examContent("문제1")
-                        .examAnswer(2)
-                        .examLevel("중")
-                        .option1("A")
-                        .option2("B")
-                        .option3("C")
-                        .option4("D")
-                        .solution("정답 해설입니다.")
-                        .subject(subject)
-                        .build()
-        ));
+        when(examRepository.findByExamContentAndSubject_SubId("문제1", subject.getSubId()))
+                .thenReturn(Optional.of(
+                        Exam.builder()
+                                .examId(1L)
+                                .examContent("문제1")
+                                .examAnswer(2)
+                                .examLevel("중")
+                                .option1("A")
+                                .option2("B")
+                                .option3("C")
+                                .option4("D")
+                                .solution("정답 해설입니다.")
+                                .subject(subject)
+                                .build()
+                ));
 
         ExamAnswerDto answer = new ExamAnswerDto(
                 1L, "문제1", 1, "챕터1", "중", true, 2
@@ -291,20 +292,22 @@ public class ExamServiceTest {
 
         when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
 
-        when(examRepository.findByExamContent("문제1")).thenReturn(Optional.of(
-                Exam.builder()
-                        .examId(1L)
-                        .examContent("문제1")
-                        .examAnswer(2)
-                        .examLevel("중")
-                        .option1("A")
-                        .option2("B")
-                        .option3("C")
-                        .option4("D")
-                        .solution("정답 해설입니다.")
-                        .subject(subject)
-                        .build()
-        ));
+        when(examRepository.findByExamContentAndSubject_SubId("문제1", subject.getSubId()))
+                .thenReturn(Optional.of(
+                        Exam.builder()
+                                .examId(1L)
+                                .examContent("문제1")
+                                .examAnswer(2)
+                                .examLevel("중")
+                                .option1("A")
+                                .option2("B")
+                                .option3("C")
+                                .option4("D")
+                                .solution("정답 해설입니다.")
+                                .subject(subject)
+                                .build()
+                ));
+
 
         ExamAnswerDto answer = new ExamAnswerDto(1L, "문제1", 1, "챕터1", "중", true, 2);
         List<ExamAnswerDto> answers = List.of(answer);

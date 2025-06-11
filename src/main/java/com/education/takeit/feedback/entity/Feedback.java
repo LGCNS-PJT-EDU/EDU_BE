@@ -35,7 +35,7 @@ public class Feedback {
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
 
-  @Column(name = "strenth", nullable = false, columnDefinition = "LONGTEXT")
+  @Column(name = "strength", nullable = false, columnDefinition = "LONGTEXT")
   private String strength;
 
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
