@@ -134,6 +134,7 @@ sonarqube {
         property 'sonar.tests', 'src/test/java'
         property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
 
+        property 'sonar.java.coveragePlugin', 'jacoco'
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.java.binaries", "${buildDir}/classes/java/main"
         property "sonar.java.test.binaries", "${buildDir}/classes/java/test"
