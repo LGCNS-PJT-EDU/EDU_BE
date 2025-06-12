@@ -1,10 +1,10 @@
 package com.education.takeit.integrationTest;
 
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@ActiveProfiles("testec2")
-//@Transactional
-//public class SaveRoadmapBeforeSignInTest {
+// @SpringBootTest
+// @AutoConfigureMockMvc
+// @ActiveProfiles("testec2")
+// @Transactional
+// public class SaveRoadmapBeforeSignInTest {
 //  @Autowired private MockMvc mockMvc;
 //  @Autowired private UserRepository userRepository;
 //  @Autowired private RoadmapManagementRepository roadmapManagementRepository;
@@ -136,4 +136,4 @@ package com.education.takeit.integrationTest;
 //
 //    assertThat(roadmapManagementRepository.findByUserId(userId)).isNotNull();
 //  }
-//}
+// }
