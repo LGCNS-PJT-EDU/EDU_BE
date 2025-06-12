@@ -15,12 +15,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +49,8 @@ public class FeedbackService {
               FeedbackDto feedbackDto =
                   new FeedbackDto(strengthMap, weaknessMap, feedback.getFeedbackContent());
 
-              return new FeedbackFindResponseDto(feedbackUserId, createdAt, subNm, scoreMap, feedbackDto);
+              return new FeedbackFindResponseDto(
+                  feedbackUserId, createdAt, subNm, scoreMap, feedbackDto);
             })
         .toList();
   }
