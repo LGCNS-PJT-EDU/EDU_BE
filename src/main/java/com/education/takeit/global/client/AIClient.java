@@ -7,6 +7,7 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
+import com.education.takeit.interview.dto.AiFeedbackReqDto;
 import com.education.takeit.interview.dto.InterviewAllReplyReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
@@ -178,12 +179,18 @@ public class AIClient {
         subjectId);
   }
 
-  public List<InterviewFeedbackResDto> getInterviewFeedback(
-      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
-    return postForList("fastAPI요청경로", InterviewFeedbackResDto[].class, userId);
-  }
+    public InterviewFeedbackResDto getInterviewFeedback(
+            Long userId, AiFeedbackReqDto aiFeedbackReqDto) {
+        return postForObject(
+                "/api/question/evaluate?user_id={userId}",
+                aiFeedbackReqDto,
+                InterviewFeedbackResDto.class,
+                userId
+        );
+    }
 
-  public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
+
+    public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
     // return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
 
     String userMessage = chatRequestDto.message();

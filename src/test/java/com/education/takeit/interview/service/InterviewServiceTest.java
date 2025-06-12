@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -195,33 +196,21 @@ public class InterviewServiceTest {
         assertThat(actualMissingIds).containsExactlyInAnyOrderElementsOf(expectedMissingIds);
 
     }
-
     @Test
     @DisplayName("면접 답변 저장 및 AI 피드백 요청")
-    void testSaveReplyAndRequestFeedback(){
-        Long userId=1L;
+    void testSaveReplyAndRequestFeedback() {
 
-        UserInterviewReplyReqDto answer1 = new UserInterviewReplyReqDto(101L,"답변1",1);
-        UserInterviewReplyReqDto answer2 = new UserInterviewReplyReqDto(102L,"답변2",1);
-        UserInterviewReplyReqDto answer3 = new UserInterviewReplyReqDto(103L,"답변3",1);
-        UserInterviewReplyReqDto answer4 = new UserInterviewReplyReqDto(104L,"답변4",1);
-        UserInterviewReplyReqDto answer5 = new UserInterviewReplyReqDto(105L,"답변5",1);
+        Long userId = 1L;
 
-        // 피드백
-        InterviewFeedbackResDto feedback1 = new InterviewFeedbackResDto(101L,"답변1",1,"피드백1");
-        InterviewFeedbackResDto feedback2 = new InterviewFeedbackResDto(102L,"답변2",1,"피드백2");
-        InterviewFeedbackResDto feedback3 = new InterviewFeedbackResDto(103L,"답변3",1,"피드백3");
-        InterviewFeedbackResDto feedback4 = new InterviewFeedbackResDto(104L,"답변4",1,"피드백4");
-        InterviewFeedbackResDto feedback5 = new InterviewFeedbackResDto(105L,"답변5",1,"피드백5");
-
-        List<InterviewFeedbackResDto> feedbackList = List.of(feedback1,feedback2,feedback3,feedback4,feedback5);
-
-        User user=User.builder()
+        User user = User.builder()
                 .email("test@email.com")
                 .nickname("테스트유저")
                 .password("1234")
                 .loginType(LoginType.LOCAL)
                 .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
 
         Subject subject = Subject.builder()
                 .subId(1L)
@@ -233,101 +222,55 @@ public class InterviewServiceTest {
                 .track(new Track())
                 .build();
 
-        Interview interview1 = Interview.builder()
-                .interviewId(101L)
-                .interviewContent("Q1")
-                .interviewAnswer("A1")
-                .subject(subject)
-                .build();
+        List<AiFeedbackReqDto> requestList = new ArrayList<>();
+        List<InterviewFeedbackResDto> expectedFeedbacks = new ArrayList<>();
 
-        Interview interview2 = Interview.builder()
-                .interviewId(102L)
-                .interviewContent("Q2")
-                .interviewAnswer("A2")
-                .subject(subject)
-                .build();
+        for (int i = 1; i <= 5; i++) {
+            Long interviewId = 100L + i;
+            String reply = "답변" + i;
 
-        Interview interview3 = Interview.builder()
-                .interviewId(103L)
-                .interviewContent("Q3")
-                .interviewAnswer("A3")
-                .subject(subject)
-                .build();
+            AiFeedbackReqDto reqDto = new AiFeedbackReqDto(interviewId, "면접 질문",reply);
+            requestList.add(reqDto);
 
-        Interview interview4 = Interview.builder()
-                .interviewId(104L)
-                .interviewContent("Q4")
-                .interviewAnswer("A4")
-                .subject(subject)
-                .build();
+            Interview interview = Interview.builder()
+                    .interviewId(interviewId)
+                    .interviewContent("질문" + i)
+                    .interviewAnswer("답변" + i)
+                    .subject(subject)
+                    .build();
 
-        Interview interview5 = Interview.builder()
-                .interviewId(105L)
-                .interviewContent("Q5")
-                .interviewAnswer("A5")
-                .subject(subject)
-                .build();
+            when(interviewRepository.findById(interviewId)).thenReturn(Optional.of(interview));
 
-        when(interviewRepository.findById(101L)).thenReturn(Optional.of(interview1));
-        when(interviewRepository.findById(102L)).thenReturn(Optional.of(interview2));
-        when(interviewRepository.findById(103L)).thenReturn(Optional.of(interview3));
-        when(interviewRepository.findById(104L)).thenReturn(Optional.of(interview4));
-        when(interviewRepository.findById(105L)).thenReturn(Optional.of(interview5));
+            // AI 피드백 응답 DTO
+            InterviewFeedbackResDto resDto = new InterviewFeedbackResDto(
+                    "피드백" + i,
+                    "요약" + i,
+                    "모범답안" + i,
+                    List.of("키워드" + i)
+            );
 
+            when(aiClient.getInterviewFeedback(userId, reqDto)).thenReturn(resDto);
 
-        UserInterviewReplyReqDto dto1 = new UserInterviewReplyReqDto(101L,"답변1",1);
-        UserInterviewReplyReqDto dto2 = new UserInterviewReplyReqDto(102L,"답변2",1);
-        UserInterviewReplyReqDto dto3 = new UserInterviewReplyReqDto(103L,"답변3",1);
-        UserInterviewReplyReqDto dto4 = new UserInterviewReplyReqDto(104L,"답변4",1);
-        UserInterviewReplyReqDto dto5 = new UserInterviewReplyReqDto(105L,"답변5",1);
-        InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(List.of(dto1,dto2,dto3,dto4,dto5));
-
-        when(aiClient.getInterviewFeedback(userId,requestDto)).thenReturn(feedbackList);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        when(aiClient.getInterviewFeedback(userId, requestDto)).thenReturn(feedbackList);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            expectedFeedbacks.add(resDto);
+        }
 
         when(replyRepository.save(any(UserInterviewReply.class))).thenReturn(null);
 
-        List<InterviewFeedbackResDto> result = interviewService.saveReplyAndRequestFeedback(userId, requestDto);
+        InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(requestList,1);
 
-        // then
+        // When
+        List<InterviewFeedbackResDto> result =
+                interviewService.saveReplyAndRequestFeedback(userId, requestDto);
+
+        // Then
         assertThat(result).hasSize(5);
-        assertThat(result).containsExactlyElementsOf(feedbackList);
+        assertThat(result).containsExactlyElementsOf(expectedFeedbacks);
 
-        // replyRepository가 5번 호출되었는지 확인
+        verify(userRepository).findById(userId);
+        verify(aiClient, times(5)).getInterviewFeedback(eq(userId), any(AiFeedbackReqDto.class));
+        verify(interviewRepository, times(5)).findById(anyLong());
         verify(replyRepository, times(5)).save(any(UserInterviewReply.class));
-        verify(aiClient).getInterviewFeedback(userId, requestDto);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
 
 
 
