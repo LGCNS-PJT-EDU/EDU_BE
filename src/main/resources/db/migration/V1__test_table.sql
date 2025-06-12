@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS feedback_fail_log;
+DROP TABLE IF EXISTS recom_fail_log;
 
 -- users 테이블 생성
 CREATE TABLE users (
@@ -4361,7 +4362,7 @@ CREATE TABLE feedback (
                           strength LONGTEXT NOT NULL,
                           weakness LONGTEXT NOT NULL,
                           scores LONGTEXT NOT NULL,
-                          created_at DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
                           CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
