@@ -80,6 +80,7 @@ public class InterviewService {
 
       List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
       List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
+      System.out.println(feedbacks);
 
       for (int i = 0; i < answers.size(); i++) {
         AiFeedbackReqDto dto = answers.get(i);
