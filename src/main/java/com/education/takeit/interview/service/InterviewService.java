@@ -79,19 +79,18 @@ public class InterviewService {
               .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
       List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
-      List<InterviewFeedbackResDto> feedbackList = new ArrayList<>();
+      List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
 
-      for (AiFeedbackReqDto dto : answers) {
 
-        InterviewFeedbackResDto feedback = aiClient.getInterviewFeedback(userId, dto);
+      for (int i = 0; i < answers.size(); i++) {
+        AiFeedbackReqDto dto = answers.get(i);
+        InterviewFeedbackResDto feedback = feedbacks.get(i);
 
-        Interview interview =
-            interviewRepository
+        Interview interview = interviewRepository
                 .findById(dto.interviewId())
                 .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
 
-        UserInterviewReply reply =
-            UserInterviewReply.builder()
+        UserInterviewReply reply = UserInterviewReply.builder()
                 .user(user)
                 .interview(interview)
                 .userReply(dto.userReply())
@@ -100,9 +99,9 @@ public class InterviewService {
                 .build();
 
         replyRepository.save(reply);
-        feedbackList.add(feedback);
       }
-      return feedbackList;
+
+      return feedbacks;
 
     } catch (Exception e) {
       log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
