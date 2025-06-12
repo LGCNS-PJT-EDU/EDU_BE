@@ -258,11 +258,10 @@ public class InterviewServiceTest {
 
         InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(requestList,1);
 
-        // When
+        //when
         List<InterviewFeedbackResDto> result =
                 interviewService.saveReplyAndRequestFeedback(userId, requestDto);
-
-        // Then
+        //then
         assertThat(result).hasSize(5);
         assertThat(result).containsExactlyElementsOf(expectedFeedbacks);
 
