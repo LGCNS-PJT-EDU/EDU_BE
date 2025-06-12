@@ -49,7 +49,6 @@ jobs:
       - name: Build and SonarCloud analyze
         run: |
             ./gradlew test \
-              sonarqube \
-              -Dsonar.login=$SONAR_TOKEN \
-              -Dsonar.branch.name=develop \
-              --info
+            sonarqube \
+            -Dsonar.login=${{ env.SONAR_TOKEN }} \
+            --info
