@@ -1,10 +1,10 @@
 package com.education.takeit.integrationTest;
 
-// @SpringBootTest
-// @AutoConfigureMockMvc
-// @ActiveProfiles("testec2")
-// @Transactional
-// public class IntegrationTotalTest {
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//@ActiveProfiles("testec2")
+//@Transactional
+//public class IntegrationTotalTest {
 //
 //  @Autowired private MockMvc mockMvc;
 //
@@ -128,11 +128,12 @@ package com.education.takeit.integrationTest;
 //    assertThat(roadmapManagementRepository.findByUserId(userId)).isNotNull();
 //
 //    // 6. 로드맵 조회
-//    String getRoadmapResponse = mockMvc
+//    String getRoadmapResponse =
+//        mockMvc
 //            .perform(
-//                    get("/api/roadmap")
-//                            .header("Authorization", "Bearer " + accessToken)
-//                            .param("uuid", "takeit"))
+//                get("/api/roadmap")
+//                    .header("Authorization", "Bearer " + accessToken)
+//                    .param("uuid", "takeit"))
 //            .andExpect(status().isOk())
 //            .andReturn()
 //            .getResponse()
@@ -141,21 +142,26 @@ package com.education.takeit.integrationTest;
 //    // 7. 과목 정보 조회
 //    Integer subjectId = JsonPath.read(getRoadmapResponse, "$.data.subjects[0].subjectId");
 //
-//    mockMvc.perform(get("/api/roadmap/subject")
-//                    .header("Authorization", "Bearer " + accessToken)
-//                    .param("subjectId", subjectId.toString()))
-//            .andExpect(status().isOk());
-
-    // 8. 사전 평가 문제 조회
-//    String getPreExamQuestions = mockMvc.perform(get("/api/exam/pre")
+//    mockMvc
+//        .perform(
+//            get("/api/roadmap/subject")
+//                .header("Authorization", "Bearer " + accessToken)
+//                .param("subjectId", subjectId.toString()))
+//        .andExpect(status().isOk());
+//
+//    // 8. 사전 평가 문제 조회
+//    String getPreExamQuestions =
+//        mockMvc
+//            .perform(
+//                get("/api/exam/pre")
 //                    .header("Authorization", "Bearer " + accessToken)
 //                    .param("subjectId", subjectId.toString()))
 //            .andExpect(status().isOk())
 //            .andReturn()
 //            .getResponse()
 //            .getContentAsString();
-
-    // 9. 사전 평가 결과 제출
-
+//
+//    // 9. 사전 평가 결과 제출
+//
 //  }
-// }
+//}
