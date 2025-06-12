@@ -66,7 +66,7 @@ oauth:
     user-info-uri: ${NAVER_USER_INFO_URI}
 
 fastapi:
-  base-url: ${FAST_API_URL}
+  base-url: ${TEST_FAST_API_URL}
 
 client:
   base-url: ${CLIENT_BASE_URL}
