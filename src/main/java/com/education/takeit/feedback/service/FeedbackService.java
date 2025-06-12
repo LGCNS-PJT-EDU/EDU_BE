@@ -1,8 +1,7 @@
 package com.education.takeit.feedback.service;
 
 import com.education.takeit.feedback.dto.FeedbackDto;
-import com.education.takeit.feedback.dto.FeedbackResponseDto;
-import com.education.takeit.feedback.dto.InfoDto;
+import com.education.takeit.feedback.dto.FeedbackFindResponseDto;
 import com.education.takeit.feedback.entity.Feedback;
 import com.education.takeit.feedback.repository.FeedbackRepository;
 import com.education.takeit.global.dto.StatusCode;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,17 @@ public class FeedbackService {
   private final SubjectRepository subjectRepository;
   private final ObjectMapper objectMapper;
 
-  public List<FeedbackResponseDto> findFeedback(Long userId, Long subjectId) {
+  public List<FeedbackFindResponseDto> findFeedback(Long userId, Long subjectId) {
     List<Feedback> feedbacks =
         feedbackRepository.findByUser_UserIdAndSubject_SubId(userId, subjectId);
 
     return feedbacks.stream()
         .map(
             feedback -> {
-              InfoDto info =
-                  new InfoDto(
-                      feedback.getUser().getUserId(),
-                      feedback.getCreatedAt(),
-                      feedback.getSubject().getSubNm());
+              Long feedbackUserId = feedback.getUser().getUserId();
+              LocalDateTime createdAt = feedback.getCreatedAt();
+              String subNm = feedback.getSubject().getSubNm();
+
               Map<String, Integer> scoreMap = parseScoresJson(feedback.getScores());
 
               Map<String, String> strengthMap = parseJson(feedback.getStrength());
@@ -50,7 +49,8 @@ public class FeedbackService {
               FeedbackDto feedbackDto =
                   new FeedbackDto(strengthMap, weaknessMap, feedback.getFeedbackContent());
 
-              return new FeedbackResponseDto(info, scoreMap, feedbackDto);
+              return new FeedbackFindResponseDto(
+                  feedbackUserId, createdAt, subNm, scoreMap, feedbackDto);
             })
         .toList();
   }

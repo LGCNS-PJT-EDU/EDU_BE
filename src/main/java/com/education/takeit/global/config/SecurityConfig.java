@@ -69,7 +69,8 @@ public class SecurityConfig {
                         "/api/roadmap",
                         "/api/user/refresh", // 리프레시 토큰 발급
                         "/ws/**",
-                        "/user/**")
+                        "/user/**",
+                        "/api/roadmap/default")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요

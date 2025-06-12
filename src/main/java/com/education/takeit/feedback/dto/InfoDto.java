@@ -6,6 +6,5 @@ import java.time.LocalDate;
 
 public record InfoDto(
     @JsonProperty("userId") Long userId,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") @JsonProperty("date")
-        LocalDate date,
+    @JsonFormat(shape = JsonFormat.Shape.STRING) @JsonProperty("date") LocalDate date,
     @JsonProperty("subject") String subject) {}
