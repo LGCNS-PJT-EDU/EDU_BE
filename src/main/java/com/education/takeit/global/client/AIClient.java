@@ -8,7 +8,6 @@ import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.AiFeedbackReqDto;
-import com.education.takeit.interview.dto.InterviewAllReplyReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;

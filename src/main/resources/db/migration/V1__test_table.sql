@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS feedback_fail_log;
+DROP TABLE IF EXISTS recom_fail_log;
 
 -- users 테이블 생성
 CREATE TABLE users (
@@ -4358,8 +4359,9 @@ CREATE TABLE feedback (
                           is_pre BOOLEAN NOT NULL,
                           user_id BIGINT NOT NULL,
                           sub_id BIGINT NOT NULL,
-                          strenth LONGTEXT NOT NULL,
+                          strength LONGTEXT NOT NULL,
                           weakness LONGTEXT NOT NULL,
+                          scores LONGTEXT NOT NULL,
                           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
                           CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
@@ -4997,3 +4999,13 @@ CREATE TABLE feedback_fail_log (
                                    error_message VARCHAR(1000) NOT NULL,
                                    created_dt DATETIME(6) NOT NULL
 );
+
+CREATE TABLE recom_fail_log (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                user_id BIGINT NOT NULL,
+                                subject_id BIGINT NOT NULL,
+                                error_code VARCHAR(255) NOT NULL,
+                                error_message VARCHAR(255) NOT NULL,
+                                created_dt DATETIME NOT NULL
+);
+

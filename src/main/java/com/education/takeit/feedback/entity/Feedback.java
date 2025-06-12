@@ -5,7 +5,7 @@ import com.education.takeit.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +35,7 @@ public class Feedback {
   @JoinColumn(name = "sub_id", nullable = false)
   private Subject subject;
 
-  @Column(name = "strenth", nullable = false, columnDefinition = "LONGTEXT")
+  @Column(name = "strength", nullable = false, columnDefinition = "LONGTEXT")
   private String strength;
 
   @Column(name = "weakness", nullable = false, columnDefinition = "LONGTEXT")
@@ -45,9 +45,9 @@ public class Feedback {
   private String scores;
 
   @Column(name = "created_at", nullable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @JsonFormat(shape = JsonFormat.Shape.STRING)
   @JsonProperty("date")
-  private LocalDate createdAt = LocalDate.now(); // 기본값: 현재 날짜
+  private LocalDateTime createdAt = LocalDateTime.now(); // 기본값: 현재 날짜
 
   public Feedback(
       String feedbackContent,
