@@ -242,11 +242,9 @@ public class InterviewServiceTest {
       // AI 피드백 응답 DTO
       InterviewFeedbackResDto resDto =
           new InterviewFeedbackResDto("피드백" + i, "요약" + i, "모범답안" + i, List.of("키워드" + i));
-
-      when(aiClient.getInterviewFeedback(userId, reqDto)).thenReturn(resDto);
-
       expectedFeedbacks.add(resDto);
     }
+    when(aiClient.getInterviewFeedback(userId, requestList)).thenReturn(expectedFeedbacks);
 
     when(replyRepository.save(any(UserInterviewReply.class))).thenReturn(null);
 
@@ -261,7 +259,7 @@ public class InterviewServiceTest {
     assertThat(result).containsExactlyElementsOf(expectedFeedbacks);
 
     verify(userRepository).findById(userId);
-    verify(aiClient, times(5)).getInterviewFeedback(eq(userId), any(AiFeedbackReqDto.class));
+    verify(aiClient, times(1)).getInterviewFeedback(eq(userId), eq(requestList));
     verify(interviewRepository, times(5)).findById(anyLong());
     verify(replyRepository, times(5)).save(any(UserInterviewReply.class));
   }
