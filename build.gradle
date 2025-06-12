@@ -91,7 +91,6 @@ tasks.named('test') {
             tasks.named('jacocoTestCoverageVerification')
     )
 }
-
 gitHooks {
     // where to install your hooks; you can leave this at the default '.githooks'
     hooksDirectory = file('.git/hooks')
@@ -111,14 +110,7 @@ spotless {
 }
 
 def sonarCoverageIncludes = [
-        '**/diagnosis/service/**/*.java',
-        '**/exam/service/**/*.java',
-        '**/feedback/service/**/*.java',
-        '**/interview/service/**/*.java',
-        '**/auth/service/**/*.java',
-        '**/recommend/service/**/*.java',
-        '**/roadmap/service/**/*.java',
-        '**/solution/service/**/*.java',
+        '**/service/**/*.java',
         '**/kafka/**/consumer/**/*.java',
         '**/kafka/**/producer/**/*.java'
 ]
@@ -134,24 +126,14 @@ sonarqube {
         property 'sonar.tests', 'src/test/java'
         property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
 
-        property 'sonar.java.coveragePlugin', 'jacoco'
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.java.binaries", "${buildDir}/classes/java/main"
-        property "sonar.java.test.binaries", "${buildDir}/classes/java/test"
     }
 }
 
 def jacocoIncludePatterns = [
-        '**/diagnosis/service/**/*.class',
-        '**/exam/service/**/*.class',
-        '**/feedback/service/**/*.class',
-        '**/interview/service/**/*.class',
-        '**/auth/service/**/*.class',
-        '**/recommend/service/**/*.class',
-        '**/roadmap/service/**/*.class',
-        '**/solution/service/**/*.class',
-        '**/kafka/**/consumer/**/*.class',
-        '**/kafka/**/producer/**/*.class'
+        '**/service/**',
+        '**/kafka/**/consumer/**',
+        '**/kafka/**/producer/**'
 ]
 
 jacocoTestReport {
@@ -175,21 +157,20 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
 
-    afterEvaluate {
-        classDirectories.setFrom(
-                files(classDirectories.files.collect {
-                    fileTree(dir: it, include: jacocoIncludePatterns)
-                })
-        )
-    }
-
     violationRules {
         rule {
             enabled = true
-            element = 'BUNDLE'
+            element = 'CLASS'
+            includes = jacocoIncludePatterns
 
             limit {
                 counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'BRANCH'
                 value = 'COVEREDRATIO'
                 minimum = 0.00
             }
