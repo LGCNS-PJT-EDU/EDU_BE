@@ -71,30 +71,19 @@ public class InterviewService {
 
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
-    try {
-      List<InterviewFeedbackResDto> feedbackList =
-          aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto);
-      //      List<InterviewFeedbackResDto> feedbackList =
-      // interviewAllReplyReqDto.answers().stream()
-      //              .map(dto -> new InterviewFeedbackResDto(
-      //                      dto.interviewId(),
-      //                      dto.userReply(),
-      //                      dto.nth(),
-      //                      "MOCK_FEEDBACK " + dto.userReply() + " 에 대한 피드백입니다." // 테스트용 AI피드백
-      // Mock
-      //              ))
-      //              .collect(Collectors.toList());
 
+    try {
       User user =
           userRepository
               .findById(userId)
               .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-      List<UserInterviewReplyReqDto> answers = interviewAllReplyReqDto.answers();
+      List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
+      List<InterviewFeedbackResDto> feedbackList = new ArrayList<>();
 
-      for (int i = 0; i < answers.size(); i++) {
-        UserInterviewReplyReqDto dto = answers.get(i);
-        InterviewFeedbackResDto feedback = feedbackList.get(i);
+      for (AiFeedbackReqDto dto : answers) {
+
+        InterviewFeedbackResDto feedback = aiClient.getInterviewFeedback(userId, dto);
 
         Interview interview =
             interviewRepository
@@ -103,15 +92,18 @@ public class InterviewService {
 
         UserInterviewReply reply =
             UserInterviewReply.builder()
-                .userReply(dto.userReply())
-                .interview(interview)
                 .user(user)
-                .aiFeedback(feedback.aiFeedback())
-                .nth(dto.nth())
+                .interview(interview)
+                .userReply(dto.userReply())
+                .aiFeedback(feedback.comment())
+                .nth(interviewAllReplyReqDto.nth())
                 .build();
+
         replyRepository.save(reply);
+        feedbackList.add(feedback);
       }
       return feedbackList;
+
     } catch (Exception e) {
       log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
       return Collections.emptyList();
