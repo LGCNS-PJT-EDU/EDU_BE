@@ -178,18 +178,16 @@ public class AIClient {
         subjectId);
   }
 
-    public InterviewFeedbackResDto getInterviewFeedback(
-            Long userId, AiFeedbackReqDto aiFeedbackReqDto) {
-        return postForObject(
-                "/api/question/evaluate?user_id={userId}",
-                aiFeedbackReqDto,
-                InterviewFeedbackResDto.class,
-                userId
-        );
-    }
+  public InterviewFeedbackResDto getInterviewFeedback(
+      Long userId, AiFeedbackReqDto aiFeedbackReqDto) {
+    return postForObject(
+        "/api/question/evaluate?user_id={userId}",
+        aiFeedbackReqDto,
+        InterviewFeedbackResDto.class,
+        userId);
+  }
 
-
-    public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
+  public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
     // return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
 
     String userMessage = chatRequestDto.message();
