@@ -33,8 +33,8 @@ spring:
     type: redis
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${TEST_SPRING_REDIS_HOST}
+      port: ${TEST_SPRING_REDIS_PORT}
 
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS}
