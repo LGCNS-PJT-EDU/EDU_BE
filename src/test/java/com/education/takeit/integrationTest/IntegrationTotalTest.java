@@ -1,10 +1,10 @@
 package com.education.takeit.integrationTest;
 
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@ActiveProfiles("testec2")
-//@Transactional
-//public class IntegrationTotalTest {
+// @SpringBootTest
+// @AutoConfigureMockMvc
+// @ActiveProfiles("testec2")
+// @Transactional
+// public class IntegrationTotalTest {
 //
 //  @Autowired private MockMvc mockMvc;
 //
@@ -158,4 +158,4 @@ package com.education.takeit.integrationTest;
     // 9. 사전 평가 결과 제출
 
 //  }
-//}
+// }
