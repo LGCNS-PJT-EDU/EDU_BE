@@ -47,4 +47,8 @@ jobs:
       #    build 태스크 → test → jacocoTestReport → jacocoTestCoverageVerification
       #    끝나면 sonar 태스크로 업로드
       - name: Build and SonarCloud analyze
-        run: ./gradlew  test sonarqube --info
+        run: ./gradlew  test \
+                sonarqube \
+                -Dsonar.login=$SONAR_TOKEN \
+                -Dsonar.branch.name=develop \
+                --info
