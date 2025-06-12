@@ -81,16 +81,17 @@ public class InterviewService {
       List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
       List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
 
-
       for (int i = 0; i < answers.size(); i++) {
         AiFeedbackReqDto dto = answers.get(i);
         InterviewFeedbackResDto feedback = feedbacks.get(i);
 
-        Interview interview = interviewRepository
+        Interview interview =
+            interviewRepository
                 .findById(dto.interviewId())
                 .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
 
-        UserInterviewReply reply = UserInterviewReply.builder()
+        UserInterviewReply reply =
+            UserInterviewReply.builder()
                 .user(user)
                 .interview(interview)
                 .userReply(dto.userReply())
