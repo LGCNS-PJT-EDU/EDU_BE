@@ -70,11 +70,12 @@ public class InterviewService {
   }
 
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
-          Long userId,
-          InterviewAllReplyReqDto interviewAllReplyReqDto) {
+      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
 
     try {
-      User user = userRepository.findById(userId)
+      User user =
+          userRepository
+              .findById(userId)
               .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
       List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
@@ -84,10 +85,13 @@ public class InterviewService {
 
         InterviewFeedbackResDto feedback = aiClient.getInterviewFeedback(userId, dto);
 
-        Interview interview = interviewRepository.findById(dto.interviewId())
+        Interview interview =
+            interviewRepository
+                .findById(dto.interviewId())
                 .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
 
-        UserInterviewReply reply = UserInterviewReply.builder()
+        UserInterviewReply reply =
+            UserInterviewReply.builder()
                 .user(user)
                 .interview(interview)
                 .userReply(dto.userReply())
@@ -105,9 +109,6 @@ public class InterviewService {
       return Collections.emptyList();
     }
   }
-
-
-
 
   public InterviewAllSubIdResDto getInterviewAllSubId(Long userId) {
     List<SubjectInfo> allSubjectIds = subjectRepository.findAllSubjectInfos();
