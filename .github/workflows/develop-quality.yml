@@ -32,7 +32,7 @@ jobs:
           key: ${{ runner.os }}-sonar
 
       - name: Test & SonarCloud analyze
-        run: ./gradlew test sonarqube \
-              -Dsonar.login=${{ env.SONAR_TOKEN }} \
-              -Dsonar.branch.name=${{ github.ref_name }} \
-              --info
+        run: ./gradlew sonarqube \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.branch.name=$SONAR_BRANCH \
+            --info
