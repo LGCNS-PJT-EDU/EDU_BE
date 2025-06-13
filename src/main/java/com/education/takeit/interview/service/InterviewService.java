@@ -59,7 +59,7 @@ public class InterviewService {
         .map(
             r ->
                 InterviewHistoryResDto.builder()
-                        .interviewId(r.getInterview().getInterviewId())
+                    .interviewId(r.getInterview().getInterviewId())
                     .interviewContent(r.getInterview().getInterviewContent())
                     .subId(r.getInterview().getSubject().getSubId())
                     .nth(r.getNth())
