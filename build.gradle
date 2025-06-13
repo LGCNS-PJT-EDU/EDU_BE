@@ -128,16 +128,17 @@ sonarqube {
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
         property 'sonar.organization', 'lgcns-pjt-edu'
+        property 'sonar.language', 'java'
         property 'sonar.sourceEncoding', 'UTF-8'
 
-        property 'sonar.sources', 'src/main/java'
-        property 'sonar.tests', 'src/test/java'
+        property 'sonar.sources', 'src/main'
+        property 'sonar.tests', 'src/test'
         property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
 
         property 'sonar.java.coveragePlugin', 'jacoco'
-        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.java.binaries", "${buildDir}/classes/java/main"
-        property "sonar.java.test.binaries", "${buildDir}/classes/java/test"
+        property 'sonar.coverage.jacoco.xmlReportPaths', '${buildDir}/reports/jacoco/test/jacocoTestReport.xml'
+        property 'sonar.java.binaries', '${buildDir}/classes'
+        property 'sona.test.inclusions', '**/*Test.java'
     }
 }
 
