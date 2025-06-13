@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS feedback_fail_log;
+DROP TABLE IF EXISTS recom_fail_log;
 
 -- users 테이블 생성
 CREATE TABLE users (
@@ -27,7 +28,8 @@ CREATE TABLE users (
                        is_active BOOLEAN NOT NULL DEFAULT TRUE,
                        lecture_amount VARCHAR(255),
                        price_level VARCHAR(255),
-                       likes_books BOOLEAN
+                       likes_books BOOLEAN,
+                       privacy_status BOOLEAN
 );
 
 -- diagnosis 테이블 생성
@@ -64,7 +66,7 @@ INSERT INTO choice (diagnosis_id, choice_num, choice, value) VALUES
                                                                  (2, 4, '깊게 공부하는게 좋아 10시간!', '3'),
                                                                  (2, 5, '나는야 공부벌레 10시간 이상!', '4');
 
--- 공통 질문
+-- 공통 질문 3
 INSERT INTO diagnosis (diagnosis_id, question, question_type) VALUES (3, '한 강의에 얼마까지 투자할 생각이 있으신가요?', 'COMMON');
 INSERT INTO choice (diagnosis_id, choice_num, choice, value) VALUES
                                                                  (3, 1, '무료', '0'),
@@ -1256,8 +1258,6 @@ CREATE TABLE user_exam_answer(
                                  CONSTRAINT fk_user_exam_answer_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- 1968번 파이썬인데 옵션이 한 줄 이라서 문제 변경 필요합니다.
--- 2626번은 application.yml 문제라서 역시 문제 변경 필요합니다.
 INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option2, option3, option4, sub_id, solution) VALUES
                                                                                                                            (1, 'HTML 문서의 최상위 루트 요소는 무엇인가?', 1, 'low', '<html>', '<head>', '<body>', '<doctype>', 1, '<html> 요소는 HTML 문서의 최상위 루트 요소이기 때문에 정답이다.'),
                                                                                                                            (2, 'head 요소 안에 넣을 수 없는 태그는?', 4, 'low', '<title>', '<link>', '<meta>', '<section>', 1, '<section>은 시맨틱 콘텐츠 구역으로, head 요소 내에는 포함될 수 없다.'),
@@ -4243,7 +4243,114 @@ INSERT INTO exam(exam_id, exam_content, exam_answer, exam_level, option1, option
     (2982, '다음 중 Flask 애플리케이션에서 전역 상태를 저장할 수 있는 객체는?', 3, 'medium','app.route','request','session','url_for',49,'`session` 객체는 사용자의 브라우저와 서버 간의 전역 상태를 유지하기 위해 사용되며, Flask는 이를 암호화된 쿠키 기반으로 제공한다.'),
     (2983, '다음 중 Flask의 Blueprint 기능에 대한 설명으로 가장 적절한 것은?', 1, 'high','Blueprint는 Flask 애플리케이션을 여러 모듈로 분리하여 유지보수를 쉽게 해준다','Blueprint는 Flask의 백그라운드 스레드를 관리하는 기능이다','Blueprint는 DB 트랜잭션을 자동으로 관리한다','Blueprint는 템플릿에서만 사용할 수 있는 객체이다',49,'Blueprint는 Flask 애플리케이션을 여러 라우트와 기능 단위로 분리하여 모듈화할 수 있도록 해주는 구조적 확장 도구이다.'),
     (2984, 'Flask에서 CSRF 공격을 방지하려면 일반적으로 어떤 방식이 사용되는가?', 2, 'high','JWT 토큰','폼에 CSRF 토큰을 삽입하고 검증하는 방식','IP 필터링','Flask는 기본적으로 CSRF를 차단함',49,'Flask에서는 CSRF 보호를 위해 `Flask-WTF` 확장을 사용하여 폼에 CSRF 토큰을 삽입하고 서버에서 이를 검증하는 방식으로 보안을 강화한다.'),
-    (2985, 'Flask의 url_for 함수의 주요 목적은?', 3, 'high','템플릿 내 반복문을 처리한다','HTML 문서에서 외부 스크립트를 로드한다','뷰 함수명을 기반으로 URL 경로를 동적으로 생성한다','서버의 루트 디렉토리를 반환한다',49,'`url_for()`는 Flask에서 URL 하드코딩을 방지하고, 라우트 함수 이름을 기반으로 동적으로 URL을 생성할 수 있도록 도와주는 함수이다.');
+    (2985, 'Flask의 url_for 함수의 주요 목적은?', 3, 'high','템플릿 내 반복문을 처리한다','HTML 문서에서 외부 스크립트를 로드한다','뷰 함수명을 기반으로 URL 경로를 동적으로 생성한다','서버의 루트 디렉토리를 반환한다',49,'`url_for()`는 Flask에서 URL 하드코딩을 방지하고, 라우트 함수 이름을 기반으로 동적으로 URL을 생성할 수 있도록 도와주는 함수이다.'),
+    (2986, 'Django REST Framework에서 ViewSet과 Router를 함께 사용하는 주된 이유는?', 2, 'high', 'URL 패턴을 더 복잡하게 정의하기 위해서', '자동으로 URLconf를 생성하여 CRUD API 구현을 단순화하기 위해서', 'APIView 기능을 대체하기 위해서', 'Template 기반 렌더링을 지원하기 위해서', 48, 'ViewSet은 비즈니스 로직만 작성하면 되고, Router가 자동으로 URLconf를 생성해줘서 빠르게 REST API를 만들 수 있다.'),
+    (2987, 'DRF에서 인증(Authentication)과 권한(Permission)의 차이점으로 옳은 것은?', 3, 'high', '인증은 사용자의 데이터를 필터링하고, 권한은 요청을 암호화한다.', '인증은 사용자의 요청 속도를 제한하고, 권한은 로그인 유무를 판단한다.', '인증은 사용자를 식별하고, 권한은 요청이 허용되는지를 판단한다.', '인증과 권한은 동일하며 보안을 위해 함께 설정한다.', 48, '인증은 사용자가 누구인지 확인하는 절차이고, 권한은 해당 사용자가 특정 작업을 수행할 수 있는지를 판단하는 절차이다.'),
+    (2988, 'Serializer에서 `create()` 메서드를 오버라이드하는 주된 이유는?', 1, 'high', '객체 생성 시 추가 로직을 적용하기 위해서', '유효성 검사를 우회하기 위해서', '데이터 저장을 방지하기 위해서', '데이터를 JSON으로 직렬화하기 위해서', 48, 'create()를 오버라이드하면 모델 인스턴스를 생성할 때 커스텀 로직(예: 필드 추가, 후처리 등)을 적용할 수 있다.'),
+    (2989, 'Django REST Framework에서 `@action` 데코레이터를 사용할 때 올바른 사용 목적은?', 4, 'high', '모델 필드를 자동으로 생성하기 위해', '뷰의 HTTP 응답을 캐싱하기 위해', 'Serializer 클래스를 동적으로 변경하기 위해', 'ViewSet에 커스텀 엔드포인트를 추가하기 위해', 48, '`@action`은 ViewSet 클래스에서 기본 CRUD 외의 커스텀 메서드(예: like, vote 등)를 별도 URL로 노출할 때 사용한다.'),
+    (2990, 'Django의 MTV 아키텍처에서 Template의 주요 역할은 무엇인가?', 4, 'high', '요청을 처리하고 적절한 응답을 반환한다.', '데이터베이스와의 상호작용을 담당한다.', '비즈니스 로직을 처리한다.', '사용자에게 보여질 화면을 렌더링한다.', 48, 'Django의 MTV 아키텍처에서 Template은 사용자에게 보여지는 UI를 담당하며 HTML 응답을 생성하는 데 사용된다.'),
+    (2991, 'Django에서 settings.py 파일에서 INSTALLED_APPS에 앱을 등록하는 주된 이유는?', 2, 'high', '앱의 모델을 강제로 마이그레이션하기 위해', 'Django가 해당 앱의 설정, 모델, 템플릿 등을 인식하게 하기 위해', '템플릿 파일을 자동 생성하기 위해', '데이터베이스와의 연결을 생략하기 위해',48, 'INSTALLED_APPS에 앱을 등록해야 Django가 해당 앱의 모델과 설정, URL 등을 인식하고 동작에 포함시킬 수 있다.'),
+    (2992, 'Django에서 URLconf의 역할로 가장 적절한 것은?', 3, 'high', '모델과 뷰 간의 데이터를 직렬화한다.', '템플릿 엔진으로 렌더링을 담당한다.', '요청된 URL을 해당 뷰(View)로 매핑하는 역할을 한다.', 'ORM에서 SQL 쿼리를 최적화하는 역할을 한다.',48, 'URLconf는 클라이언트의 URL 요청을 어떤 뷰 함수 또는 클래스에 전달할지 매핑하는 설정으로, URL 라우팅을 담당한다.'),
+    (2993, 'Django에서 클래스 기반 뷰(Class-Based View)를 URLconf에 연결할 때 사용하는 메서드는?', 2, 'high', 'get_context_data', 'as_view()', 'dispatch()', 'render_to_response',48, '클래스 기반 뷰는 함수가 아니기 때문에 URLconf에 등록할 때 as_view() 메서드를 사용해 인스턴스로 변환해야 한다.'),
+    (2994, '다음 중 Django에서 URL 이름(name)을 지정하는 주된 목적은?', 3, 'high', '뷰 함수의 이름을 변경하기 위해', '정적 파일 경로를 등록하기 위해', '템플릿 또는 뷰에서 URL 역참조(reverse)를 가능하게 하기 위해', 'url 패턴을 자동으로 생성하기 위해',48, 'URL에 name을 지정하면 reverse() 함수나 {% url %} 템플릿 태그를 사용하여 경로를 문자열이 아닌 이름으로 참조할 수 있다.'),
+    (2995, 'Django에서 path()와 re_path() 함수의 주요 차이점은?', 1, 'high', 'path()는 간단한 경로 지정에 사용되고, re_path()는 정규표현식을 이용한 복잡한 경로 지정에 사용된다.', 're_path()는 클래스 기반 뷰 전용이며, path()는 함수형 뷰에서만 사용된다.', 'path()는 정적 파일 라우팅에 특화되어 있다.', '둘의 기능은 동일하지만 re_path()는 더 최신 방식이다.',48, 'path()는 읽기 쉬운 경로 문자열을 사용하며, re_path()는 복잡한 정규표현식 기반 URL 처리를 위해 사용된다.'),
+    (2996, 'Django 모델에서 related_name 옵션의 주된 목적은?', 3, 'high', 'ForeignKey의 삭제 동작을 제어하기 위해', '모델의 기본 정렬 방식을 지정하기 위해', '역참조 시 사용할 매니저 이름을 정의하기 위해', '모델 필드의 nullable 여부를 결정하기 위해',48, 'related_name은 역참조할 때 사용할 이름을 설정하는 데 사용된다. 예를 들어 author.book_set 대신 author.books처럼 커스텀 가능하다.'),
+    (2997, 'Django ORM에서 select_related()와 prefetch_related()의 차이로 가장 적절한 설명은?', 1, 'high', 'select_related()는 SQL JOIN을 사용하고, prefetch_related()는 별도 쿼리로 데이터를 가져온다.', '둘 다 동일한 방식의 조인을 사용하지만 성능 차이가 있다.', 'select_related()는 다대다 관계 전용이며, prefetch_related()는 일대일 관계 전용이다.', 'select_related()는 QuerySet 캐싱을 위해 사용된다.',48, 'select_related는 JOIN을 사용하여 하나의 쿼리로 가져오고, prefetch_related는 별도 쿼리 후 파이썬에서 매칭하여 성능 최적화를 한다.'),
+    (2998, 'Django에서 모델을 마이그레이션하지 않고 데이터베이스 구조를 직접 수정했을 때 발생할 수 있는 문제는?', 4, 'high', 'Admin 페이지에서 모델이 표시되지 않는다.', '쿼리셋이 자동으로 초기화된다.', 'ORM이 해당 모델을 무시하고 실행된다.', '모델 정의와 DB 스키마가 불일치하여 런타임 오류가 발생할 수 있다.',48, 'Django는 models.py를 기반으로 ORM을 구성하므로, 직접 DB 구조를 바꾸면 ORM과 불일치가 생겨 런타임에서 오류가 발생할 수 있다.'),
+    (2999, 'Django 템플릿에서 `{{ some_list|length }}`와 같이 필터를 사용하는 주요 목적은?', 2, 'high', '템플릿 내에서 함수를 정의하기 위해', '데이터를 출력 전에 처리하거나 변형하기 위해', '변수를 선언하고 루프를 제어하기 위해', '모델 필드를 직접 수정하기 위해',48, '템플릿 필터는 데이터를 화면에 출력하기 전에 변형하거나 포맷팅하는 데 사용된다. 예를 들어 |length는 리스트의 길이를 출력한다.'),
+    (3000, 'Django에서 `{% static "css/styles.css" %}` 태그가 정상 작동하기 위해 반드시 설정해야 하는 것은?', 4, 'high', 'MEDIA_ROOT 설정', 'BASE_DIR 환경변수', 'INSTALLED_APPS에 django.template 추가', 'STATICFILES_DIRS 또는 STATIC_ROOT 설정 및 static 템플릿 태그 로딩',48, '`{% static %}`을 사용하려면 static 경로 설정과 {% load static %} 태그를 포함해야 한다. 또한 STATICFILES_DIRS나 STATIC_ROOT도 설정되어 있어야 한다.'),
+    (3001, 'Django 템플릿 언어에서 `{% include %}` 태그와 `{% extends %}` 태그의 차이점으로 올바른 설명은?', 1, 'high', '`include`는 템플릿을 삽입하고, `extends`는 상속을 통해 구조를 재사용한다.', '`extends`는 하위 템플릿을 삽입하고, `include`는 base 템플릿을 참조한다.', '`include`는 오직 정적 파일에만 사용된다.', '두 태그는 기능적으로 동일하며, 상호 치환 가능하다.',48, '`include`는 템플릿 조각을 삽입할 때 사용되고, `extends`는 상위 템플릿을 기반으로 블록을 오버라이딩하는 방식으로 전체 구조를 재사용한다.'),
+    (3002, 'DRF에서 `validate_<fieldname>` 메서드의 주된 목적은?', 2, 'high', '전체 필드 검증 로직을 수행하기 위해', '특정 필드에 대한 개별 검증 로직을 정의하기 위해', 'serializer 저장 시 후처리를 위해', '뷰에서 사용할 에러 메시지를 포맷팅하기 위해',57, 'validate_<fieldname>()은 해당 필드 값에 대한 유효성 검사 및 조건 검사를 위해 사용된다.'),
+    (3003, 'DRF에서 `raise serializers.ValidationError(...)`가 호출되는 위치로 적절하지 않은 것은?', 4, 'high', 'validate_<fieldname> 메서드 내부', 'validate 메서드 내부', 'create() 또는 update() 메서드 내부', 'Serializer 클래스 외부',57, 'ValidationError는 주로 Serializer 내에서 사용되며, 외부에서 호출하면 DRF의 예외 처리 흐름과 어긋난다.'),
+    (3004, 'DRF의 `validators` 인자에 커스텀 함수를 전달할 때, 주의할 점은?', 3, 'high', '해당 함수는 반드시 serializer 클래스 외부에 정의되어야 한다.', '함수명은 validate_로 시작해야 한다.', '입력값을 인자로 받고 ValidationError를 명시적으로 발생시켜야 한다.', '함수 내에서는 request 객체에 접근할 수 있어야 한다.',57, 'validators에 전달하는 함수는 인자 값만 받아 검증하며, 조건 불일치 시 ValidationError를 명시적으로 발생시켜야 한다.'),
+    (3005, 'Simple JWT에서 Refresh Token의 주요 목적은?', 1, 'high', 'Access Token 만료 후 재발급을 가능하게 하기 위해', '사용자의 비밀번호 재설정을 위해', '클라이언트의 인증 상태를 영구히 유지하기 위해', 'OAuth 인증 연동을 처리하기 위해',57, 'Refresh Token은 Access Token이 만료된 후 새 Access Token을 발급받기 위한 토큰이다.'),
+    (3006, 'Simple JWT에서 토큰 블랙리스트 기능을 사용하기 위해 필요한 설정은?', 2, 'high', 'DEFAULT_PERMISSION_CLASSES에 BlacklistPermission 추가', 'INSTALLED_APPS에 rest_framework_simplejwt.token_blacklist 추가', 'MIDDLEWARE에 TokenBlacklistMiddleware 추가', 'settings.py에 JWT_ALLOW_BLACKLIST = True 설정',57, '토큰 블랙리스트 기능은 `rest_framework_simplejwt.token_blacklist` 앱을 추가해야 활성화된다.'),
+    (3007, 'Simple JWT에서 토큰 유효 시간을 변경하기 위한 설정 키는?', 3, 'high', 'JWT_EXPIRE_MINUTES', 'ACCESS_TOKEN_TTL', 'ACCESS_TOKEN_LIFETIME', 'JWT_REFRESH_VALIDITY',57, '`ACCESS_TOKEN_LIFETIME`은 Access Token의 만료 시간을 설정하는 공식 키이다.'),
+    (3008, 'Django ORM의 `F()` 객체를 사용하는 주요 이유는?', 2, 'high', '필드 값을 상수로 비교하기 위해', '쿼리셋 내에서 필드 간 연산을 수행하기 위해', 'SQL 조인을 수동으로 지정하기 위해', 'Raw SQL 구문을 삽입하기 위해',57, 'F() 객체는 필드 간 연산이나 기존 값 기준 변경 등에 사용된다 (ex: count = F("count") + 1).'),
+    (3009, 'Django ORM에서 Q 객체를 사용하는 가장 주된 목적은?', 1, 'high', 'OR 조건 및 복잡한 논리 쿼리 작성', '데이터베이스 트랜잭션 제어', '쿼리셋 캐싱', '모델 필드에 대한 제한 설정',57, 'Q 객체는 OR 조건 또는 괄호가 필요한 조건 쿼리를 정의하는 데 사용된다.'),
+    (3010, 'Django에서 `annotate()`와 `aggregate()`의 주된 차이는?', 4, 'high', '둘 다 필터 조건을 구성한다.', 'aggregate는 쿼리셋을 수정하지 않는다.', 'annotate는 전체 쿼리셋을 하나로 요약한다.', 'annotate는 각 객체에 계산 결과를 추가하고, aggregate는 전체 쿼리에 대한 계산값을 반환한다.',57, 'annotate는 개별 객체에 값을 추가하고, aggregate는 전체 쿼리셋에 대한 계산을 반환한다.'),
+    (3011, 'DRF에서 `GenericAPIView`가 제공하는 기능 중 옳은 것은?', 3, 'high', '템플릿 렌더링을 지원하는 Mixin', 'URLConf 자동 등록', '쿼리셋 및 serializer_class 속성 기반 처리', 'JWT 기반 인증 처리 전용 뷰',57, 'GenericAPIView는 queryset, serializer_class 속성을 바탕으로 기본적인 처리 로직을 내장한다.'),
+    (3012, 'DRF에서 ViewSet을 사용할 때 Router를 함께 사용하는 목적은?', 4, 'high', '데이터 정렬을 위한 필터 기능 제공', 'permission 클래스 설정을 위해', '쿼리셋을 자동으로 저장하기 위해', '자동으로 URL 패턴을 생성하여 코드량을 줄이기 위해',57, 'Router는 ViewSet과 함께 사용되어 자동으로 CRUD URLconf를 생성해준다.'),
+    (3013, 'DRF에서 `ListModelMixin`의 기본 동작은?', 2, 'high', '하나의 객체를 상세 조회한다.', '전체 객체 목록을 조회한다.', '새 객체를 생성한다.', '선택한 객체를 삭제한다.',57, 'ListModelMixin은 `list()` 메서드를 제공하여 전체 객체를 반환한다.'),
+    (3014, 'drf-yasg에서 `@swagger_auto_schema` 데코레이터를 사용하는 이유는?', 1, 'high', 'APIView에 명시적으로 입력/출력 스펙을 정의하기 위해', 'Serializer의 필드 값을 디버깅하기 위해', 'HTML 렌더링을 커스터마이징하기 위해', 'REST API 경로를 보호하기 위해',57, 'swagger_auto_schema는 API 스펙을 명시적으로 정의할 수 있게 해준다.'),
+    (3015, 'drf-spectacular에서 `extend_schema`의 주요 사용 목적은?', 2, 'high', '템플릿 경로를 지정하기 위해', '각 API 엔드포인트의 문서와 스키마를 커스터마이징하기 위해', '뷰 함수의 권한을 제어하기 위해', 'Swagger UI의 디자인을 변경하기 위해',57, '`extend_schema`는 각 API에 대한 문서 및 파라미터 스펙을 커스터마이징할 수 있게 한다.'),
+    (3016, 'drf-spectacular의 OpenAPI 스키마 생성 명령어는?', 3, 'high',  'python manage.py collectstatic', 'python manage.py makemigrations', 'python manage.py spectacular --file schema.yml', 'python manage.py generate_docs',57, '`spectacular --file schema.yml` 명령어는 OpenAPI 스펙 파일을 생성해주는 기본 명령이다.'),
+    (3017, 'Flask 애플리케이션에서 CSRF 공격을 방지하기 위한 일반적인 방법은?', 2, 'high', '비밀번호 암호화 적용', '폼에 CSRF 토큰을 삽입하고 서버에서 검증', '클라이언트 측 입력값 길이 제한', '정적 파일 접근을 제한',49, 'CSRF 보호는 각 요청에 고유한 토큰을 삽입하고 서버에서 이를 확인하는 방식으로 이뤄진다.'),
+    (3018, 'Flask를 Gunicorn으로 배포할 때, 보안 및 성능 향상을 위해 추천되는 설정은?', 3, 'high',  'Flask debug 모드를 켠 채로 운영', '기본 HTTP 서버만으로 처리', 'Nginx를 리버스 프록시로 앞단에 두는 구성', 'threaded=True 설정 제거',49, 'Flask는 개발용 서버로 적합하지 않으며, 운영환경에서는 Nginx + Gunicorn 조합이 일반적이다.'),
+    (3019, 'Flask에서 HTTPS를 적용할 때 가장 적절한 방식은?', 4, 'high', 'Flask 내부에서 직접 SSLContext 설정', 'Werkzeug 내장 서버에서 인증서 설정', 'Flask 앱에서 직접 인증서 파일을 로드', 'Nginx에서 HTTPS 처리 후 Flask로 프록시',49, '실제 운영 환경에서는 Nginx 등 프록시 서버에서 HTTPS를 처리하고 Flask는 HTTP로 통신한다.'),
+    (3020, 'Flask-SQLAlchemy에서 모델 클래스에 정의된 __tablename__ 속성의 의미는?', 1, 'high',  '해당 모델이 매핑될 데이터베이스 테이블명을 지정한다.', '쿼리의 기본 정렬 기준을 지정한다.', 'ORM이 모델을 무시하게 한다.', '테이블 간 조인을 자동 수행한다.',49, '__tablename__은 모델이 실제 데이터베이스에서 매핑될 테이블 이름을 명시적으로 지정한다.'),
+    (3021, 'Flask-SQLAlchemy에서 `session.commit()` 호출 전까지 데이터가 반영되지 않는 이유는?', 3, 'high', 'ORM이 비동기로 작동하기 때문', '쿼리셋이 캐싱되기 때문', '트랜잭션 방식으로 작동하기 때문', '데이터베이스에 연결되지 않았기 때문',49, 'Flask-SQLAlchemy는 트랜잭션 기반으로 동작하며, commit() 호출 전까지는 실제 반영되지 않는다.'),
+    (3022, '다음 중 Flask-SQLAlchemy에서 객체를 삭제하는 올바른 방법은?', 2, 'high', 'db.session.drop(object)', 'db.session.delete(object) 후 db.session.commit()', 'object.remove() 후 flush()', 'DELETE 쿼리를 직접 실행',49, 'SQLAlchemy에서는 delete()로 객체를 삭제한 후 commit()으로 반영해야 한다.'),
+    (3023, 'Flask에서 URL 경로 매개변수에 타입을 지정하는 이유는?', 4, 'high', '디버깅 편의를 위해', '라우팅 속도를 높이기 위해', '템플릿 자동 생성에 필요', '뷰 함수로 전달되기 전에 형 변환 처리를 하기 위해',49, 'Flask는 <int:id>와 같이 URL 매개변수에 타입을 지정하면 자동으로 해당 타입으로 변환해준다.'),
+    (3024, '다음 중 Flask에서 route 데코레이터를 통해 정의할 수 없는 것은?', 2, 'high', 'HTTP 메서드(GET, POST 등) 제한', '세션 유지 시간 설정', 'URL 경로 정의', '동적 URL 매개변수 지정',49, 'route()는 URL과 메서드를 정의하는 데 사용되며, 세션 설정은 전혀 다른 방식으로 처리된다.'),
+    (3025, 'Flask에서 여러 route가 동일한 뷰 함수를 공유할 수 있는 방법은?', 1, 'high',  'route() 데코레이터를 중첩하거나 다중 선언한다.', '뷰 함수 안에서 URL을 분기한다.', '클래스 기반 뷰로만 가능하다.', 'Blueprint를 반드시 사용해야 한다.',49, 'Flask에서는 하나의 뷰 함수에 여러 @app.route() 데코레이터를 붙여 여러 URL에 대응하게 할 수 있다.'),
+    (3026, 'Jinja2에서 `{{ user.name | default(''익명'') }}`의 동작은?', 3, 'high', 'user.name이 항상 "익명"으로 출력된다.', '템플릿에서 변수를 삭제한다.', 'user.name이 None 또는 undefined일 경우 "익명"을 출력한다.', 'user.name이 문자열이면 익명으로 치환한다.',49, 'default 필터는 값이 None이거나 정의되지 않았을 경우 대체 값을 출력하도록 한다.'),
+    (3027, '다음 중 Jinja2 템플릿 상속과 관련된 설명으로 옳은 것은?', 1, 'high', '`{% block %}` 태그를 사용하여 자식 템플릿에서 내용을 재정의할 수 있다.', '상속은 파이썬 클래스처럼 다중 상속이 가능하다.', '부모 템플릿은 반드시 HTML 전체 구조를 포함해야 한다.', 'Jinja2는 상속을 지원하지 않으며 include만 제공한다.',49, 'block 태그는 상속 구조에서 자식 템플릿이 내용을 덮어쓸 수 있도록 해준다.'),
+    (3028, 'Jinja2 템플릿에서 `{% with %}` 블록의 용도는?', 4, 'high', '변수를 삭제하기 위해', '템플릿을 조건부로 렌더링하기 위해', '반복문 중간에 변수 초기화하기 위해', '일시적으로 변수에 값을 할당하고 블록 내에서만 사용할 수 있게 하기 위해',49, '`with` 블록은 블록 내부에서만 사용할 수 있는 임시 변수를 선언하는 데 사용된다.'),
+    (3029, 'Flask-SQLAlchemy에서 데이터베이스 모델 클래스는 어떤 클래스를 상속받아야 하는가?', 2, 'low', 'ModelBase', 'db.Model', 'BaseModel', 'FlaskModel',49, 'SQLAlchemy의 모델 클래스는 db.Model을 상속받아야 SQLAlchemy가 인식할 수 있다.'),
+    (3030, 'Flask-SQLAlchemy에서 새 객체를 데이터베이스에 추가할 때 사용하는 메서드는?', 3, 'low', 'db.session.append()', 'db.session.insert()', 'db.session.add()', 'db.session.create()',49, 'db.session.add()를 사용해 객체를 세션에 등록한 후 commit()으로 DB에 반영한다.'),
+    (3031, 'GitHub Actions에서 DockerHub에 이미지를 푸시하기 위해 필요한 인증 방식은?', 1, 'high',   'secrets에 DockerHub 사용자명과 액세스 토큰을 저장하고 사용한다.', 'GitHub Actions runner에서 직접 로그인하도록 한다.', 'DockerHub의 API Key를 README에 명시한다.', 'GitHub CLI를 통해 수동으로 푸시한다.',59, 'GitHub Actions에서 secrets.DOCKER_USERNAME, secrets.DOCKER_PASSWORD 등을 설정해 로그인 후 push한다.'),
+    (3032, '다음 중 GitHub Actions 워크플로우에서 Docker 이미지를 빌드하고 푸시하기 위한 올바른 순서는?', 2, 'high', 'push → build → tag → login', 'login → build → tag → push', 'tag → build → push → login', 'build → login → push → tag',59, '먼저 DockerHub에 로그인한 후, 이미지를 빌드하고 태그한 뒤 푸시하는 것이 일반적인 순서이다.'),
+    (3033, 'GitHub Actions에서 특정 브랜치에 push될 때만 CI/CD 파이프라인이 동작하도록 하기 위한 설정은?', 3, 'high', 'jobs.only.branch', 'filters.branch.include', 'on.push.branches', 'env.branch-restrict',59, '`on.push.branches` 키를 사용하면 특정 브랜치에 push가 일어날 때만 워크플로우가 실행된다.'),
+    (3034, 'Flask 앱을 Docker로 배포할 때 권장되는 베이스 이미지는?', 1, 'high', 'python:3.x-slim', 'flask:latest', 'alpine-nginx-flask', 'ubuntu-flask-dev',59, '`python:3.x-slim` 이미지는 가볍고 Python 기반 Flask 앱 배포에 적합하다.'),
+    (3035, 'Nginx 설정에서 Flask 앱을 리버스 프록시할 때 올바른 설정은?', 4, 'high', 'proxy_pass http://localhost:443;', 'proxy_pass flask.sock;', 'proxy_pass unix:/var/www/flask;', 'proxy_pass http://127.0.0.1:8000;',59, 'Gunicorn 등이 127.0.0.1:8000에서 동작할 경우, Nginx는 proxy_pass로 이를 참조한다.'),
+    (3036, 'Flask 앱을 Docker와 Nginx를 조합해 배포할 때 자주 발생하는 문제는?', 2, 'high', 'Flask가 static 디렉토리를 못 읽는 문제', 'Docker container 간 네트워크 연결이 되지 않는 문제', 'requirements.txt가 무시되는 문제', 'pipenv가 자동 실행되지 않는 문제',59, 'docker-compose에서 nginx와 flask 컨테이너를 동일 네트워크로 연결하지 않으면 연결 불가 문제가 자주 발생한다.'),
+    (3037, 'Gunicorn에서 워커 수 설정을 위한 일반적인 공식은?', 1, 'high', 'CPU 코어 수 × 2 + 1', 'CPU 코어 수 ÷ 2', 'CPU 코어 수 × 1.5', '메모리 용량 ÷ 워커당 메모리 사용량',59, 'Gunicorn 공식 문서에서도 권장하는 워커 수는 CPU 수 × 2 + 1이다.'),
+    (3038, 'Gunicorn이 WSGI 서버로 적합한 이유는?', 3, 'high', '스레드 기반 구조이기 때문', 'Flask 내장 서버보다 메모리를 더 많이 쓰기 때문', '비동기 요청을 다수 처리할 수 있는 워커 기반 구조이기 때문', '템플릿 렌더링을 지원하기 때문',59, 'Gunicorn은 여러 워커를 통해 동시에 요청을 처리할 수 있어 실 서비스에 적합하다.'),
+    (3039, 'Waitress를 선택하는 경우로 적절한 것은?', 2, 'high', 'Gunicorn이 없는 Windows 환경에서 운영할 때', 'Windows 서버에서 Python 앱을 운영할 때', '동시에 대용량 비동기 요청을 처리할 때', 'Flask 개발 서버를 배포용으로 쓸 때',59, 'Waitress는 Windows에서도 안정적으로 작동하는 WSGI 서버로 추천된다.'),
+    (3040, 'Flask에서 S3를 이용한 정적 파일 저장 시 보안상 중요한 설정은?', 2, 'high', '정적 폴더를 templates와 함께 두기', 'S3 버킷 정책에서 public read 접근을 제한하기', '모든 파일에 signed URL 적용 금지', '버킷 이름을 앱에 하드코딩',59, '정적 파일을 보호하기 위해 public read를 제한하거나 signed URL을 사용하는 것이 좋다.'),
+    (3041, 'Flask 앱에서 로깅 설정 시 RotatingFileHandler를 사용하는 이유는?', 3, 'high', '로그에 색상 강조를 적용하기 위해', '서버 간 로그 공유를 위해', '로그 파일 크기를 제한하고 순환시키기 위해', 'SQLAlchemy 쿼리 출력을 보기 위해',59, 'RotatingFileHandler는 파일이 일정 크기를 넘으면 자동으로 새 로그 파일을 생성하며 이전 로그를 보존한다.'),
+    (3042, 'Sentry를 Flask에 연동할 때 가장 중요한 초기화 요소는?', 4, 'high', 'Flask 로그 핸들러 등록', 'Flask의 run() 함수 내에서 설치', '환경 변수로 SENTRY_SILENT 설정', 'DSN 키로 클라이언트를 초기화',59, 'Sentry는 DSN 키를 통해 프로젝트와 연동되며, 초기화 시 반드시 필요하다.'),
+    (3043, 'Flask 앱에서 환경변수를 `.env` 파일로 관리할 때 필요한 패키지는?', 1, 'high', 'python-dotenv', 'flask-environ', 'env-handler','dotenv-cli',59, 'Flask에서 .env 파일을 로드하려면 `python-dotenv` 패키지가 일반적으로 사용된다.'),
+    (3044, 'Flask의 `app.config.from_object()` 메서드의 주요 용도는?', 4, 'high', '환경에 따라 다른 파이썬 인터프리터를 설정', '템플릿 경로를 추가', '로깅 파일 위치를 설정', '클래스 기반 설정 객체로부터 구성값을 불러오기 위해',59, 'from_object()는 설정 클래스를 전달받아 설정값을 로드하는 데 사용된다.'),
+    (3045, '환경 설정 시 보안을 위해 피해야 할 방식은?', 3, 'high', 'Flask.config에 from_envvar 사용', '환경변수를 활용한 비밀키 저장', '하드코딩된 설정값을 GitHub에 커밋', 'Flask CLI에서 환경 선택 사용',59, '비밀번호나 시크릿 키 등을 코드에 하드코딩한 채로 GitHub에 업로드하면 보안상 큰 문제가 된다.'),
+    (3046, 'Spring Boot 애플리케이션에서 내장 톰캣을 비활성화하고 외부 톰캣으로 배포하기 위한 설정은?', 4, 'high', 'server.port를 0으로 설정', 'application.yml에서 embeddedTomcat: false', 'WebApplicationType을 NONE으로 설정', 'spring-boot-starter-tomcat 의 scope를 provided로 설정',53, '내장 톰캣을 제외하려면 starter-tomcat의 scope를 provided로 설정하여 외부 톰캣에 배포할 수 있다.'),
+    (3047, 'Spring Boot에서 실행 시 특정 profile을 적용하는 방법으로 올바른 것은?', 1, 'high', '--spring.profiles.active=prod 옵션을 추가한다.', 'application-run.yml을 생성한다.', 'WebApplicationType을 PROFILE로 설정한다.', 'application.properties에 spring.profile.only 설정',53, '명령행 인자로 --spring.profiles.active=prod와 같이 지정하여 실행할 수 있다.'),
+    (3048, 'Spring Boot fat jar 실행 시 `java -jar` 명령으로 설정을 추가하려면 어떻게 해야 하는가?', 2, 'high', 'jar 내부의 application.yml만 수정하면 된다.', '명령행 인자 또는 환경변수로 설정을 오버라이드할 수 있다.', 'JVM 환경변수로만 설정 가능하다.', 'properties 파일만 사용 가능하다.',53, '명령행 인자나 환경변수를 통해 jar 실행 시 설정을 동적으로 지정할 수 있다.'),
+    (3049, 'Spring Boot 앱을 Nginx와 연동할 때 주의할 점은?', 1, 'high', 'Nginx가 proxy_pass로 전달할 대상 포트를 정확히 설정해야 한다.', 'Spring 앱에서 반드시 HTTPS만 허용해야 한다.', 'Nginx는 Spring 앱의 jar 파일을 직접 실행할 수 있다.', 'Spring 앱은 반드시 루트 도메인("/")에 배포되어야 한다.',53, 'Nginx 설정에서 proxy_pass가 Spring 앱의 포트를 정확히 가리켜야 통신이 가능하다.'),
+    (3050, 'Spring Boot를 Docker로 배포할 때 가장 좋은 베이스 이미지는?', 3, 'high', 'ubuntu:latest', 'tomcat:9-jdk11', 'openjdk:17-slim', 'alpine-java',53, 'Spring Boot를 Docker로 배포할 땐 openjdk slim 이미지가 용량과 보안 측면에서 우수하다.'),
+    (3051, 'Spring Boot에서 HTTPS를 적용하려면 반드시 필요한 설정은?', 4, 'high', 'application.yml에 https=true 설정', '톰캣 포트를 443으로 변경', 'HTTPS 인코딩 설정', 'keystore 및 인증서 정보를 application.yml에 등록',53, 'HTTPS 적용을 위해서는 keystore 파일 경로, 비밀번호, 프로토콜 등을 명시해야 한다.'),
+    (3052, 'Spring Boot에서 `@Value`로 주입할 수 없는 설정 방식은?', 2, 'high', 'application.yml에 정의된 값', '자바 클래스에서 선언된 static final 필드', '환경변수에 설정된 값', 'application.properties의 커스텀 설정값',53, '`@Value`는 static final 필드에는 주입되지 않으며, 스프링 컨텍스트에서 관리되는 빈에서만 가능하다.'),
+    (3053, 'Spring Boot에서 다중 환경별 설정을 분리하기 위해 사용하는 기능은?', 1, 'high', 'Spring Profile', 'Config Hash', '설정 정규화', 'Bean Diff Config',53, 'Spring Profile 기능을 이용하면 dev, test, prod 등의 환경에 따라 설정을 분리할 수 있다.'),
+    (3054, 'application.yml 설정에서 profile별 파일을 자동으로 적용하기 위한 구성은?', 3, 'high', 'spring.load.activeProfiles=dev', 'profile-mapping.yml 사용', 'application-{profile}.yml 파일을 만들어야 한다.', 'application-profile-override=true',53, '`application-prod.yml`과 같이 profile명을 포함한 파일을 만들면 해당 profile 활성화 시 자동 적용된다.'),
+    (3055, 'Gradle 기반 Spring 프로젝트에서 Docker 이미지 빌드를 자동화하는 방법은?', 2, 'high', 'Maven plugin을 설정', 'Gradle의 Docker plugin 또는 Jib을 사용', 'Makefile로 빌드만 수행', 'DockerHub에서 jar 직접 업로드',53, 'Gradle 프로젝트는 Jib 플러그인을 사용해 도커 없이도 이미지 빌드가 가능하다.'),
+    (3056, 'GitHub Actions에서 Spring Boot 프로젝트를 빌드하고 테스트하는 job 구성의 필수 단계는?', 3, 'high', 'init → install', 'build → docker-compose up', 'checkout → setup-java → gradle build/test', 'cache → deploy',53, 'Spring 프로젝트 빌드에는 GitHub Actions에서 체크아웃, JDK 설정, gradle build/test 단계가 필요하다.'),
+    (3057, 'DockerHub로 Spring Boot 이미지를 push하기 위한 인증 방식은?', 1, 'high', 'GitHub Secrets에 로그인 정보 저장 후 로그인', 'Spring Boot 설정에 직접 Docker ID 입력', 'JDK 환경변수로 Docker 토큰 설정', 'Dockerfile 내에 인증 정보 삽입',53, 'GitHub Actions의 secrets에 Docker ID/PW를 저장하고 로그인 처리해야 push가 가능하다.'),
+    (3058, 'Spring Boot에서 Actuator의 특정 엔드포인트를 활성화하려면?', 3, 'high', 'spring.monitor.enable=true', 'actuator.properties에 등록', 'management.endpoints.web.exposure.include에 해당 엔드포인트를 추가', 'ActuatorController를 직접 구현',3, 'Actuator의 엔드포인트는 expose 설정을 통해 개별적으로 활성화할 수 있다.'),
+    (3059, 'Micrometer를 Prometheus와 연동할 때 필요한 exporter는?', 1, 'high', 'micrometer-registry-prometheus', 'spring-export-prometheus', 'prometheus-viewer-core', 'spring-metrics-viewer',53, 'Micrometer를 Prometheus에 연동하려면 micrometer-registry-prometheus 라이브러리가 필요하다.'),
+    (3060, 'ELK 스택을 이용한 Spring 로그 분석에서 Logstash의 역할은?', 2, 'high', '로그 시각화', '로그 수집 및 변환', '모니터링 지표 수집', '애플리케이션 성능 추적',53, 'Logstash는 로그를 수집하고 변환/필터링한 후 Elasticsearch로 전달하는 역할을 한다.'),
+    (3061, 'GitHub Actions에서 Node.js 애플리케이션의 CI 파이프라인 설정 시 가장 먼저 필요한 job 단계는?', 2, 'high', 'node_modules 캐싱', '코드 checkout 및 Node.js 환경 설정', 'Jest 실행', 'Docker 이미지 태깅',55, 'GitHub Actions에서 CI를 구성하려면 먼저 코드를 체크아웃하고 Node.js 환경을 세팅해야 한다.'),
+    (3062, 'Node.js 애플리케이션을 GitHub Actions로 DockerHub에 자동 배포하려면 필요한 구성은?', 4, 'high', 'GitHub CLI 사용 및 run.sh 스크립트 작성', 'Node.js 프로젝트에 DockerHub 토큰 삽입', 'Dockerfile을 actions.yml에 하드코딩', 'GitHub Secrets에 Docker ID와 토큰 등록 및 login → build → push 과정',55, 'GitHub Secrets에 Docker 인증 정보를 등록하고 login → build → push 과정을 workflow에 작성해야 한다.'),
+    (3063, '다음 중 GitHub Actions 워크플로우 파일에서 CI/CD 실행 조건을 정의하는 올바른 위치는?', 1, 'high', '`on:` 필드 아래에 push 또는 pull_request 지정', '`jobs:` 필드에 조건 작성', '`env:` 필드에 조건 지정', '조건은 actions 디렉토리에만 작성',5, '`on:` 키워드는 워크플로우 트리거를 지정하는 기본 위치이다 (ex: on: push, on: pull_request).'),
+    (3064, 'Node.js 앱을 Docker로 배포할 때 최적의 Dockerfile 구성은?', 2, 'high', 'node:latest 사용 및 npm run start', 'node:alpine 사용, 작업 디렉토리 설정 후 COPY → RUN → CMD 순서로 작성', 'npm start만 설정', 'Dockerfile 없이 직접 컨테이너 실행',5, '경량 이미지(node:alpine)를 기반으로 명확한 빌드 순서와 작업 디렉토리 설정을 포함해야 효율적이다.'),
+    (3065, 'Nginx를 Node.js 애플리케이션과 Reverse Proxy로 구성할 때 주의할 점은?', 3, 'high', 'Nginx가 Node.js 소스를 직접 렌더링해야 한다.', 'Nginx는 반드시 HTTPS를 직접 처리해야 한다.', 'proxy_pass 지시어로 Node.js 백엔드 서버 주소와 포트를 정확히 지정해야 한다.', 'Node.js는 반드시 443 포트를 사용해야 한다.',55, 'proxy_pass 설정에서 Node.js 서버의 정확한 host:port를 지정하지 않으면 프록시가 실패한다.'),
+    (3066, 'Docker Compose를 사용해 Node.js와 Nginx를 함께 배포할 때 필요한 조건은?', 1, 'high', '두 컨테이너가 동일 네트워크에서 실행되어야 한다.', 'Node.js는 도커 외부에서 실행되어야 한다.', 'Nginx는 app.js 파일을 직접 참조해야 한다.', '각 서비스는 별도 Dockerfile 없이 실행되어야 한다.',55, 'Nginx와 Node.js 컨테이너가 같은 Docker 네트워크에 있어야 proxy가 정상 작동한다.'),
+    (3067, 'PM2를 사용하여 Node.js 앱을 운영할 때 메모리 누수나 크래시 대응을 위한 전략은?', 4, 'high', 'Node.js 자체로 로그 출력', 'Forever 모드로 실행', '정적 설정 파일을 구성', 'watch, restart_delay, max_memory_restart 등을 설정',55, 'PM2에서는 메모리 초과 시 재시작 설정(max_memory_restart) 등으로 프로세스를 안정적으로 관리할 수 있다.'),
+    (3068, 'PM2에서 애플리케이션 환경별 설정을 자동화하려면 어떻게 해야 하는가?', 2, 'high', 'env.sh 파일만 만들면 된다.', 'ecosystem.config.js 파일에 env, env_production 등을 정의한다.', 'PM2 커맨드라인에 직접 환경변수를 입력한다.', 'settings.json 파일에 환경을 저장한다.',55, 'PM2는 ecosystem.config.js에 각 환경별 설정(env, env_production 등)을 정의해 자동화할 수 있다.'),
+    (3069, '다음 중 PM2의 클러스터 모드의 주된 이점은?', 3, 'high', '스레드 기반 동시성 향상', '모놀리식 구조 유지', '멀티코어 환경에서 병렬 처리 성능 향상', '단일 포트 바인딩 제거',55, 'PM2 클러스터 모드는 멀티코어 시스템에서 여러 인스턴스를 생성해 병렬 처리 성능을 높인다.'),
+    (3070, 'Winston 로거에서 로그 레벨을 동적으로 제어하기 위한 설정은?', 2, 'high', '로그 포맷을 JSON으로 설정', 'logger 인스턴스 생성 시 level 속성 동적 지정', '환경변수 NODE_LOG만 사용', 'app.js에서 직접 console.log로 조작',55, 'Winston은 level 속성을 통해 로깅 레벨을 설정하며, 동적으로도 변경 가능하다.'),
+    (3071, 'Node.js 로깅과 관련하여 Logrotate의 사용 목적은?', 3, 'high', '로그의 색상을 지정하기 위해', '로그 레벨 필터링을 위해', '로그 파일 용량 제한 및 자동 순환 보관', '서버 간 로그 전달',55, 'Logrotate는 로그 파일이 일정 크기를 넘거나 오래되면 순환하고 보관할 수 있도록 해준다.'),
+    (3072, 'Sentry를 Node.js 앱에 연동할 때 필수 요소는?', 1, 'high', 'Sentry DSN 키를 초기화 코드에 포함', 'Sentry의 로그 파일 직접 업로드', 'logger.error를 직접 실행', 'Sentry 전용 포트를 열어야 한다.',55, 'Sentry는 DSN 키를 통해 프로젝트에 연결되며 초기화 시 필수로 포함해야 한다.'),
+    (3073, 'Node.js 애플리케이션에서 dotenv 패키지를 사용하는 주된 이유는?', 1, 'high', '환경변수를 코드 외부에서 관리할 수 있기 때문', '코드 실행 시간을 줄이기 위해', '파일 시스템을 자동으로 로드하기 위해', 'YAML 설정을 지원하기 위해',55, 'dotenv는 .env 파일을 로드해 process.env를 통해 환경변수를 사용할 수 있게 한다.'),
+    (3074, '다중 환경(dev, prod 등)을 설정할 때 보안적으로 가장 안전한 방식은?', 3, 'high', '.env 파일을 하드코딩하고 커밋', '환경별 config.js 파일을 직접 실행', '민감 정보는 .env에 분리하고 Git에 커밋하지 않는다.', '설정 파일을 URL로 불러온다.',55, '.env에 민감 정보를 분리하고 .gitignore에 추가해 Git에 커밋되지 않도록 해야 보안이 유지된다.'),
+    (3075, 'Node.js 설정에서 `process.env.NODE_ENV`를 사용하는 주된 목적은?', 2, 'high', '서버 포트를 지정하기 위해', '실행 환경(dev, test, prod 등)에 따라 분기 처리하기 위해', '서버를 클러스터링하기 위해', '환경변수를 하드코딩하지 않기 위해',55, 'NODE_ENV는 현재 실행 환경에 따라 설정 로직, 로그 레벨, DB 접속 등을 다르게 처리할 수 있도록 해준다.'),
+    (3076, 'Spring Boot에서 Kotlin DSL 스타일의 라우팅을 사용할 때 필요한 설정은?', 3, 'high', 'WebMvcConfigurer에서 route 등록', 'RestController에서 RequestMapping 직접 사용', 'RouterFunction을 정의하고 RouterDsl을 적용', 'PathVariable 대신 RequestParam으로 통일',50, 'Kotlin에서는 functional routing 방식으로 RouterFunction을 DSL 형태로 정의해 사용할 수 있다.'),
+    (3077, 'Kotlin에서 `@RestController`에 DSL을 적용하지 않고 함수형 방식으로 라우팅할 경우 사용되는 핵심 구성 요소는?', 2, 'high', 'RequestHandler 및 ResponseResolver', 'RouterFunction과 HandlerFunction', 'ControllerAdvice와 DataClass', 'SpringKotlinControllerAdapter',50, '함수형 라우팅에서는 RouterFunction과 HandlerFunction을 통해 요청과 응답을 분리된 방식으로 구성한다.'),
+    (3078, 'Kotlin + Spring WebFlux에서 `coRouter`를 사용한 라우팅의 장점은?', 1, 'high', '비동기 흐름을 DSL 스타일로 명확하게 구성할 수 있다.', 'MVC 기반 구조를 자동으로 생성한다.', '라우팅 자동 문서화가 가능하다.', '@RequestMapping을 대체해 HTTP 메시지 변환을 최소화한다.',50, '`coRouter`는 코루틴 기반 비동기 처리를 DSL 형태로 명확하고 선언적으로 표현할 수 있게 해준다.'),
+    (3079, '다음 중 외래 키 제약 조건을 추가하는 SQL 문으로 올바른 것은?', 2, 'high', 'ALTER TABLE orders ADD FOREIGN KEY customer_id REFERENCES customers;', 'ALTER TABLE orders ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers(id);', 'MODIFY TABLE orders ADD CONSTRAINT fk_customer (customer_id) REFERENCES customers;', 'CREATE TABLE orders ADD FOREIGN KEY (customer_id);',43, '외래 키 제약 조건은 CONSTRAINT 이름과 FOREIGN KEY (컬럼) REFERENCES (참조테이블)을 포함해야 한다.'),
+    (3080, '다음 중 `CHECK` 제약 조건이 유효한 컬럼 생성 구문은?', 4, 'high', 'age INT CHECK age > 18', 'age INT CONSTRAINT CHECK(age > 18)', 'CHECK age > 18 INT', 'age INT CHECK (age > 18)',43, 'CHECK 제약 조건은 괄호 안에 논리 조건을 포함하며, 데이터 타입 뒤에 선언해야 한다.'),
+    (3081, '다음 중 트랜잭션 제어 관련 SQL 문이 아닌 것은?', 1, 'high', 'SAVE', 'COMMIT', 'ROLLBACK', 'SAVEPOINT',43, 'SAVE는 유효한 트랜잭션 제어 명령이 아니며, SAVEPOINT를 사용하는 것이 올바르다.'),
+    (3082, '다음 중 LEFT OUTER JOIN을 사용하는 이유로 가장 적절한 것은?', 3, 'high', '두 테이블의 교집합을 얻기 위해', 'NULL 값을 제거하기 위해', '왼쪽 테이블의 모든 값을 포함하면서 조건에 맞는 오른쪽 테이블의 값만 포함하기 위해', '서브쿼리를 대체하기 위해',43, 'LEFT OUTER JOIN은 왼쪽 테이블의 모든 행을 유지하면서 오른쪽 테이블의 조건에 맞는 값을 가져온다.'),
+    (3083, '다음 SQL 중 상관 서브쿼리를 사용하는 것은?', 1, 'high', 'SELECT name FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id);', 'SELECT name FROM employees WHERE id IN (SELECT manager_id FROM departments);', 'SELECT * FROM employees WHERE department_id = (SELECT MAX(department_id) FROM departments);', 'SELECT * FROM employees WHERE EXISTS (SELECT 1 FROM departments);',43, '상관 서브쿼리는 외부 쿼리의 값을 내부 쿼리에서 참조하는 구조로, 예제 1이 해당된다.'),
+    (3084, '다음 중 두 테이블의 교집합을 구하는 SQL 문은?', 2, 'high', 'SELECT * FROM A FULL JOIN B;', 'SELECT * FROM A INTERSECT SELECT * FROM B;', 'SELECT * FROM A UNION SELECT * FROM B;', 'SELECT * FROM A LEFT JOIN B;',43, '`INTERSECT`는 두 SELECT 결과의 공통된 행만 반환한다.'),
+    (3085, '다음 중 CSS 선택자 우선순위가 가장 높은 것은?', 2, 'high', '태그 선택자', '인라인 스타일', '클래스 선택자', 'id 선택자',20, '인라인 스타일은 우선순위에서 가장 높으며, 그 다음은 id > class > tag 순이다.'),
+    (3086, '다음 중 box-sizing: border-box가 적용되었을 때 width 계산 방식으로 올바른 것은?', 3, 'high', 'width는 content 영역만 포함한다.', 'width는 content + padding만 포함한다.', 'width는 content + padding + border를 모두 포함한다.', 'width는 margin까지 포함한다.',20, 'border-box는 padding과 border를 포함한 전체 너비를 width로 계산한다.'),
+    (3087, '다음 중 CSS Grid에서 특정 영역을 2행 2열로 병합할 때 사용하는 문법은?', 4, 'high', 'grid-area: span 2;', 'grid-template: repeat(2, auto);', 'grid-column: auto / span 2;', 'grid-column: span 2; grid-row: span 2;',20, 'grid-column과 grid-row를 각각 span 2로 지정하면 셀을 2x2 크기로 병합할 수 있다.'),
+    (3088, '다음 중 화면 너비가 768px 이하일 때 스타일을 적용하는 미디어 쿼리 문법은?', 1, 'high',  '@media screen and (max-width: 768px)', '@media screen or (width <= 768px)', '@media only if width < 768px', '@media mobile-width: 768px',20, '올바른 문법은 @media screen and (max-width: 768px)이며, 반응형 설계에서 자주 사용된다.'),
+    (3089, '다음 중 CSS 트랜지션이 적용되지 않는 이유로 가장 적절한 것은?', 3, 'high', 'transition-duration이 설정되지 않음', 'transition-property가 all로 설정됨', '속성값이 즉시 변화하는 display 속성에 transition을 적용함', 'transition-delay가 너무 길게 설정됨',20, 'display 속성은 트랜지션이 불가능한 속성 중 하나이므로 변화가 애니메이션되지 않는다.'),
+    (3090, '테스트 피라미드(Test Pyramid) 원칙에 따라 테스트를 구성할 때 가장 바람직한 방식은?', 2, 'high', 'E2E 테스트를 가장 많이 작성하고, 단위 테스트는 최소화한다.', '단위 테스트를 기반으로 가장 많이 작성하고, E2E 테스트는 최소화한다.', '통합 테스트만으로 전체 테스트 커버리지를 확보한다.', '스냅샷 테스트 중심으로 구성한다.',33, '테스트 피라미드는 단위 테스트를 가장 많이, 통합 테스트를 중간 수준으로, E2E 테스트를 적게 작성하는 것을 권장한다.'),
+    (3091, 'JavaScript 로직 함수의 단위 테스트를 작성할 때 테스트하기 어려운 대상은?', 3, 'high', '리턴값이 명확한 순수 함수', '입력값에 따라 결과가 결정되는 조건문', '의존성이 외부 시스템(API, DB 등)에 연결된 사이드 이펙트 함수', '논리 연산자 중심의 단일 함수',33, '단위 테스트는 외부 시스템에 의존하지 않아야 하며, 사이드 이펙트가 있는 함수는 Mocking 또는 Stub이 필요해 테스트가 어렵다.'),
+    (3092, 'React 컴포넌트 테스트에서 사용자가 버튼을 클릭했을 때 상태가 변경되는지를 확인하려면 가장 적절한 접근은?', 1, 'high', 'fireEvent를 통해 클릭 이벤트를 발생시키고, 상태 변경 후 UI를 검사한다.', '컴포넌트 내부 state 값을 직접 변경하고 렌더링을 체크한다.', '렌더링된 DOM을 직접 조작하여 결과를 예상한다.', 'snapshot 테스트만으로 충분하다.',33, 'React Testing Library에서 fireEvent를 통해 사용자 인터랙션을 모사하고 상태 반영을 렌더링된 UI로 확인하는 것이 적절한 방식이다.');
 
 CREATE TABLE feedback (
                           feedback_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -4252,8 +4359,10 @@ CREATE TABLE feedback (
                           is_pre BOOLEAN NOT NULL,
                           user_id BIGINT NOT NULL,
                           sub_id BIGINT NOT NULL,
-                          strenth LONGTEXT NOT NULL,
+                          strength LONGTEXT NOT NULL,
                           weakness LONGTEXT NOT NULL,
+                          scores LONGTEXT NOT NULL,
+                          created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           CONSTRAINT fk_feedback_user FOREIGN KEY (user_id) REFERENCES users(user_id),
                           CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
@@ -4890,3 +4999,13 @@ CREATE TABLE feedback_fail_log (
                                    error_message VARCHAR(1000) NOT NULL,
                                    created_dt DATETIME(6) NOT NULL
 );
+
+CREATE TABLE recom_fail_log (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                user_id BIGINT NOT NULL,
+                                subject_id BIGINT NOT NULL,
+                                error_code VARCHAR(255) NOT NULL,
+                                error_message VARCHAR(255) NOT NULL,
+                                created_dt DATETIME NOT NULL
+);
+

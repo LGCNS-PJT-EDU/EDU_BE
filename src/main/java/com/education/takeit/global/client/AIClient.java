@@ -7,9 +7,8 @@ import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.interview.dto.InterviewAllReplyReqDto;
+import com.education.takeit.interview.dto.AiFeedbackReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
-import com.education.takeit.recommend.dto.UserContentResDto;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -85,13 +84,16 @@ public class AIClient {
         .toBodilessEntity();
   }
 
-  private <T> List<T> postForList(String uri, Class<T[]> responseType, Object... uriVariables) {
+  private <T> List<T> postForList(
+      String uri, Object requestBody, Class<T[]> responseType, Object... uriVariables) {
     log.info("FastAPI 요청 시도: {}", uri);
     T[] response =
         restClient
             .post()
             .uri(baseUrl + uri, uriVariables)
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .body(requestBody)
             .retrieve()
             .onStatus(
                 status -> status.is4xxClientError(),
@@ -169,18 +171,15 @@ public class AIClient {
     postForNoContent("/api/post/subject?user_id={userId}", examResultDto, userId);
   }
 
-  /** 추천 컨텐츠 요청 */
-  public List<UserContentResDto> getRecommendation(Long userId, Long subjectId) {
-    return postForList(
-        "/api/recommendation?user_id={userId}&subject_id={subjectId}",
-        UserContentResDto[].class,
-        userId,
-        subjectId);
-  }
-
+  /** 사용자 면접 피드백 요청 */
   public List<InterviewFeedbackResDto> getInterviewFeedback(
-      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
-    return postForList("fastAPI요청경로", InterviewFeedbackResDto[].class, userId);
+      Long userId, List<AiFeedbackReqDto> aiFeedbackReqDtoList) {
+
+    return postForList(
+        "/api/question/evaluate?user_id={userId}",
+        aiFeedbackReqDtoList,
+        InterviewFeedbackResDto[].class,
+        userId);
   }
 
   public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {

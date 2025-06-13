@@ -33,6 +33,9 @@ public class InterviewService {
   private final RoadmapRepository roadmapRepository;
 
   public List<InterviewContentResDto> getInterview(List<Long> subjectIds, Long userId) {
+    if (subjectIds == null || subjectIds.isEmpty()) {
+      throw new CustomException(StatusCode.SUBJECT_ID_REQUIRED);
+    }
     int currentNth = replyRepository.findMaxNthByUserId(userId).orElse(0) + 1;
     List<Interview> interviewList = interviewRepository.findBySubject_SubIdIn(subjectIds);
 
@@ -50,49 +53,13 @@ public class InterviewService {
         .toList();
   }
 
-  //  @Transactional
-  //  public InterviewFeedbackResDto saveReplyAndRequestFeedback(
-  //      UserInterviewReplyReqDto reqDto, User user) {
-  //    Interview interview =
-  //        interviewRepository
-  //            .findById(reqDto.interviewId())
-  //            .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
-  //
-  //    String bestAnswer = interview.getInterviewAnswer();
-  //    String prompt =
-  //        String.format(
-  //            """
-  //            면접 질문에 대한 사용자 응답과 모범 답안이 있습니다.
-  //
-  //            [사용자 응답]
-  //            %s
-  //
-  //            [모범 답안]
-  //            %s
-  //
-  //            사용자 응답과 모범 답안을 비교해서 사용자 응답에 대해 개선이 필요한 부분을 구체적으로 설명해줘.
-  //            """,
-  //            reqDto.userReply(), bestAnswer);
-  //    String feedback = openAiRestClient.requestInterviewFeedback(prompt);
-  //    UserInterviewReply reply =
-  //        UserInterviewReply.builder()
-  //            .userReply(reqDto.userReply())
-  //            .interview(interview)
-  //            .user(user)
-  //            .aiFeedback(feedback)
-  //            .nth(reqDto.nth())
-  //            .build();
-  //    replyRepository.save(reply);
-  //
-  //    return new InterviewFeedbackResDto(feedback);
-  //  }
-
   public List<InterviewHistoryResDto> getInterviewHistory(Long userId) {
     List<UserInterviewReply> replyList = replyRepository.findByUser_UserId(userId);
     return replyList.stream()
         .map(
             r ->
                 InterviewHistoryResDto.builder()
+                    .interviewId(r.getInterview().getInterviewId())
                     .interviewContent(r.getInterview().getInterviewContent())
                     .subId(r.getInterview().getSubject().getSubId())
                     .nth(r.getNth())
@@ -105,30 +72,20 @@ public class InterviewService {
 
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
-    try {
-      List<InterviewFeedbackResDto> feedbackList =
-          aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto);
-      //      List<InterviewFeedbackResDto> feedbackList =
-      // interviewAllReplyReqDto.answers().stream()
-      //              .map(dto -> new InterviewFeedbackResDto(
-      //                      dto.interviewId(),
-      //                      dto.userReply(),
-      //                      dto.nth(),
-      //                      "MOCK_FEEDBACK " + dto.userReply() + " 에 대한 피드백입니다." // 테스트용 AI피드백
-      // Mock
-      //              ))
-      //              .collect(Collectors.toList());
 
+    try {
       User user =
           userRepository
               .findById(userId)
               .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-      List<UserInterviewReplyReqDto> answers = interviewAllReplyReqDto.answers();
+      List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
+      List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
+      System.out.println(feedbacks);
 
       for (int i = 0; i < answers.size(); i++) {
-        UserInterviewReplyReqDto dto = answers.get(i);
-        InterviewFeedbackResDto feedback = feedbackList.get(i);
+        AiFeedbackReqDto dto = answers.get(i);
+        InterviewFeedbackResDto feedback = feedbacks.get(i);
 
         Interview interview =
             interviewRepository
@@ -137,15 +94,18 @@ public class InterviewService {
 
         UserInterviewReply reply =
             UserInterviewReply.builder()
-                .userReply(dto.userReply())
-                .interview(interview)
                 .user(user)
-                .aiFeedback(feedback.aiFeedback())
-                .nth(dto.nth())
+                .interview(interview)
+                .userReply(dto.userReply())
+                .aiFeedback(feedback.comment())
+                .nth(interviewAllReplyReqDto.nth())
                 .build();
+
         replyRepository.save(reply);
       }
-      return feedbackList;
+
+      return feedbacks;
+
     } catch (Exception e) {
       log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
       return Collections.emptyList();
@@ -169,6 +129,7 @@ public class InterviewService {
     List<SubjectInfo> missingSubjectIds =
         allSubjectIds.stream()
             .filter(s -> !existingSubIdSet.contains(s.subId()))
+            .map(s -> new SubjectInfo(s.subId(), s.subjectNm(), false))
             .collect(Collectors.toCollection(ArrayList::new));
 
     // 중복되는 과목 삭제
