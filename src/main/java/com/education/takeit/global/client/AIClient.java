@@ -1,7 +1,5 @@
 package com.education.takeit.global.client;
 
-import com.education.takeit.chat.dto.ChatReqDto;
-import com.education.takeit.chat.dto.ChatResDto;
 import com.education.takeit.exam.dto.ExamResDto;
 import com.education.takeit.exam.dto.ExamResultDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
@@ -9,8 +7,6 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.AiFeedbackReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +16,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -180,20 +179,5 @@ public class AIClient {
         aiFeedbackReqDtoList,
         InterviewFeedbackResDto[].class,
         userId);
-  }
-
-  public ChatResDto postChatMessage(ChatReqDto chatRequestDto) {
-    // return postForObject("/api/chat", chatRequestDto, ChatResDto.class);
-
-    String userMessage = chatRequestDto.message();
-
-    String mockResponse =
-        switch (userMessage) {
-          case "안녕" -> "안녕하세요! 무엇을 도와드릴까요?";
-          case "스프링 부트란?" -> "Spring Boot는 자바 기반 프레임워크입니다.";
-          default -> "죄송해요, 잘 이해하지 못했어요.";
-        };
-
-    return new ChatResDto(mockResponse);
   }
 }
