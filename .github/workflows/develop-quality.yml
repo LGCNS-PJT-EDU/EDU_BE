@@ -3,12 +3,16 @@ name: SonarCloud Quality Gate
 on:
   push:
     branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build-and-analyze:
     runs-on: ubuntu-latest
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -28,4 +32,4 @@ jobs:
           key: ${{ runner.os }}-sonar
 
       - name: Test & SonarCloud analyze
-        run: ./gradlew -Dsonar.login=$SONAR_TOKEN test sonarqube --info
+        run: ./gradlew test sonarqube --info
