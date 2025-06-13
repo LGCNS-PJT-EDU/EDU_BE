@@ -7,6 +7,8 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.AiFeedbackReqDto;
 import com.education.takeit.interview.dto.InterviewFeedbackResDto;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +18,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
