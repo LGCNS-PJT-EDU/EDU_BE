@@ -1,7 +1,6 @@
 package com.education.takeit.interview.service;
 
 import com.education.takeit.global.client.AIClient;
-import com.education.takeit.global.client.OpenAiRestClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.interview.dto.*;
@@ -27,7 +26,6 @@ public class InterviewService {
   private final InterviewRepository interviewRepository;
   private final SubjectRepository subjectRepository;
   private final UserInterviewReplyRepository replyRepository;
-  private final OpenAiRestClient openAiRestClient;
   private final AIClient aiClient;
   private final UserRepository userRepository;
   private final RoadmapRepository roadmapRepository;

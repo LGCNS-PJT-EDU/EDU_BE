@@ -4367,15 +4367,6 @@ CREATE TABLE feedback (
                           CONSTRAINT fk_feedback_subject FOREIGN KEY (sub_id) REFERENCES subject(sub_id)
 );
 
-
-CREATE TABLE chat(
-                     chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                     user_message TEXT NOT NULL,
-                     ai_message TEXT NOT NULL,
-                     chat_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                     user_id BIGINT NOT NULL,
-                     CONSTRAINT fk_chat_user FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
 # 면접 질문 테이블 생성
 CREATE TABLE interview (
                            interview_id BIGINT AUTO_INCREMENT PRIMARY KEY,
