@@ -128,6 +128,7 @@ sonarqube {
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
         property 'sonar.organization', 'lgcns-pjt-edu'
+        property 'sonar.language', 'java'
         property 'sonar.sourceEncoding', 'UTF-8'
 
         property 'sonar.sources', 'src/main/java'
