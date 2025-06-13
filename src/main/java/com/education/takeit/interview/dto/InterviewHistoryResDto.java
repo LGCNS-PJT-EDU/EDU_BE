@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record InterviewHistoryResDto(
+    Long interviewId,
     String interviewContent,
     Long subId,
     int nth,
