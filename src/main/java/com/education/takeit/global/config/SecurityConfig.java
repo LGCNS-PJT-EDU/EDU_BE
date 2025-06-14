@@ -71,7 +71,7 @@ public class SecurityConfig {
                         "/ws/**",
                         "/user/**",
                         "/api/roadmap/default",
-                            "/api/admin/**")
+                        "/api/admin/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요
