@@ -50,12 +50,16 @@ public class User {
   @Column(name = "privacy_status")
   private Boolean privacyStatus = null;
 
+  @Column(name = "role")
+  private String role;
+
   @Builder
-  public User(String email, String nickname, String password, LoginType loginType) {
+  public User(String email, String nickname, String password, LoginType loginType, String role) {
     this.email = email;
     this.nickname = nickname;
     this.password = password;
     this.loginType = loginType;
+    this.role = role;
   }
 
   public void changeActivateStatus() {
