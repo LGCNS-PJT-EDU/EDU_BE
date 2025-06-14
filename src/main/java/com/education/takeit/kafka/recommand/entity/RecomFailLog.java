@@ -41,9 +41,11 @@ public class RecomFailLog {
   @Column(name = "created_dt", updatable = false, nullable = false)
   private LocalDateTime createdDt;
 
-  // 새로 추가된 retry 필드
   @Column(name = "retry", nullable = false)
   @Builder.Default
   private Boolean retry = Boolean.FALSE;
 
+  public void markRetry() {
+    this.retry = true;
+  }
 }
