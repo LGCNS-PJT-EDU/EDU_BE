@@ -152,7 +152,7 @@ public class RecommendServiceTest {
   @DisplayName("사용자 추천 컨텐츠 저장 성공")
   void 사옹자_추천_컨텐츠_저장_성공() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL);
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, "USER");
 
     RecomResultDto recomResultDto =
         new RecomResultDto(
@@ -190,7 +190,7 @@ public class RecommendServiceTest {
   @DisplayName("추천 콘텐츠 저장 시 컨텐츠가 존재하지 않으면 예외 발생")
   void 추천_콘텐츠_저장_실패_컨텐츠_없음() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL);
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, "USER");
 
     RecomResultDto dto =
         new RecomResultDto(

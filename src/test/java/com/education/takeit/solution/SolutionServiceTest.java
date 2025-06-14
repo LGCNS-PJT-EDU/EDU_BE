@@ -9,6 +9,7 @@ import com.education.takeit.exam.entity.Exam;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.entity.Subject;
+import com.education.takeit.solution.dto.AllSolutionResDto;
 import com.education.takeit.solution.dto.SolutionResDto;
 import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
@@ -88,10 +89,15 @@ class SolutionServiceTest {
         .thenReturn(List.of(userExamAnswer));
 
     // when
-    List<SolutionResDto> result = solutionService.findAllUserSolutions(userId, subjectId);
+    AllSolutionResDto result = solutionService.findAllUserSolutions(userId, subjectId);
+    List<SolutionResDto> solutions = result.solutions();
+
+    assertThat(result.correctCnt())
+        .isEqualTo(
+            userExamAnswer.getUserAnswer() == userExamAnswer.getExam().getExamAnswer() ? 1 : 0);
 
     // then
-    SolutionResDto dto = result.getFirst();
+    SolutionResDto dto = solutions.get(0);
     assertThat(dto.subNm()).isEqualTo("Java");
     assertThat(dto.examContent()).isEqualTo("자바의 기본 자료형은?");
     assertThat(dto.option1()).isEqualTo("String");
