@@ -6,6 +6,7 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
+import com.education.takeit.solution.dto.AllSolutionResDto;
 import com.education.takeit.solution.dto.SolutionResDto;
 import com.education.takeit.solution.entity.UserExamAnswer;
 import com.education.takeit.solution.repository.UserExamAnswerRepository;
@@ -24,7 +25,7 @@ public class SolutionService {
   private final RoadmapRepository roadmapRepository;
 
   // 해설 조회
-  public List<SolutionResDto> findAllUserSolutions(Long userId, Long subjectId) {
+  public AllSolutionResDto findAllUserSolutions(Long userId, Long subjectId) {
     List<UserExamAnswer> solutionList =
         userExamAnswerRepository.findByUser_UserIdAndSubject_SubId(userId, subjectId);
 
@@ -32,8 +33,13 @@ public class SolutionService {
       throw new CustomException(StatusCode.NOT_FOUND_SOLUTION);
     }
 
+
+    int correctCnt = (int) solutionList.stream()
+              .filter(solution -> solution.getUserAnswer() == solution.getExam().getExamAnswer())
+              .count();
+
     // TODO : convert로 메소드 분리
-    return solutionList.stream()
+    List<SolutionResDto> solutions =  solutionList.stream()
         .map(
             solution -> {
               Exam exam = solution.getExam();
@@ -54,39 +60,7 @@ public class SolutionService {
                   );
             })
         .collect(Collectors.toList());
+
+    return new AllSolutionResDto(correctCnt,solutions);
   }
-
-  // 중복되는 메소드라서 주석처리 하겠습니다. - Honey
-
-  //  public void saveAllUserSolutions(Long userId, List<ExamAnswerDto> answers, boolean isPre) {
-  //    User user = userRepository.findById(userId).orElseThrow();
-  //
-  //    for (ExamAnswerDto answer : answers) {
-  //      Exam exam = examRepository.findByExamId(answer.examId());
-  //      Subject subject = exam.getSubject();
-  //      if (subject == null) {
-  //        throw new CustomException(StatusCode.SUBJECT_NOT_FOUND);
-  //      }
-  //
-  //      int nth;
-  //      Roadmap roadmap =
-  //          roadmapRepository.findBySubject_SubIdAndRoadmapManagement_UserId(
-  //              subject.getSubId(), userId);
-  //      if (!isPre) {
-  //        nth = roadmap.getPostSubmitCount() + 1;
-  //      } else {
-  //        nth = 1;
-  //      }
-  //      UserExamAnswer userExamAnswer =
-  //          UserExamAnswer.builder()
-  //              .user(user)
-  //              .subject(subject)
-  //              .exam(exam)
-  //              .userAnswer(answer.userAnswer())
-  //              .isPre(isPre)
-  //              .nth(nth)
-  //              .build();
-  //      userExamAnswerRepository.save(userExamAnswer);
-  //    }
-  //  }
 }
