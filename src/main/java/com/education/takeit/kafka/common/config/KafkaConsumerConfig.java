@@ -30,6 +30,7 @@ public class KafkaConsumerConfig {
   private String bootstrapServers;
 
   private static final String TRUSTED_PACKAGE = "com.education.takeit.kafka.dto";
+  private static final String EARLIEST = "earliest";
 
   /**
    * 피드백 생성 실패 커스텀 에러 핸들러
@@ -93,7 +94,10 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 900000); // 15분
+    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000); // 세션 유지 시간 (기본: 10초)
+    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000); // heartbeat 간격 (기본: 3초)
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
@@ -115,7 +119,10 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 900000); // 15분
+    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000); // 세션 유지 시간 (기본: 10초)
+    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000); // heartbeat 간격 (기본: 3초)
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
@@ -137,7 +144,7 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
@@ -159,7 +166,7 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
