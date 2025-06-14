@@ -6,6 +6,8 @@ import com.education.takeit.kafka.feedback.recoverer.FeedbackFailRecoverer;
 import com.education.takeit.kafka.recommand.consumer.RecomFailRecoverer;
 import com.education.takeit.kafka.recommand.dto.RecomFailDto;
 import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,9 +22,6 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class KafkaConsumerConfig {
@@ -96,8 +95,8 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 900000); // 15분
-    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000);     // 세션 유지 시간 (기본: 10초)
-    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);  // heartbeat 간격 (기본: 3초)
+    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000); // 세션 유지 시간 (기본: 10초)
+    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000); // heartbeat 간격 (기본: 3초)
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
@@ -121,8 +120,8 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 900000); // 15분
-    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000);     // 세션 유지 시간 (기본: 10초)
-    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);  // heartbeat 간격 (기본: 3초)
+    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000); // 세션 유지 시간 (기본: 10초)
+    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000); // heartbeat 간격 (기본: 3초)
 
     return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
   }
