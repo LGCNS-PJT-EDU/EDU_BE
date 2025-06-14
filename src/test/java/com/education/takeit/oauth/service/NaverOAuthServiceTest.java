@@ -66,7 +66,7 @@ public class NaverOAuthServiceTest {
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(Role.ROLE_USER, mockUser.getUserId(), mockUser.getPrivacyStatus()))
+    when(jwtUtils.generateTokens(Role.USER, mockUser.getUserId(), mockUser.getPrivacyStatus()))
         .thenReturn(new UserSigninResDto("mock-access-token", "mock-refresh-token"));
 
     UserSigninResDto tokens = naverOAuthService.login(loginRequest);
@@ -79,7 +79,7 @@ public class NaverOAuthServiceTest {
     verify(naverOauthClient).getToken("mock-code", "mock-state");
     verify(naverOauthClient).getUserInfo("mock-access-token");
     verify(userRepository).findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER);
-    verify(jwtUtils).generateTokens(Role.ROLE_USER, mockUser.getUserId(), mockUser.getPrivacyStatus());
+    verify(jwtUtils).generateTokens(Role.USER, mockUser.getUserId(), mockUser.getPrivacyStatus());
   }
 
   @Test
@@ -98,7 +98,7 @@ public class NaverOAuthServiceTest {
     // 토큰 요청 실패했을 때는 한번도 실행되면 안됨
     verify(naverOauthClient, never()).getUserInfo(any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.ROLE_USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
   }
 
   @Test
@@ -111,7 +111,7 @@ public class NaverOAuthServiceTest {
 
     verify(naverOauthClient, never()).getToken(any(), any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.ROLE_USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
   }
 
   @Test
@@ -136,6 +136,6 @@ public class NaverOAuthServiceTest {
     verify(naverOauthClient).getToken("mock-code", "mock-state");
     verify(naverOauthClient).getUserInfo("mock-access-token");
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.ROLE_USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
   }
 }
