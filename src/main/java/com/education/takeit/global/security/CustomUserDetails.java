@@ -60,5 +60,7 @@ public class CustomUserDetails implements UserDetails {
     return true;
   }
 
-  public String getUserRole(){return  user.getRole().toString();}
+  public String getUserRole() {
+    return user.getRole().toString();
+  }
 }
