@@ -7,6 +7,7 @@ import com.education.takeit.user.dto.UserSigninReqDto;
 import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.dto.UserSignupReqDto;
 import com.education.takeit.user.entity.LoginType;
+import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
             .nickname(userSignupReqDto.nickname())
             .password(passwordEncoder.encode(userSignupReqDto.password()))
             .loginType(LoginType.LOCAL)
-            .role("USER")
+            .role(Role.USER)
             .build();
 
     userRepository.save(user);
@@ -53,7 +54,8 @@ public class UserServiceImpl implements UserService {
     if (!passwordEncoder.matches(userSigninReqDto.password(), user.getPassword())) {
       throw new CustomException(StatusCode.INVALID_SIGNIN_INFO);
     }
-    return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
+
+    return jwtUtils.generateTokens(user.getRole(), user.getUserId(), user.getPrivacyStatus());
   }
 
   @Override

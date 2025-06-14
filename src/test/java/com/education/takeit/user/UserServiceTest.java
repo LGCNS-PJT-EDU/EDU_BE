@@ -92,7 +92,7 @@ public class UserServiceTest {
 
     UserSigninResDto fakeTokens = new UserSigninResDto("fake-access-token", "fake-refresh-token");
 
-    when(jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus())).thenReturn(fakeTokens);
+    when(jwtUtils.generateTokens(user.getRole(), user.getUserId(), user.getPrivacyStatus())).thenReturn(fakeTokens);
 
     // When
     UserSigninResDto tokens = userService.signIn(signinDto);
