@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
             .nickname(userSignupReqDto.nickname())
             .password(passwordEncoder.encode(userSignupReqDto.password()))
             .loginType(LoginType.LOCAL)
+            .role("USER")
             .build();
 
     userRepository.save(user);
