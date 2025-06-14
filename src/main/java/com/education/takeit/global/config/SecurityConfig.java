@@ -73,7 +73,8 @@ public class SecurityConfig {
                         "/health",
                         "/actuator/health")
                     .permitAll()
-                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/admin/**")
+                    .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요
             )

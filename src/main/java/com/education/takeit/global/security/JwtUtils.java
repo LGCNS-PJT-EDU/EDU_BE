@@ -34,7 +34,7 @@ public class JwtUtils {
   }
 
   // 액세스, 리프레시 토큰 함께 생성
-  public UserSigninResDto generateTokens(Role role,Long userId, Boolean privacyStatus) {
+  public UserSigninResDto generateTokens(Role role, Long userId, Boolean privacyStatus) {
     Date now = new Date();
 
     // 액세스 토큰
