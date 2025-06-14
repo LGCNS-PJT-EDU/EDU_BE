@@ -74,7 +74,7 @@ public class RoadmapController {
     return ResponseEntity.ok(new Message<>(StatusCode.OK, defaultRoadmap));
   }
 
-  @PostMapping("/default")
+  @PostMapping("/default/assign")
   @Operation(summary = "기본 로드맵을 사용자에게 할당", description = "기본 로드맵을 사용자에게 할당하는 API")
   public ResponseEntity<Message<RoadmapSaveResDto>> saveDefaultRoadmap(
       @RequestParam("roadmap") String defaultRoadmapType,
