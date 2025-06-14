@@ -92,10 +92,9 @@ class SolutionServiceTest {
     AllSolutionResDto result = solutionService.findAllUserSolutions(userId, subjectId);
     List<SolutionResDto> solutions = result.solutions();
 
-    assertThat(result.correctCnt()).isEqualTo(
-            userExamAnswer.getUserAnswer() == userExamAnswer.getExam().getExamAnswer()?1:0);
-
-
+    assertThat(result.correctCnt())
+        .isEqualTo(
+            userExamAnswer.getUserAnswer() == userExamAnswer.getExam().getExamAnswer() ? 1 : 0);
 
     // then
     SolutionResDto dto = solutions.get(0);

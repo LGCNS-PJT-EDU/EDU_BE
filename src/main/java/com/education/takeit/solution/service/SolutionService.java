@@ -33,34 +33,36 @@ public class SolutionService {
       throw new CustomException(StatusCode.NOT_FOUND_SOLUTION);
     }
 
-
-    int correctCnt = (int) solutionList.stream()
-              .filter(solution -> solution.getUserAnswer() == solution.getExam().getExamAnswer())
-              .count();
+    int correctCnt =
+        (int)
+            solutionList.stream()
+                .filter(solution -> solution.getUserAnswer() == solution.getExam().getExamAnswer())
+                .count();
 
     // TODO : convert로 메소드 분리
-    List<SolutionResDto> solutions =  solutionList.stream()
-        .map(
-            solution -> {
-              Exam exam = solution.getExam();
-              Subject subject = exam.getSubject();
-              return new SolutionResDto(
-                  solution.isPre(), // 사전 사후 여부
-                  solution.getNth(), // 회차 정보
-                  subject.getSubNm(), // 과목 이름
-                  exam.getExamContent(), // 문제 내용
-                  exam.getOption1(), // 보기 1
-                  exam.getOption2(), // 보기 2
-                  exam.getOption3(), // 보기 3
-                  exam.getOption4(), // 보기 4
-                  exam.getExamAnswer(), // 정답
-                  solution.getUserAnswer(), // 사용자 선택
-                  exam.getSolution(), // 해설
-                  exam.getExamLevel() // 난이도
-                  );
-            })
-        .collect(Collectors.toList());
+    List<SolutionResDto> solutions =
+        solutionList.stream()
+            .map(
+                solution -> {
+                  Exam exam = solution.getExam();
+                  Subject subject = exam.getSubject();
+                  return new SolutionResDto(
+                      solution.isPre(), // 사전 사후 여부
+                      solution.getNth(), // 회차 정보
+                      subject.getSubNm(), // 과목 이름
+                      exam.getExamContent(), // 문제 내용
+                      exam.getOption1(), // 보기 1
+                      exam.getOption2(), // 보기 2
+                      exam.getOption3(), // 보기 3
+                      exam.getOption4(), // 보기 4
+                      exam.getExamAnswer(), // 정답
+                      solution.getUserAnswer(), // 사용자 선택
+                      exam.getSolution(), // 해설
+                      exam.getExamLevel() // 난이도
+                      );
+                })
+            .collect(Collectors.toList());
 
-    return new AllSolutionResDto(correctCnt,solutions);
+    return new AllSolutionResDto(correctCnt, solutions);
   }
 }

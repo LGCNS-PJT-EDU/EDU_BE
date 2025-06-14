@@ -41,7 +41,8 @@ class FeedbackServiceTest {
   @InjectMocks private FeedbackService feedbackService;
 
   private final Track track = new Track();
-  private final User dummyUser = new User("test@test.com", "testUser", "test", LoginType.LOCAL,"USER");
+  private final User dummyUser =
+      new User("test@test.com", "testUser", "test", LoginType.LOCAL, "USER");
   private final Subject dummySubject =
       Subject.builder()
           .subNm("Java")
