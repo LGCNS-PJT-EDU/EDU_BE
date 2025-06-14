@@ -67,11 +67,6 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'
-    //websocket
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-json'
-    implementation 'org.webjars:stomp-websocket:2.3.3'
-
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
