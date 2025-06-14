@@ -126,7 +126,7 @@ def sonarCoverageIncludes = [
 sonarqube {
     properties {
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
+        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE_DEVELOP'
         property 'sonar.organization', 'lgcns-pjt-edu'
         property 'sonar.language', 'java'
         property 'sonar.sourceEncoding', 'UTF-8'
