@@ -67,11 +67,6 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'
-    //websocket
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-json'
-    implementation 'org.webjars:stomp-websocket:2.3.3'
-
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -126,19 +121,13 @@ def sonarCoverageIncludes = [
 sonarqube {
     properties {
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE'
+        property 'sonar.projectKey', 'LGCNS-PJT-EDU_EDU_BE_DEVELOP'
         property 'sonar.organization', 'lgcns-pjt-edu'
         property 'sonar.language', 'java'
         property 'sonar.sourceEncoding', 'UTF-8'
 
-        property 'sonar.sources', 'src/main/java'
-        property 'sonar.tests', 'src/test/java'
         property 'sonar.coverage.inclusions', sonarCoverageIncludes.join(',')
-
-        property 'sonar.java.coveragePlugin', 'jacoco'
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.java.binaries", "${buildDir}/classes/java/main"
-        property "sonar.java.test.binaries", "${buildDir}/classes/java/test"
     }
 }
 

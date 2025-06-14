@@ -517,10 +517,13 @@ public class RoadmapService {
       throw new CustomException(StatusCode.DEFAULT_ROADMAP_NOT_FOUND);
     }
 
+    String randomRoadmapName =
+        ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
+
     // 새로운 로드맵 관리 정보 생성
     RoadmapManagement roadmapManagement =
         RoadmapManagement.builder()
-            .roadmapNm("Default " + roadmapType + " Roadmap")
+            .roadmapNm(randomRoadmapName)
             .roadmapTimestamp(LocalDateTime.now())
             .userId(userId)
             .build();
@@ -544,7 +547,7 @@ public class RoadmapService {
 
     return new RoadmapSaveResDto(
         "user Default Roadmap",
-        "기본 로드맵",
+        randomRoadmapName,
         userLocationSubjectId,
         getDefaultRoadmap(roadmapType).subjects());
   }
