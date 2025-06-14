@@ -68,9 +68,11 @@ public class SecurityConfig {
                         "/api/diagnosis", // 진단 경로
                         "/api/roadmap",
                         "/api/user/refresh", // 리프레시 토큰 발급
-                        "/ws/**",
                         "/user/**",
-                        "/api/roadmap/default")
+                        "/api/roadmap/default",
+                        "/api/admin/**",
+                        "/health",
+                        "/actuator/health")
                     .permitAll()
                     .anyRequest()
                     .authenticated() // 나머지 요청들은 인증 필요
