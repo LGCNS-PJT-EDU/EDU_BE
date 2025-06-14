@@ -518,7 +518,7 @@ public class RoadmapService {
     }
 
     String randomRoadmapName =
-            ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
+        ROADMAP_NAMES.get(ThreadLocalRandom.current().nextInt(ROADMAP_NAMES.size()));
 
     // 새로운 로드맵 관리 정보 생성
     RoadmapManagement roadmapManagement =
@@ -547,7 +547,7 @@ public class RoadmapService {
 
     return new RoadmapSaveResDto(
         "user Default Roadmap",
-            randomRoadmapName,
+        randomRoadmapName,
         userLocationSubjectId,
         getDefaultRoadmap(roadmapType).subjects());
   }
