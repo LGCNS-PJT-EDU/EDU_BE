@@ -39,8 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           "/v3/api-docs/**",
           "/swagger-resources/**",
           "/ws/**",
-          "/ws/chat/**",
-          "/api/roadmap/default");
+          "/ws/chat/**");
 
   public JwtAuthenticationFilter(
       JwtUtils jwtUtils, CustomUserDetailService customUserDetailService) {
