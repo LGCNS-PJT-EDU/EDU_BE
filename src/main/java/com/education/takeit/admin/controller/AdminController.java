@@ -1,5 +1,6 @@
 package com.education.takeit.admin.controller;
 
+import com.education.takeit.admin.dto.AdminSubjectResDto;
 import com.education.takeit.admin.dto.TotalUserFindResDto;
 import com.education.takeit.admin.service.AdminService;
 import com.education.takeit.global.dto.Message;
@@ -28,4 +29,18 @@ public class AdminController {
     Page<TotalUserFindResDto> pagedUsers = adminService.getPagedUsers(page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, pagedUsers));
   }
+
+  @GetMapping("/subjects")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Message<Page<AdminSubjectResDto>>> getSubjects(
+          @RequestParam(required = false) String keyword,
+          @RequestParam(defaultValue = "id") String sortBy,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size
+  ) {
+    Page<AdminSubjectResDto> subjects = adminService.getSubjects(keyword, sortBy, page, size);
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, subjects));
+  }
+
+
 }
