@@ -51,10 +51,11 @@ public class User {
   private Boolean privacyStatus = null;
 
   @Column(name = "role")
-  private String role;
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
   @Builder
-  public User(String email, String nickname, String password, LoginType loginType, String role) {
+  public User(String email, String nickname, String password, LoginType loginType, Role role) {
     this.email = email;
     this.nickname = nickname;
     this.password = password;
