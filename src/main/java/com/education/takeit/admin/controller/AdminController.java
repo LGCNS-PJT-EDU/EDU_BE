@@ -1,5 +1,6 @@
 package com.education.takeit.admin.controller;
 
+import com.education.takeit.admin.dto.AdminExamResDto;
 import com.education.takeit.admin.dto.AdminSubjectResDto;
 import com.education.takeit.admin.dto.TotalUserFindResDto;
 import com.education.takeit.admin.service.AdminService;
@@ -25,8 +26,12 @@ public class AdminController {
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/users")
   public ResponseEntity<Message<Page<TotalUserFindResDto>>> getUsers(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    Page<TotalUserFindResDto> pagedUsers = adminService.getPagedUsers(page, size);
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size,
+          @RequestParam(required = false) String nickname,
+          @RequestParam(required = false) String email
+  ) {
+    Page<TotalUserFindResDto> pagedUsers = adminService.getPagedUsers(nickname, email, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, pagedUsers));
   }
 
@@ -42,5 +47,16 @@ public class AdminController {
     return ResponseEntity.ok(new Message<>(StatusCode.OK, subjects));
   }
 
-
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/exams")
+  public ResponseEntity<Message<Page<AdminExamResDto>>> getExams(
+          @RequestParam(required = false) String subName,
+          @RequestParam(required = false) String examContent,
+          @RequestParam(defaultValue = "id") String sortBy,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size
+  ) {
+    Page<AdminExamResDto> exams = adminService.getExams(subName, examContent, sortBy, page, size);
+    return ResponseEntity.ok(new Message<>(StatusCode.OK, exams));
+  }
 }
