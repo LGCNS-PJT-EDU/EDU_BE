@@ -2,9 +2,8 @@ package com.education.takeit.user.repository;
 
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
-import java.util.Optional;
-
 import io.lettuce.core.dynamic.annotation.Param;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,13 +18,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Page<User> findAll(Pageable pageable);
 
-
-  @Query("SELECT u FROM User u " +
-          "WHERE (:nickname IS NULL OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :nickname, '%'))) " +
-          "AND (:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')))")
+  @Query(
+      "SELECT u FROM User u "
+          + "WHERE (:nickname IS NULL OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :nickname, '%'))) "
+          + "AND (:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')))")
   Page<User> findByNicknameAndEmail(
-          @Param("nickname") String nickname,
-          @Param("email") String email,
-          Pageable pageable
-  );
+      @Param("nickname") String nickname, @Param("email") String email, Pageable pageable);
 }
