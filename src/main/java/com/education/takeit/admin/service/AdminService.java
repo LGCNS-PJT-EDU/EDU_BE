@@ -1,9 +1,11 @@
 package com.education.takeit.admin.service;
 
+import com.education.takeit.admin.dto.AdminContentResDto;
 import com.education.takeit.admin.dto.AdminExamResDto;
 import com.education.takeit.admin.dto.AdminSubjectResDto;
 import com.education.takeit.admin.dto.TotalUserFindResDto;
 import com.education.takeit.exam.repository.ExamRepository;
+import com.education.takeit.recommend.repository.TotalContentRepository;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
@@ -20,6 +22,7 @@ public class AdminService {
   private final UserRepository userRepository;
   private final SubjectRepository subjectRepository;
   private final ExamRepository examRepository;
+  private final TotalContentRepository totalContentRepository;
 
   public Page<TotalUserFindResDto> getPagedUsers(String nickname, String email, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
@@ -48,5 +51,10 @@ public class AdminService {
   public Page<AdminExamResDto> getExams(String subName, String examContent, String sortBy, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
     return examRepository.findExamWithUserCountAndFilter(subName, examContent, sortBy, pageable);
+  }
+
+  public Page<AdminContentResDto> getContentList(String title, String subName, String sortBy, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return totalContentRepository.findAllWithUserCount(title, subName, sortBy, pageable);
   }
 }
