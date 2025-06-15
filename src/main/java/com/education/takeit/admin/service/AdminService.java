@@ -24,7 +24,8 @@ public class AdminService {
   private final ExamRepository examRepository;
   private final TotalContentRepository totalContentRepository;
 
-  public Page<TotalUserFindResDto> getPagedUsers(String nickname, String email, int page, int size) {
+  public Page<TotalUserFindResDto> getPagedUsers(
+      String nickname, String email, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
     Page<User> userPage = userRepository.findByNicknameAndEmail(nickname, email, pageable);
 

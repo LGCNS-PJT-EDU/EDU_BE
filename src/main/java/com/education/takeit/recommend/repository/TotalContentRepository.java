@@ -10,7 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TotalContentRepository extends JpaRepository<TotalContent, Long> {
 
-    @Query("""
+  @Query(
+      """
     SELECT new com.education.takeit.admin.dto.AdminContentResDto(
         tc.totalContentId,
         tc.contentTitle,
@@ -31,10 +32,9 @@ public interface TotalContentRepository extends JpaRepository<TotalContent, Long
       CASE WHEN :sortBy = 'title' THEN tc.contentTitle END ASC,
       tc.totalContentId ASC
 """)
-    Page<AdminContentResDto> findAllWithUserCount(
-            @Param("title") String title,
-            @Param("subName") String subName,
-            @Param("sortBy") String sortBy,
-            Pageable pageable
-    );
+  Page<AdminContentResDto> findAllWithUserCount(
+      @Param("title") String title,
+      @Param("subName") String subName,
+      @Param("sortBy") String sortBy,
+      Pageable pageable);
 }
