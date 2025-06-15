@@ -4,8 +4,6 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.Optional;
-
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
