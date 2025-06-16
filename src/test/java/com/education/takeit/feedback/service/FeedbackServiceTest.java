@@ -43,7 +43,7 @@ class FeedbackServiceTest {
 
   private final Track track = new Track();
   private final User dummyUser =
-      new User("test@test.com", "testUser", "test", LoginType.LOCAL, Role.USER);
+      new User("test@test.com", "testUser", "test", LoginType.LOCAL, Role.USER, true);
   private final Subject dummySubject =
       Subject.builder()
           .subNm("Java")
