@@ -97,8 +97,11 @@ public class InterviewService {
                 .user(user)
                 .interview(interview)
                 .userReply(dto.userReply())
-                .aiFeedback(feedback.comment())
                 .nth(interviewAllReplyReqDto.nth())
+                .aiFeedback(feedback.comment())
+                .modelAnswer(feedback.modelAnswer())
+                .summary(feedback.conceptSummary())
+                .keyword(String.join(",", feedback.recommendKeywords()))
                 .build();
 
         replies.add(reply);
