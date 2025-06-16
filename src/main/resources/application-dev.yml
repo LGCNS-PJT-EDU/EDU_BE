@@ -93,4 +93,4 @@ logging:
 
 server:
   tomcat:
-    connection-timeout: 120000 # 요청 타임아웃 시간 2분
+    connection-timeout: 180000 # 요청 타임아웃 시간 3분
