@@ -52,13 +52,19 @@ public class User {
   private Role role;
 
   @Builder
-  public User(String email, String nickname, String password, LoginType loginType, Role role, Boolean privacyStatus) {
+  public User(
+      String email,
+      String nickname,
+      String password,
+      LoginType loginType,
+      Role role,
+      Boolean privacyStatus) {
     this.email = email;
     this.nickname = nickname;
     this.password = password;
     this.loginType = loginType;
     this.role = role;
-    this.privacyStatus=privacyStatus;
+    this.privacyStatus = privacyStatus;
   }
 
   public void changeActivateStatus() {
