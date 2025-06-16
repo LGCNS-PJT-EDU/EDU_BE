@@ -138,6 +138,9 @@ public class InterviewServiceTest {
             .user(user)
             .aiFeedback("AI 피드백")
             .nth(1)
+            .summary("개념 요약")
+            .modelAnswer("모범 답변")
+            .keyword("특정 키워드")
             .build();
 
     List<UserInterviewReply> replyList = List.of(reply);
@@ -154,7 +157,9 @@ public class InterviewServiceTest {
     assertThat(dto.nth()).isEqualTo(1);
     assertThat(dto.userReply()).isEqualTo("사용자 답변");
     assertThat(dto.aiFeedback()).isEqualTo("AI 피드백");
-    assertThat(dto.interviewAnswer()).isEqualTo("모범 답변");
+    assertThat(dto.modelAnswer()).isEqualTo("모범 답변");
+    assertThat(dto.summary()).isEqualTo("개념 요약");
+    assertThat(dto.keyword()).isEqualTo("특정 키워드");
 
     verify(replyRepository, times(1)).findByUser_UserId(userId);
   }
@@ -246,8 +251,6 @@ public class InterviewServiceTest {
     }
     when(aiClient.getInterviewFeedback(userId, requestList)).thenReturn(expectedFeedbacks);
 
-    when(replyRepository.save(any(UserInterviewReply.class))).thenReturn(null);
-
     InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(requestList, 1);
 
     // When
@@ -261,6 +264,6 @@ public class InterviewServiceTest {
     verify(userRepository).findById(userId);
     verify(aiClient, times(1)).getInterviewFeedback(eq(userId), eq(requestList));
     verify(interviewRepository, times(5)).findById(anyLong());
-    verify(replyRepository, times(5)).save(any(UserInterviewReply.class));
+    verify(replyRepository, times(1)).saveAll(anyList());
   }
 }

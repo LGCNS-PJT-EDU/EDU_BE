@@ -64,6 +64,9 @@ public class InterviewService {
                     .userReply(r.getUserReply())
                     .aiFeedback(r.getAiFeedback())
                     .interviewAnswer(r.getInterview().getInterviewAnswer())
+                    .summary(r.getSummary())
+                    .modelAnswer(r.getModelAnswer())
+                    .keyword(r.getKeyword())
                     .build())
         .toList();
   }
@@ -81,6 +84,8 @@ public class InterviewService {
       List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
       System.out.println(feedbacks);
 
+      List<UserInterviewReply> replies = new ArrayList<>();
+
       for (int i = 0; i < answers.size(); i++) {
         AiFeedbackReqDto dto = answers.get(i);
         InterviewFeedbackResDto feedback = feedbacks.get(i);
@@ -95,12 +100,16 @@ public class InterviewService {
                 .user(user)
                 .interview(interview)
                 .userReply(dto.userReply())
-                .aiFeedback(feedback.comment())
                 .nth(interviewAllReplyReqDto.nth())
+                .aiFeedback(feedback.comment())
+                .modelAnswer(feedback.modelAnswer())
+                .summary(feedback.conceptSummary())
+                .keyword(String.join(",", feedback.recommendKeywords()))
                 .build();
 
-        replyRepository.save(reply);
+        replies.add(reply);
       }
+      replyRepository.saveAll(replies);
 
       return feedbacks;
 

@@ -18,10 +18,7 @@ import com.education.takeit.recommend.service.RecommendService;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.entity.Track;
 import com.education.takeit.roadmap.repository.SubjectRepository;
-import com.education.takeit.user.entity.LectureAmount;
-import com.education.takeit.user.entity.LoginType;
-import com.education.takeit.user.entity.PriceLevel;
-import com.education.takeit.user.entity.User;
+import com.education.takeit.user.entity.*;
 import com.education.takeit.user.repository.UserRepository;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -152,7 +149,7 @@ public class RecommendServiceTest {
   @DisplayName("사용자 추천 컨텐츠 저장 성공")
   void 사옹자_추천_컨텐츠_저장_성공() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, "USER");
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER);
 
     RecomResultDto recomResultDto =
         new RecomResultDto(
@@ -190,7 +187,7 @@ public class RecommendServiceTest {
   @DisplayName("추천 콘텐츠 저장 시 컨텐츠가 존재하지 않으면 예외 발생")
   void 추천_콘텐츠_저장_실패_컨텐츠_없음() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, "USER");
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER);
 
     RecomResultDto dto =
         new RecomResultDto(

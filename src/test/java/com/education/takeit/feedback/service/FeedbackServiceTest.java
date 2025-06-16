@@ -15,6 +15,7 @@ import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.entity.Track;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.LoginType;
+import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,7 +43,7 @@ class FeedbackServiceTest {
 
   private final Track track = new Track();
   private final User dummyUser =
-      new User("test@test.com", "testUser", "test", LoginType.LOCAL, "USER");
+      new User("test@test.com", "testUser", "test", LoginType.LOCAL, Role.USER);
   private final Subject dummySubject =
       Subject.builder()
           .subNm("Java")

@@ -13,6 +13,7 @@ import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
+import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import java.security.KeyPair;
@@ -89,11 +90,17 @@ class KakaoOAuthServiceTest {
         .thenReturn(Optional.empty());
 
     User savedUser =
-        User.builder().email(email).nickname(nickname).loginType(LoginType.KAKAO).build();
+        User.builder()
+            .email(email)
+            .nickname(nickname)
+            .loginType(LoginType.KAKAO)
+            .role(Role.USER)
+            .build();
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(savedUser.getUserId(), savedUser.getPrivacyStatus()))
-        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(
+            savedUser.getRole(), savedUser.getUserId(), savedUser.getPrivacyStatus()))
+        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token", true));
 
     // when
     UserSigninResDto tokens = kakaoOAuthService.login(loginRequest);

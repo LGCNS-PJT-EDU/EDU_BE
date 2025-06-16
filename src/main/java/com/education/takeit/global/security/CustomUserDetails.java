@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
   }
 
   public String getNickname() {
@@ -57,5 +58,9 @@ public class CustomUserDetails implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public String getUserRole() {
+    return user.getRole().toString();
   }
 }

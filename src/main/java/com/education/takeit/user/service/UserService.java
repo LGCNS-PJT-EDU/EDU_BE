@@ -21,4 +21,6 @@ public interface UserService {
   Long extractUserId(String token);
 
   boolean validateRefreshToken(Long userId, String refreshToken);
+
+  boolean getPrivacyStatus(Long userId);
 }

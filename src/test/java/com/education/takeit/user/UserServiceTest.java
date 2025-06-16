@@ -90,9 +90,11 @@ public class UserServiceTest {
         .thenReturn(Optional.of(user));
     when(passwordEncoder.matches(signinDto.password(), user.getPassword())).thenReturn(true);
 
-    UserSigninResDto fakeTokens = new UserSigninResDto("fake-access-token", "fake-refresh-token");
+    UserSigninResDto fakeTokens =
+        new UserSigninResDto("fake-access-token", "fake-refresh-token", true);
 
-    when(jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus())).thenReturn(fakeTokens);
+    when(jwtUtils.generateTokens(user.getRole(), user.getUserId(), user.getPrivacyStatus()))
+        .thenReturn(fakeTokens);
 
     // When
     UserSigninResDto tokens = userService.signIn(signinDto);
