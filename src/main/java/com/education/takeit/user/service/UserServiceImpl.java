@@ -109,4 +109,13 @@ public class UserServiceImpl implements UserService {
   public boolean validateRefreshToken(Long userId, String refreshToken) {
     return jwtUtils.validateRefreshToken(userId, refreshToken);
   }
+
+  @Override
+  public boolean getPrivacyStatus(Long userId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    return user.getPrivacyStatus();
+  }
 }
