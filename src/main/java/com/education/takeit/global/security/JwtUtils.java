@@ -1,6 +1,8 @@
 package com.education.takeit.global.security;
 
 import com.education.takeit.user.dto.UserSigninResDto;
+import com.education.takeit.user.entity.Role;
+import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -22,6 +24,7 @@ public class JwtUtils {
   private final long refreshTokenExpiration = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효시간 : 7일
 
   private Key key;
+  private User user;
 
   private UserRepository userRepository;
 
@@ -31,7 +34,7 @@ public class JwtUtils {
   }
 
   // 액세스, 리프레시 토큰 함께 생성
-  public UserSigninResDto generateTokens(Long userId, Boolean privacyStatus) {
+  public UserSigninResDto generateTokens(Role role, Long userId, Boolean privacyStatus) {
     Date now = new Date();
 
     // 액세스 토큰
@@ -40,6 +43,7 @@ public class JwtUtils {
         Jwts.builder()
             .setSubject(userId.toString())
             .claim("userId", userId)
+            .claim("role", role.name())
             .setIssuedAt(now)
             .setExpiration(accessExpiry)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -85,6 +89,7 @@ public class JwtUtils {
     return Jwts.builder()
         .setSubject(userId.toString())
         .claim("userId", userId)
+        .claim("role", Role.USER.name())
         .setIssuedAt(now)
         .setExpiration(expiry)
         .signWith(key, SignatureAlgorithm.HS256)
@@ -113,5 +118,10 @@ public class JwtUtils {
       return bearerToken.substring(7);
     }
     return bearerToken;
+  }
+
+  public String getUserRole(String token) {
+    Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    return claims.get("role", String.class);
   }
 }

@@ -56,7 +56,7 @@ public class KakaoOAuthService implements OAuthService {
                             .loginType(loginType)
                             .build()));
 
-    return jwtUtils.generateTokens(user.getUserId(), user.getPrivacyStatus());
+    return jwtUtils.generateTokens(user.getRole(), user.getUserId(), user.getPrivacyStatus());
   }
 
   /**
