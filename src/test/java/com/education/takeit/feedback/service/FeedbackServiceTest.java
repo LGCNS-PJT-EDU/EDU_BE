@@ -1,5 +1,8 @@
 package com.education.takeit.feedback.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.*;
+
 import com.education.takeit.feedback.dto.FeedbackDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
 import com.education.takeit.feedback.dto.InfoDto;
@@ -17,19 +20,15 @@ import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
@@ -44,7 +43,7 @@ class FeedbackServiceTest {
 
   private final Track track = new Track();
   private final User dummyUser =
-      new User("test@test.com", "testUser", "test", LoginType.LOCAL, Role.USER,true);
+      new User("test@test.com", "testUser", "test", LoginType.LOCAL, Role.USER, true);
   private final Subject dummySubject =
       Subject.builder()
           .subNm("Java")
