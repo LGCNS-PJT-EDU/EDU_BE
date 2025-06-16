@@ -1,9 +1,5 @@
 package com.education.takeit.oauth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.NaverOauthClient;
@@ -15,9 +11,14 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 public class NaverOAuthServiceTest {
   private NaverOauthClient naverOauthClient;
@@ -59,6 +60,7 @@ public class NaverOAuthServiceTest {
             .email(userInfo.getEmail())
             .nickname(userInfo.getNickname())
             .loginType(LoginType.NAVER)
+            .role(Role.USER)
             .build();
 
     // when (login 메소드가 실행되기전에 mock 객체 동작을 설정)
@@ -66,7 +68,7 @@ public class NaverOAuthServiceTest {
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(Role.USER, mockUser.getUserId(), mockUser.getPrivacyStatus()))
+    when(jwtUtils.generateTokens(mockUser.getRole(), mockUser.getUserId(), mockUser.getPrivacyStatus()))
         .thenReturn(new UserSigninResDto("mock-access-token", "mock-refresh-token"));
 
     UserSigninResDto tokens = naverOAuthService.login(loginRequest);
@@ -98,7 +100,7 @@ public class NaverOAuthServiceTest {
     // 토큰 요청 실패했을 때는 한번도 실행되면 안됨
     verify(naverOauthClient, never()).getUserInfo(any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(eq(Role.USER), any(), any());
   }
 
   @Test
@@ -111,7 +113,7 @@ public class NaverOAuthServiceTest {
 
     verify(naverOauthClient, never()).getToken(any(), any());
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(eq(Role.USER), any(), any());
   }
 
   @Test
@@ -136,6 +138,6 @@ public class NaverOAuthServiceTest {
     verify(naverOauthClient).getToken("mock-code", "mock-state");
     verify(naverOauthClient).getUserInfo("mock-access-token");
     verify(userRepository, never()).findByEmailAndLoginType(any(), any());
-    verify(jwtUtils, never()).generateTokens(Role.USER, any(), any());
+    verify(jwtUtils, never()).generateTokens(eq(Role.USER), any(), any());
   }
 }
