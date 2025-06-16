@@ -71,6 +71,7 @@ public class InterviewService {
         .toList();
   }
 
+  @Transactional
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
 
