@@ -4,6 +4,7 @@ import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.security.CustomUserDetails;
 import com.education.takeit.global.security.JwtUtils;
+import com.education.takeit.user.dto.TokenRefreshResDto;
 import com.education.takeit.user.dto.UserSigninReqDto;
 import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.dto.UserSignupReqDto;
@@ -104,7 +105,7 @@ public class UserController {
 
   @PostMapping("/refresh")
   @Operation(summary = "엑세스 토큰 재발급", description = "만료된 액세스 토큰 재발급 API")
-  public ResponseEntity<Message<String>> refreshAccessToken(HttpServletRequest request) {
+  public ResponseEntity<Message<TokenRefreshResDto>> refreshAccessToken(HttpServletRequest request) {
     // 1. 쿠키에서 refreshToken 추출
     String refreshToken =
         Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
@@ -122,11 +123,15 @@ public class UserController {
     if (!jwtUtils.validateRefreshToken(userId, refreshToken)) {
       return ResponseEntity.ok(new Message<>(StatusCode.UNAUTHORIZED));
     }
+
     String newAccessToken = jwtUtils.generateAccessToken(userId);
+    Boolean privacyStatus = userService.getPrivacyStatus(userId);
+
+
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + newAccessToken);
     return ResponseEntity.ok()
         .headers(headers)
-        .body(new Message<>(StatusCode.OK, "accessToken : " + newAccessToken));
+        .body(new Message<>(StatusCode.OK, new TokenRefreshResDto(newAccessToken,privacyStatus)));
   }
 }

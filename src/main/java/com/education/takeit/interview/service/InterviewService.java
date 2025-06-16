@@ -81,6 +81,8 @@ public class InterviewService {
       List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
       System.out.println(feedbacks);
 
+      List<UserInterviewReply> replies = new ArrayList<>();
+
       for (int i = 0; i < answers.size(); i++) {
         AiFeedbackReqDto dto = answers.get(i);
         InterviewFeedbackResDto feedback = feedbacks.get(i);
@@ -99,8 +101,9 @@ public class InterviewService {
                 .nth(interviewAllReplyReqDto.nth())
                 .build();
 
-        replyRepository.save(reply);
+        replies.add(reply);
       }
+      replyRepository.saveAll(replies);
 
       return feedbacks;
 
