@@ -111,9 +111,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean getPrivacyStatus(Long userId){
-    User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+  public boolean getPrivacyStatus(Long userId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
     return user.getPrivacyStatus();
   }
-
 }
