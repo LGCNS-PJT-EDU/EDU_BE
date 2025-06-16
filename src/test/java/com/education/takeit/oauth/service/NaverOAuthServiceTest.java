@@ -1,5 +1,9 @@
 package com.education.takeit.oauth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.global.security.JwtUtils;
 import com.education.takeit.oauth.client.NaverOauthClient;
@@ -11,14 +15,9 @@ import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 public class NaverOAuthServiceTest {
   private NaverOauthClient naverOauthClient;
@@ -68,7 +67,8 @@ public class NaverOAuthServiceTest {
     when(naverOauthClient.getUserInfo("mock-access-token")).thenReturn(userResponse);
     when(userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.NAVER))
         .thenReturn(Optional.of(mockUser));
-    when(jwtUtils.generateTokens(mockUser.getRole(), mockUser.getUserId(), mockUser.getPrivacyStatus()))
+    when(jwtUtils.generateTokens(
+            mockUser.getRole(), mockUser.getUserId(), mockUser.getPrivacyStatus()))
         .thenReturn(new UserSigninResDto("mock-access-token", "mock-refresh-token"));
 
     UserSigninResDto tokens = naverOAuthService.login(loginRequest);
