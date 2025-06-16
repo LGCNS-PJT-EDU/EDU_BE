@@ -1,11 +1,5 @@
 package com.education.takeit.recommend;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.kafka.recommand.dto.RecomResultDto;
@@ -20,9 +14,6 @@ import com.education.takeit.roadmap.entity.Track;
 import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.*;
 import com.education.takeit.user.repository.UserRepository;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +21,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class RecommendServiceTest {
@@ -149,7 +150,7 @@ public class RecommendServiceTest {
   @DisplayName("사용자 추천 컨텐츠 저장 성공")
   void 사옹자_추천_컨텐츠_저장_성공() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER);
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER,true);
 
     RecomResultDto recomResultDto =
         new RecomResultDto(
@@ -187,7 +188,7 @@ public class RecommendServiceTest {
   @DisplayName("추천 콘텐츠 저장 시 컨텐츠가 존재하지 않으면 예외 발생")
   void 추천_콘텐츠_저장_실패_컨텐츠_없음() {
     // given
-    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER);
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER, true);
 
     RecomResultDto dto =
         new RecomResultDto(
