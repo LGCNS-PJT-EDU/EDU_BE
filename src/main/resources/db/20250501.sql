@@ -4385,6 +4385,9 @@ CREATE TABLE user_interview_reply(
     user_id BIGINT NOT NULL,
     nth INT NOT NULL,
     ai_feedback TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    model_answer TEXT NOT NULL,
+    keyword TEXT NOT NULL,
     CONSTRAINT fk_user_reply_interview FOREIGN KEY (interview_id) REFERENCES interview(interview_id),
     CONSTRAINT fk_interview_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
