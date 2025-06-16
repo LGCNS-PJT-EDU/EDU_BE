@@ -29,9 +29,20 @@ public class UserInterviewReply {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
+  @Column(name = "nth", nullable = false)
+  private Integer nth;
+
   @Column(name = "ai_feedback", nullable = false, columnDefinition = "TEXT")
   private String aiFeedback;
 
-  @Column(name = "nth", nullable = false)
-  private Integer nth;
+  @Column(name = "summary", nullable = false, columnDefinition = "TEXT")
+  private String summary;
+
+  @Column(name = "model_answer", nullable = false,columnDefinition = "TEXT")
+  private String modelAnswer;
+
+  @Column(name = "keyword", nullable = false,columnDefinition = "TEXT")
+  private String keyword;
+
+
 }
