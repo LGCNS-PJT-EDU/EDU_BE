@@ -74,12 +74,18 @@ class GoogleOAuthServiceTest {
         .thenReturn(Optional.empty());
 
     User savedUser =
-        User.builder().email(email).nickname(nickname).loginType(LoginType.GOOGLE).build();
+        User.builder()
+            .email(email)
+            .nickname(nickname)
+            .loginType(LoginType.GOOGLE)
+            .role(Role.USER)
+            .build();
 
     when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(Role.USER, savedUser.getUserId(), savedUser.getPrivacyStatus()))
-        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(
+            savedUser.getRole(), savedUser.getUserId(), savedUser.getPrivacyStatus()))
+        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token", true));
 
     // when
     UserSigninResDto tokens = googleOAuthService.login(loginRequest);

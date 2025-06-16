@@ -90,11 +90,17 @@ class KakaoOAuthServiceTest {
         .thenReturn(Optional.empty());
 
     User savedUser =
-        User.builder().email(email).nickname(nickname).loginType(LoginType.KAKAO).build();
+        User.builder()
+            .email(email)
+            .nickname(nickname)
+            .loginType(LoginType.KAKAO)
+            .role(Role.USER)
+            .build();
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(jwtUtils.generateTokens(Role.USER, savedUser.getUserId(), savedUser.getPrivacyStatus()))
-        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token"));
+    when(jwtUtils.generateTokens(
+            savedUser.getRole(), savedUser.getUserId(), savedUser.getPrivacyStatus()))
+        .thenReturn(new UserSigninResDto("new-mock-access-token", "new-mock-refresh-token", true));
 
     // when
     UserSigninResDto tokens = kakaoOAuthService.login(loginRequest);
