@@ -64,6 +64,9 @@ public class InterviewService {
                     .userReply(r.getUserReply())
                     .aiFeedback(r.getAiFeedback())
                     .interviewAnswer(r.getInterview().getInterviewAnswer())
+                    .summary(r.getSummary())
+                    .modelAnswer(r.getModelAnswer())
+                    .keyword(r.getKeyword())
                     .build())
         .toList();
   }
