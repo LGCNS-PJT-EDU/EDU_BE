@@ -10,4 +10,7 @@ public record InterviewHistoryResDto(
     int nth,
     String userReply,
     String aiFeedback,
-    String interviewAnswer) {}
+    String interviewAnswer,
+    String summary,
+    String modelAnswer,
+    String keyword) {}
