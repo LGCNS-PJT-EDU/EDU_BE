@@ -38,11 +38,9 @@ public class UserInterviewReply {
   @Column(name = "summary", nullable = false, columnDefinition = "TEXT")
   private String summary;
 
-  @Column(name = "model_answer", nullable = false,columnDefinition = "TEXT")
+  @Column(name = "model_answer", nullable = false, columnDefinition = "TEXT")
   private String modelAnswer;
 
-  @Column(name = "keyword", nullable = false,columnDefinition = "TEXT")
+  @Column(name = "keyword", nullable = false, columnDefinition = "TEXT")
   private String keyword;
-
-
 }
