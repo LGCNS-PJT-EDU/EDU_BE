@@ -205,7 +205,7 @@ public class ExamService {
    * @param answers
    * @return
    */
-  private int calculatePreLevel(List<ExamAnswerDto> answers) {
+  int calculatePreLevel(List<ExamAnswerDto> answers) {
     int score =
         answers.stream()
             .mapToInt(a -> examLevelCalculator.calculateScoreByDifficulty(a, false))
@@ -225,7 +225,7 @@ public class ExamService {
    * @param answers
    * @return
    */
-  private int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
+  int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
     int scorePercent = examLevelCalculator.calculateScorePercent(answers);
     int levelDelta = examLevelCalculator.calculateLevelDelta(scorePercent);
     return examLevelCalculator.calculateNewLevel(roadmap.getLevel(), levelDelta);
