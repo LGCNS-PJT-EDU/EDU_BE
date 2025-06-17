@@ -13,12 +13,11 @@ import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -80,7 +79,8 @@ public class InterviewService {
     Map<Long, Interview> interviewMap = getInterviews(interviewAllReplyReqDto.answers());
 
     // 2. 트랜잭션 종료 → 이제 느린 작업 가능
-    List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto.answers());
+    List<InterviewFeedbackResDto> feedbacks =
+        aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto.answers());
 
     // 3. 응답 결과 → 트랜잭션 시작 후 저장
     saveReplies(user, interviewMap, interviewAllReplyReqDto, feedbacks);
@@ -132,24 +132,24 @@ public class InterviewService {
 
   @Transactional
   public User getUser(Long userId) {
-    return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    return userRepository
+        .findById(userId)
+        .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
   }
 
   @Transactional
   public Map<Long, Interview> getInterviews(List<AiFeedbackReqDto> answers) {
     List<Long> ids = answers.stream().map(AiFeedbackReqDto::interviewId).toList();
-    return interviewRepository.findAllById(ids)
-            .stream()
-            .collect(Collectors.toMap(Interview::getInterviewId, i -> i));
+    return interviewRepository.findAllById(ids).stream()
+        .collect(Collectors.toMap(Interview::getInterviewId, i -> i));
   }
 
   @Transactional
   public void saveReplies(
-          User user,
-          Map<Long, Interview> interviews,
-          InterviewAllReplyReqDto dto,
-          List<InterviewFeedbackResDto> feedbacks) {
+      User user,
+      Map<Long, Interview> interviews,
+      InterviewAllReplyReqDto dto,
+      List<InterviewFeedbackResDto> feedbacks) {
 
     List<UserInterviewReply> replies = new ArrayList<>();
 
@@ -157,7 +157,8 @@ public class InterviewService {
       AiFeedbackReqDto req = dto.answers().get(i);
       InterviewFeedbackResDto res = feedbacks.get(i);
 
-      replies.add(UserInterviewReply.builder()
+      replies.add(
+          UserInterviewReply.builder()
               .user(user)
               .interview(interviews.get(req.interviewId()))
               .userReply(req.userReply())
