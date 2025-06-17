@@ -220,4 +220,118 @@ public class RecommendServiceTest {
     verify(subjectRepository).findBySubId(subject.getSubId());
     verify(totalContentRepository).findById(content.getTotalContentId());
   }
+
+  @Test
+  @DisplayName("추천 컨텐츠 2개 중 하나는 저장 성공, 하나는 예외 발생")
+  void 추천_컨텐츠_일부_실패() {
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER, true);
+
+    UserContentResDto validContent =
+        new UserContentResDto(
+            content.getTotalContentId(),
+            subject.getSubId(),
+            content.getContentTitle(),
+            content.getContentUrl(),
+            content.getContentType(),
+            content.getContentPlatform(),
+            content.getContentDuration().name(),
+            content.getContentPrice().name(),
+            true,
+            "AI 추천 성공");
+
+    UserContentResDto invalidContent =
+        new UserContentResDto(
+            999L,
+            subject.getSubId(), // 존재하지 않는 contentId
+            "Fake",
+            "fake-url",
+            "VIDEO",
+            "YOUTUBE",
+            "HOUR_1",
+            "FREE",
+            true,
+            "AI 추천 실패");
+
+    RecomResultDto dto =
+        new RecomResultDto(userId, subject.getSubId(), List.of(validContent, invalidContent));
+
+    when(userRepository.findByUserId(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findBySubId(subject.getSubId())).thenReturn(Optional.of(subject));
+    when(totalContentRepository.findById(content.getTotalContentId()))
+        .thenReturn(Optional.of(content));
+    when(totalContentRepository.findById(999L)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> recommendService.saveUserContents(dto))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.CONTENTS_NOT_FOUND);
+
+    verify(userRepository).findByUserId(userId);
+    verify(subjectRepository).findBySubId(subject.getSubId());
+    verify(totalContentRepository).findById(content.getTotalContentId());
+    verify(totalContentRepository).findById(999L);
+  }
+
+  @Test
+  @DisplayName("추천컨첸트 저장 실패 - 유저가 존재하지 않는 경우")
+  void 추천_콘텐츠_저장_실패_유저_없음() {
+    when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
+    RecomResultDto dto =
+        new RecomResultDto(
+            userId,
+            subject.getSubId(),
+            List.of(
+                new UserContentResDto(
+                    content.getTotalContentId(),
+                    subject.getSubId(),
+                    content.getContentTitle(),
+                    content.getContentUrl(),
+                    content.getContentType(),
+                    content.getContentPlatform(),
+                    content.getContentDuration().name(),
+                    content.getContentPrice().name(),
+                    true,
+                    "AI 추천 사유")));
+
+    assertThatThrownBy(() -> recommendService.saveUserContents(dto))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.USER_NOT_FOUND);
+
+    verify(userRepository).findByUserId(userId);
+  }
+
+  @Test
+  @DisplayName("추천 컨텐츠 저장 실패 - 과목이 존재하지 않는 경우")
+  void 추천_콘텐츠_저장_실패_과목_없음() {
+    User user = new User("test@test.com", "test", "password", LoginType.LOCAL, Role.USER, true);
+    when(userRepository.findByUserId(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findBySubId(subject.getSubId())).thenReturn(Optional.empty());
+
+    RecomResultDto dto =
+        new RecomResultDto(
+            userId,
+            subject.getSubId(),
+            List.of(
+                new UserContentResDto(
+                    content.getTotalContentId(),
+                    subject.getSubId(),
+                    content.getContentTitle(),
+                    content.getContentUrl(),
+                    content.getContentType(),
+                    content.getContentPlatform(),
+                    content.getContentDuration().name(),
+                    content.getContentPrice().name(),
+                    true,
+                    "AI 추천 사유")));
+
+    assertThatThrownBy(() -> recommendService.saveUserContents(dto))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.NOT_EXIST_SUBJECT);
+
+    verify(userRepository).findByUserId(userId);
+    verify(subjectRepository).findBySubId(subject.getSubId());
+  }
 }
