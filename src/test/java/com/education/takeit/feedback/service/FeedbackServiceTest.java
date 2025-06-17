@@ -1,5 +1,9 @@
 package com.education.takeit.feedback.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.BDDMockito.*;
+
 import com.education.takeit.feedback.dto.FeedbackDto;
 import com.education.takeit.feedback.dto.FeedbackFindResponseDto;
 import com.education.takeit.feedback.dto.FeedbackResponseDto;
@@ -19,21 +23,16 @@ import com.education.takeit.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
@@ -130,7 +129,8 @@ class FeedbackServiceTest {
   @DisplayName("RDB에 저장된 피드백 조회 성공")
   void 피드백_조회_성공() throws JsonProcessingException {
     // Given
-    Feedback feedback = new Feedback(
+    Feedback feedback =
+        new Feedback(
             "final",
             1,
             true,
@@ -138,16 +138,15 @@ class FeedbackServiceTest {
             dummySubject,
             "{\"a\":\"A\"}",
             "{\"b\":\"B\"}",
-            "{\"total\":42}"
-    );
+            "{\"total\":42}");
     given(feedbackRepository.findByUser_UserIdAndSubject_SubId(1L, 1L))
-            .willReturn(List.of(feedback));
+        .willReturn(List.of(feedback));
     given(objectMapper.readValue(eq("{\"a\":\"A\"}"), any(TypeReference.class)))
-            .willReturn(Map.of("a", "A"));
+        .willReturn(Map.of("a", "A"));
     given(objectMapper.readValue(eq("{\"b\":\"B\"}"), any(TypeReference.class)))
-            .willReturn(Map.of("b", "B"));
+        .willReturn(Map.of("b", "B"));
     given(objectMapper.readValue(eq("{\"total\":42}"), any(TypeReference.class)))
-            .willReturn(Map.of("total", 42));
+        .willReturn(Map.of("total", 42));
 
     // When
     List<FeedbackFindResponseDto> result = feedbackService.findFeedback(1L, 1L);
