@@ -6,6 +6,8 @@ import com.education.takeit.kafka.feedback.recoverer.FeedbackFailRecoverer;
 import com.education.takeit.kafka.recommend.dto.RecomFailDto;
 import com.education.takeit.kafka.recommend.dto.RecomResultDto;
 import com.education.takeit.kafka.recommend.recoverer.RecomFailRecoverer;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,9 +22,6 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class KafkaConsumerConfig {
