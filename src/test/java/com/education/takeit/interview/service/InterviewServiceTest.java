@@ -200,7 +200,7 @@ public class InterviewServiceTest {
   @Test
   @DisplayName("면접 답변 저장 및 AI 피드백 요청")
   void testSaveReplyAndRequestFeedback() {
-
+    // Given
     Long userId = 1L;
 
     User user =
@@ -226,13 +226,16 @@ public class InterviewServiceTest {
 
     List<AiFeedbackReqDto> requestList = new ArrayList<>();
     List<InterviewFeedbackResDto> expectedFeedbacks = new ArrayList<>();
+    List<Interview> interviewEntities = new ArrayList<>();
+    List<Long> interviewIds = new ArrayList<>();
 
     for (int i = 1; i <= 5; i++) {
       Long interviewId = 100L + i;
       String reply = "답변" + i;
 
-      AiFeedbackReqDto reqDto = new AiFeedbackReqDto(interviewId, "면접 질문", reply);
-      requestList.add(reqDto);
+      requestList.add(new AiFeedbackReqDto(interviewId, "면접 질문", reply));
+      expectedFeedbacks.add(
+          new InterviewFeedbackResDto("피드백" + i, "요약" + i, "모범답안" + i, List.of("키워드" + i)));
 
       Interview interview =
           Interview.builder()
@@ -242,14 +245,12 @@ public class InterviewServiceTest {
               .subject(subject)
               .build();
 
-      when(interviewRepository.findById(interviewId)).thenReturn(Optional.of(interview));
-
-      // AI 피드백 응답 DTO
-      InterviewFeedbackResDto resDto =
-          new InterviewFeedbackResDto("피드백" + i, "요약" + i, "모범답안" + i, List.of("키워드" + i));
-      expectedFeedbacks.add(resDto);
+      interviewEntities.add(interview);
+      interviewIds.add(interviewId);
     }
+
     when(aiClient.getInterviewFeedback(userId, requestList)).thenReturn(expectedFeedbacks);
+    when(interviewRepository.findAllById(interviewIds)).thenReturn(interviewEntities);
 
     InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(requestList, 1);
 
@@ -263,7 +264,7 @@ public class InterviewServiceTest {
 
     verify(userRepository).findById(userId);
     verify(aiClient, times(1)).getInterviewFeedback(eq(userId), eq(requestList));
-    verify(interviewRepository, times(5)).findById(anyLong());
+    verify(interviewRepository, times(1)).findAllById(eq(interviewIds));
     verify(replyRepository, times(1)).saveAll(anyList());
   }
 }

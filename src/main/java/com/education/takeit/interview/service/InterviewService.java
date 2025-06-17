@@ -71,53 +71,21 @@ public class InterviewService {
         .toList();
   }
 
-  @Transactional
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
 
-    try {
-      User user =
-          userRepository
-              .findById(userId)
-              .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+    // 1. 트랜잭션 안에서 필요한 데이터 미리 조회
+    User user = getUser(userId);
+    Map<Long, Interview> interviewMap = getInterviews(interviewAllReplyReqDto.answers());
 
-      List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
-      List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
-      System.out.println(feedbacks);
+    // 2. 트랜잭션 종료 → 이제 느린 작업 가능
+    List<InterviewFeedbackResDto> feedbacks =
+        aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto.answers());
 
-      List<UserInterviewReply> replies = new ArrayList<>();
+    // 3. 응답 결과 → 트랜잭션 시작 후 저장
+    saveReplies(user, interviewMap, interviewAllReplyReqDto, feedbacks);
 
-      for (int i = 0; i < answers.size(); i++) {
-        AiFeedbackReqDto dto = answers.get(i);
-        InterviewFeedbackResDto feedback = feedbacks.get(i);
-
-        Interview interview =
-            interviewRepository
-                .findById(dto.interviewId())
-                .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
-
-        UserInterviewReply reply =
-            UserInterviewReply.builder()
-                .user(user)
-                .interview(interview)
-                .userReply(dto.userReply())
-                .nth(interviewAllReplyReqDto.nth())
-                .aiFeedback(feedback.comment())
-                .modelAnswer(feedback.modelAnswer())
-                .summary(feedback.conceptSummary())
-                .keyword(String.join(",", feedback.recommendKeywords()))
-                .build();
-
-        replies.add(reply);
-      }
-      replyRepository.saveAll(replies);
-
-      return feedbacks;
-
-    } catch (Exception e) {
-      log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
-      return Collections.emptyList();
-    }
+    return feedbacks;
   }
 
   public InterviewAllSubIdResDto getInterviewAllSubId(Long userId) {
@@ -160,5 +128,48 @@ public class InterviewService {
             .findById(userId)
             .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
     user.savePrivacyStatus();
+  }
+
+  @Transactional
+  public User getUser(Long userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
+  }
+
+  @Transactional
+  public Map<Long, Interview> getInterviews(List<AiFeedbackReqDto> answers) {
+    List<Long> ids = answers.stream().map(AiFeedbackReqDto::interviewId).toList();
+    return interviewRepository.findAllById(ids).stream()
+        .collect(Collectors.toMap(Interview::getInterviewId, i -> i));
+  }
+
+  @Transactional
+  public void saveReplies(
+      User user,
+      Map<Long, Interview> interviews,
+      InterviewAllReplyReqDto dto,
+      List<InterviewFeedbackResDto> feedbacks) {
+
+    List<UserInterviewReply> replies = new ArrayList<>();
+
+    for (int i = 0; i < feedbacks.size(); i++) {
+      AiFeedbackReqDto req = dto.answers().get(i);
+      InterviewFeedbackResDto res = feedbacks.get(i);
+
+      replies.add(
+          UserInterviewReply.builder()
+              .user(user)
+              .interview(interviews.get(req.interviewId()))
+              .userReply(req.userReply())
+              .nth(dto.nth())
+              .aiFeedback(res.comment())
+              .modelAnswer(res.modelAnswer())
+              .summary(res.conceptSummary())
+              .keyword(String.join(",", res.recommendKeywords()))
+              .build());
+    }
+
+    replyRepository.saveAll(replies);
   }
 }
