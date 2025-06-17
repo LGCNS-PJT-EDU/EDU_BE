@@ -331,4 +331,138 @@ public class ExamServiceTest {
     verify(roadmapRepository).save(any(Roadmap.class));
     verify(feedbackKafkaProducer).publish(any(FeedbackRequestDto.class));
   }
+
+  @Test
+  @DisplayName("사전 평가 결과 저장 실패 - 로드맵 없음")
+  void 사전_평가_저장_실패_로드맵_없음() {
+    Long userId = 1L;
+    Long roadmapId = 999L;
+    ExamAnswerResDto examAnswerResDto =
+        new ExamAnswerResDto(roadmapId, 1L, "2024-06-01", 100L, 0, List.of());
+
+    when(roadmapRepository.findByRoadmapId(anyLong())).thenReturn(mock(Roadmap.class));
+    when(roadmapRepository.findByRoadmapId(roadmapId)).thenReturn(null);
+
+    assertThatThrownBy(() -> examService.submitPreExam(userId, examAnswerResDto))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.NOT_FOUND_ROADMAP);
+  }
+
+  @Test
+  @DisplayName("사전 평가 결과 저장 실패 - 로드맵 없음")
+  void 사후_평가_저장_실패_로드맵_없음() {
+    Long userId = 1L;
+    Long roadmapId = 999L;
+    ExamAnswerResDto examAnswerResDto =
+        new ExamAnswerResDto(roadmapId, 1L, "2024-06-01", 100L, 0, List.of());
+
+    when(roadmapRepository.findByRoadmapId(anyLong())).thenReturn(mock(Roadmap.class));
+    when(roadmapRepository.findByRoadmapId(roadmapId)).thenReturn(null);
+
+    assertThatThrownBy(() -> examService.submitPostExam(userId, examAnswerResDto))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.NOT_FOUND_ROADMAP);
+  }
+
+  @Test
+  @DisplayName("사용자 응답 저장 실패 - 유저 없음")
+  void 사전_평가_저장_실패_유저_없음() {
+    Long userId = 1L;
+    Long subjectId = 100L;
+    List<ExamAnswerDto> answers = List.of(new ExamAnswerDto(1L, "문제1", 1, "챕터1", "low", true, 2));
+
+    Subject subject = Subject.builder().subId(subjectId).build();
+    Roadmap roadmap = Roadmap.builder().roadmapId(10L).subject(subject).preSubmitCount(0).build();
+
+    when(roadmapRepository.findByRoadmapId(anyLong())).thenReturn(roadmap);
+    when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(
+            () ->
+                examService.submitPreExam(
+                    userId, new ExamAnswerResDto(10L, subjectId, "2024-01-01", 100L, 0, answers)))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.USER_NOT_FOUND);
+  }
+
+  @Test
+  @DisplayName("사전 평가 저장 실패 - 과목 없음")
+  void 사전_평가_저장_실패_과목_없음() {
+    Long userId = 1L;
+    Long roadmapId = 100L;
+    Long subjectId = 100L;
+
+    User user =
+        User.builder()
+            .email("test@test.com")
+            .nickname("유저")
+            .password("pw")
+            .loginType(LoginType.LOCAL)
+            .build();
+
+    Subject mockSubject = Subject.builder().subId(subjectId).build();
+
+    Roadmap roadmap =
+        Roadmap.builder().roadmapId(roadmapId).subject(mockSubject).preSubmitCount(0).build();
+
+    ExamAnswerDto answer = new ExamAnswerDto(1L, "문제1", 1, "챕터1", "low", true, 2);
+    ExamAnswerResDto examAnswerRes =
+        new ExamAnswerResDto(roadmapId, subjectId, "2024-06-01", 300L, 0, List.of(answer));
+
+    when(roadmapRepository.findByRoadmapId(roadmapId)).thenReturn(roadmap);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findById(subjectId)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> examService.submitPreExam(userId, examAnswerRes))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.SUBJECT_NOT_FOUND);
+  }
+
+  @Test
+  @DisplayName("사전 평가 저장 실패 - 문제 없음")
+  void 사전_평가_저장_실패_문제_없음() {
+    Long userId = 1L;
+    Long roadmapId = 1L;
+    Long subjectId = 100L;
+    User user =
+        User.builder()
+            .email("test@test.com")
+            .nickname("유저")
+            .password("pw")
+            .loginType(LoginType.LOCAL)
+            .build();
+
+    Subject subject =
+        Subject.builder()
+            .subId(subjectId)
+            .subNm("Spring")
+            .subType("BE")
+            .subEssential("Y")
+            .baseSubOrder(1)
+            .subOverview("설명")
+            .track(new Track())
+            .build();
+
+    Roadmap roadmap =
+        Roadmap.builder().roadmapId(roadmapId).subject(subject).preSubmitCount(0).build();
+
+    ExamAnswerDto answer = new ExamAnswerDto(1L, "존재하지않는문제", 1, "챕터1", "low", true, 2);
+    ExamAnswerResDto examAnswerRes =
+        new ExamAnswerResDto(roadmapId, subjectId, "2024-06-01", 300L, 0, List.of(answer));
+
+    when(roadmapRepository.findByRoadmapId(roadmapId)).thenReturn(roadmap);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+    when(examRepository.findByExamContentAndSubject_SubId(anyString(), eq(subjectId)))
+        .thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> examService.submitPreExam(userId, examAnswerRes))
+        .isInstanceOf(CustomException.class)
+        .extracting("statusCode")
+        .isEqualTo(StatusCode.EXAM_NOT_FOUND);
+  }
 }
