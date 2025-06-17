@@ -350,7 +350,7 @@ public class ExamServiceTest {
   }
 
   @Test
-  @DisplayName("사전 평가 결과 저장 실패 - 로드맵 없음")
+  @DisplayName("사후 평가 결과 저장 실패 - 로드맵 없음")
   void 사후_평가_저장_실패_로드맵_없음() {
     Long userId = 1L;
     Long roadmapId = 999L;
