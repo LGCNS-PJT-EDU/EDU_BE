@@ -950,4 +950,33 @@ public class RoadmapServiceTest {
     verify(feedbackRepository).deleteByUser_UserId(userId);
     verify(userExamAnswerRepository).deleteByUser_UserId(userId);
   }
+
+  @Test
+  @DisplayName("로드맵 삭제 시 로드맵이 존재하지 않으면 예외 발생")
+  void 로드맵_삭제_로드맵_없음() {
+    // Given
+    Long userId = 1L;
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder().roadmapManagementId(100L).userId(userId).build();
+
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
+    when(roadmapRepository.findByRoadmapManagement_RoadmapManagementId(100L)).thenReturn(List.of());
+
+    assertThatThrownBy(() -> injectedRoadmapTransactionalService.deleteRoadmap(userId))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(StatusCode.ROADMAP_NOT_FOUND.getMessage());
+
+    verify(roadmapRepository, never()).deleteAll(anyList());
+    verify(roadmapManagementRepository, never()).delete(any());
+  }
+
+  @Test
+  @DisplayName("로드맵 관리 엔티티가 없을 경우 NPE 발생")
+  void 로드맵_삭제_관리엔티티_없음() {
+    Long userId = 1L;
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+
+    assertThatThrownBy(() -> injectedRoadmapTransactionalService.deleteRoadmap(userId))
+        .isInstanceOf(NullPointerException.class);
+  }
 }
