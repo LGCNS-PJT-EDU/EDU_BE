@@ -1,4 +1,4 @@
-package com.education.takeit.kafka.recommand.consumer;
+package com.education.takeit.kafka.recommend.consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,8 +6,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import com.education.takeit.kafka.common.slack.SlackNotifier;
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.service.RecomFailLogService;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.service.RecomFailLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

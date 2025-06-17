@@ -1,15 +1,15 @@
-package com.education.takeit.kafka.recommand.service;
+package com.education.takeit.kafka.recommend.service;
 
 import com.education.takeit.admin.failLog.dto.DailyLogCountDto;
 import com.education.takeit.admin.failLog.dto.RecomFailLogDto;
 import com.education.takeit.admin.failLog.spec.FailLogSpecifications;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
-import com.education.takeit.kafka.recommand.entity.RecomFailLog;
-import com.education.takeit.kafka.recommand.producer.RecomKafkaProducer;
-import com.education.takeit.kafka.recommand.repository.RecomFailRepository;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommend.entity.RecomFailLog;
+import com.education.takeit.kafka.recommend.producer.RecomKafkaProducer;
+import com.education.takeit.kafka.recommend.repository.RecomFailRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import java.time.LocalDate;

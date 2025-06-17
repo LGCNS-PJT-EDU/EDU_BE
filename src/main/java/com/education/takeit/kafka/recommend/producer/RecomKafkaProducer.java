@@ -1,7 +1,7 @@
-package com.education.takeit.kafka.recommand.producer;
+package com.education.takeit.kafka.recommend.producer;
 
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.dto.RecomRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

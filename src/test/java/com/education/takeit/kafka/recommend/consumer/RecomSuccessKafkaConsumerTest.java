@@ -1,10 +1,10 @@
-package com.education.takeit.kafka.recommand.consumer;
+package com.education.takeit.kafka.recommend.consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import com.education.takeit.kafka.recommend.dto.RecomResultDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.service.RecommendService;
 import java.util.Arrays;
