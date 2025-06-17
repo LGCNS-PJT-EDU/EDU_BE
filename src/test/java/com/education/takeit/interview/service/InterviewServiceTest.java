@@ -1,5 +1,9 @@
 package com.education.takeit.interview.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.*;
+
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
@@ -15,23 +19,18 @@ import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.LoginType;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class InterviewServiceTest {
@@ -204,7 +203,8 @@ public class InterviewServiceTest {
     // Given
     Long userId = 1L;
 
-    User user = User.builder()
+    User user =
+        User.builder()
             .email("test@email.com")
             .nickname("테스트유저")
             .password("1234")
@@ -213,7 +213,8 @@ public class InterviewServiceTest {
 
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-    Subject subject = Subject.builder()
+    Subject subject =
+        Subject.builder()
             .subId(1L)
             .subNm("Spring")
             .subType("BE")
@@ -233,9 +234,11 @@ public class InterviewServiceTest {
       String reply = "답변" + i;
 
       requestList.add(new AiFeedbackReqDto(interviewId, "면접 질문", reply));
-      expectedFeedbacks.add(new InterviewFeedbackResDto("피드백" + i, "요약" + i, "모범답안" + i, List.of("키워드" + i)));
+      expectedFeedbacks.add(
+          new InterviewFeedbackResDto("피드백" + i, "요약" + i, "모범답안" + i, List.of("키워드" + i)));
 
-      Interview interview = Interview.builder()
+      Interview interview =
+          Interview.builder()
               .interviewId(interviewId)
               .interviewContent("질문" + i)
               .interviewAnswer("답변" + i)
@@ -252,7 +255,8 @@ public class InterviewServiceTest {
     InterviewAllReplyReqDto requestDto = new InterviewAllReplyReqDto(requestList, 1);
 
     // When
-    List<InterviewFeedbackResDto> result = interviewService.saveReplyAndRequestFeedback(userId, requestDto);
+    List<InterviewFeedbackResDto> result =
+        interviewService.saveReplyAndRequestFeedback(userId, requestDto);
 
     // Then
     assertThat(result).hasSize(5);
@@ -263,5 +267,4 @@ public class InterviewServiceTest {
     verify(interviewRepository, times(1)).findAllById(eq(interviewIds));
     verify(replyRepository, times(1)).saveAll(anyList());
   }
-
 }
