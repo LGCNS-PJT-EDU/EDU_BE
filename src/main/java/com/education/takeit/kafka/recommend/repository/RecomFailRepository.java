@@ -1,6 +1,6 @@
-package com.education.takeit.kafka.recommand.repository;
+package com.education.takeit.kafka.recommend.repository;
 
-import com.education.takeit.kafka.recommand.entity.RecomFailLog;
+import com.education.takeit.kafka.recommend.entity.RecomFailLog;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

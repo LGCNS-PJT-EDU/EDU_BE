@@ -6,7 +6,7 @@ import com.education.takeit.admin.failLog.dto.RecomFailLogDto;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.kafka.feedback.service.FeedbackFailLogService;
-import com.education.takeit.kafka.recommand.service.RecomFailLogService;
+import com.education.takeit.kafka.recommend.service.RecomFailLogService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

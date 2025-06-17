@@ -1,4 +1,4 @@
-package com.education.takeit.kafka.recommand.entity;
+package com.education.takeit.kafka.recommend.entity;
 
 import com.education.takeit.user.entity.User;
 import jakarta.persistence.*;

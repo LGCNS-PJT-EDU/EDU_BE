@@ -1,7 +1,7 @@
-package com.education.takeit.kafka.recommand.consumer;
+package com.education.takeit.kafka.recommend.recoverer;
 
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.dto.RecomResultDto;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
