@@ -1,12 +1,12 @@
-package com.education.takeit.kafka.recommand.producer;
+package com.education.takeit.kafka.recommend.producer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.dto.RecomRequestDto;
 import java.util.concurrent.CompletableFuture;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;

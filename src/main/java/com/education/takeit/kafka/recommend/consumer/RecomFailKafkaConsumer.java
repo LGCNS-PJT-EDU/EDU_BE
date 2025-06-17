@@ -1,8 +1,8 @@
-package com.education.takeit.kafka.recommand.consumer;
+package com.education.takeit.kafka.recommend.consumer;
 
 import com.education.takeit.kafka.common.slack.SlackNotifier;
-import com.education.takeit.kafka.recommand.dto.RecomFailDto;
-import com.education.takeit.kafka.recommand.service.RecomFailLogService;
+import com.education.takeit.kafka.recommend.dto.RecomFailDto;
+import com.education.takeit.kafka.recommend.service.RecomFailLogService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

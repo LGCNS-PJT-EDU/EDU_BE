@@ -4,7 +4,7 @@ import com.education.takeit.exam.service.ExamService;
 import com.education.takeit.global.client.AIClient;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
-import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import com.education.takeit.kafka.recommend.dto.RecomResultDto;
 import com.education.takeit.recommend.dto.UserContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import com.education.takeit.recommend.entity.UserContent;
