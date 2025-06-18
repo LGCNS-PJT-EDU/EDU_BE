@@ -199,6 +199,66 @@ public class RoadmapServiceTest {
   }
 
   @Test
+  @DisplayName("createRoadmap - BE 트랙 선택 시 defaultLocationSubjectId는 35")
+  void createRoadmap_BE기본위치확인() {
+    List<DiagnosisAnswerRequest> answers = List.of(new DiagnosisAnswerRequest(1L, "BE"));
+    when(subjectRepository.findBySubTypeAndSubEssential("BE", "Y")).thenReturn(List.of());
+
+    RoadmapSaveResDto result = roadmapService.createRoadmap(answers);
+
+    assertThat(result.userLocationSubjectId()).isEqualTo(35L);
+  }
+
+  @Test
+  @DisplayName("createRoadmap - 조건 분기 포함한 생성 (React + Java/Spring + Y)")
+  void createRoadmap_조건포함_분기확인() {
+    // Given
+    List<DiagnosisAnswerRequest> answers =
+        List.of(
+            new DiagnosisAnswerRequest(1L, "FE"), // 트랙
+            new DiagnosisAnswerRequest(5L, "React"), // React 과목들
+            new DiagnosisAnswerRequest(11L, "Java/Spring"), // 백엔드 분기
+            new DiagnosisAnswerRequest(14L, "Y"),
+            new DiagnosisAnswerRequest(15L, "Y"));
+
+    when(subjectRepository.findBySubTypeAndSubEssential("FE", "Y")).thenReturn(List.of());
+
+    // React 관련
+    when(subjectRepository.findById(10L))
+        .thenReturn(Optional.of(new Subject(10L, "React", "FE", "N", 1, "", null)));
+    when(subjectRepository.findById(11L))
+        .thenReturn(Optional.of(new Subject(11L, "Redux", "FE", "N", 2, "", null)));
+    when(subjectRepository.findById(12L))
+        .thenReturn(Optional.of(new Subject(12L, "Zustand", "FE", "N", 3, "", null)));
+    when(subjectRepository.findById(22L))
+        .thenReturn(Optional.of(new Subject(22L, "Next.js", "FE", "N", 4, "", null)));
+    when(subjectRepository.findById(23L))
+        .thenReturn(Optional.of(new Subject(23L, "React 랜더링", "FE", "N", 5, "", null)));
+    when(subjectRepository.findById(24L))
+        .thenReturn(Optional.of(new Subject(24L, "React Query", "FE", "N", 6, "", null)));
+
+    // Java/Spring 관련
+    when(subjectRepository.findById(39L))
+        .thenReturn(Optional.of(new Subject(39L, "Java", "BE", "N", 7, "", null)));
+    when(subjectRepository.findById(46L))
+        .thenReturn(Optional.of(new Subject(46L, "Spring", "BE", "N", 8, "", null)));
+
+    // Q14: flag == 1 → 51L
+    when(subjectRepository.findById(51L))
+        .thenReturn(Optional.of(new Subject(51L, "추가Q14", "BE", "N", 9, "", null)));
+    // Q15: flag == 1 → 53L
+    when(subjectRepository.findById(53L))
+        .thenReturn(Optional.of(new Subject(53L, "추가Q15", "BE", "N", 10, "", null)));
+
+    // When
+    RoadmapSaveResDto result = roadmapService.createRoadmap(answers);
+
+    // Then
+    List<Long> actualIds = result.subjects().stream().map(SubjectDto::subjectId).toList();
+    assertThat(actualIds).contains(10L, 11L, 12L, 22L, 23L, 24L, 39L, 46L, 51L, 53L);
+  }
+
+  @Test
   @DisplayName("로그인 사용자는 기존 로드맵이 있으면 삭제하고 새로운 로드맵을 저장한다")
   void 회원의_진단_결과로_로드맵_생성() {
     // given
@@ -978,5 +1038,181 @@ public class RoadmapServiceTest {
 
     assertThatThrownBy(() -> injectedRoadmapTransactionalService.deleteRoadmap(userId))
         .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  @DisplayName("saveRoadmap - 이미 로드맵이 존재할 경우 예외 발생")
+  void saveRoadmap_이미_존재() {
+    Long userId = 1L;
+    when(roadmapManagementRepository.findByUserId(userId))
+        .thenReturn(mock(RoadmapManagement.class));
+
+    assertThatThrownBy(
+            () -> roadmapService.saveRoadmap(userId, "이미 존재", List.of(1L, 2L), List.of()))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(StatusCode.ALREADY_EXIST_ROADMAP.getMessage());
+  }
+
+  @Test
+  @DisplayName("saveRoadmap - 존재하지 않는 사용자 예외 발생")
+  void saveRoadmap_유저없음() {
+
+    Long userId = 1L;
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+    when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> roadmapService.saveRoadmap(userId, "로드맵", List.of(1L, 2L), List.of()))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(StatusCode.USER_NOT_FOUND.getMessage());
+  }
+
+  @Test
+  @DisplayName("saveRoadmap - 진단 응답으로 사용자 정보 업데이트")
+  void saveRoadmap_공통질문응답() {
+    // Given
+    Long userId = 1L;
+    List<DiagnosisAnswerRequest> answers =
+        List.of(
+            new DiagnosisAnswerRequest(2L, "1"), // LectureAmount
+            new DiagnosisAnswerRequest(3L, "2"), // PriceLevel
+            new DiagnosisAnswerRequest(4L, "Y") // likesBooks = true
+            );
+    Subject subject = new Subject(1L, "HTML", "FE", "Y", 1, "", null);
+
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+
+    User user = mock(User.class);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findAllById(List.of(1L))).thenReturn(List.of(subject));
+
+    // When
+    roadmapService.saveRoadmap(userId, "테스트용 로드맵", List.of(1L), answers);
+
+    // Then
+    verify(user)
+        .updatePreferences(eq(LectureAmount.values()[1]), eq(PriceLevel.values()[2]), eq(true));
+    verify(roadmapRepository).saveAll(any());
+  }
+
+  @Test
+  @DisplayName("saveRoadmap - subjectId에 해당하는 과목이 없으면 예외 발생")
+  void saveRoadmap_과목없음() {
+    Long userId = 1L;
+    DiagnosisAnswerRequest dummyAnswer = new DiagnosisAnswerRequest(2L, "0");
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(null);
+
+    User user = mock(User.class);
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(subjectRepository.findAllById(List.of(99L))).thenReturn(List.of()); // 과목 존재하지 않으면 빈 리스트 반환
+
+    assertThatThrownBy(
+            () -> roadmapService.saveRoadmap(userId, "로드맵", List.of(99L), List.of(dummyAnswer)))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(StatusCode.SUBJECT_NOT_FOUND.getMessage());
+  }
+
+  @Test
+  @DisplayName("saveGuestRoadmap - Redis에 subject/answers 없을 때 예외 발생")
+  void saveGuestRoadmap_redis데이터_없음() {
+    String uuid = "guest-uuid";
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":subjects")).thenReturn(null);
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":answers")).thenReturn(null);
+
+    assertThatThrownBy(() -> roadmapService.saveGuestRoadmap(uuid, 1L))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(StatusCode.ROADMAP_NOT_FOUND.getMessage());
+  }
+
+  @Test
+  @DisplayName("saveGuestRoadmap - answers 역직렬화 실패 시 예외 발생")
+  void saveGuestRoadmap_역직렬화_실패() throws JsonProcessingException {
+    String uuid = "guest-uuid";
+    String subjects = "1,2";
+    String invalidJson = "invalid-json";
+
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":subjects")).thenReturn(subjects);
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":answers")).thenReturn(invalidJson);
+
+    when(objectMapper.readValue(eq(invalidJson), any(TypeReference.class)))
+        .thenThrow(JsonProcessingException.class);
+
+    assertThatThrownBy(() -> roadmapService.saveGuestRoadmap(uuid, 1L))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("answers 역직렬화 실패");
+  }
+
+  @Test
+  @DisplayName("saveGuestRoadmap - 정상적으로 게스트 로드맵 저장 성공")
+  void saveGuestRoadmap_정상() throws JsonProcessingException {
+    // Given
+    String uuid = "guest-uuid";
+    Long userId = 100L;
+
+    String redisSubjects = "1,2";
+    String redisAnswersJson =
+        """
+        [
+            {"questionId":2,"answer":"1"},
+            {"questionId":3,"answer":"2"},
+            {"questionId":4,"answer":"Y"}
+        ]
+        """;
+
+    List<Long> subjectIds = List.of(1L, 2L);
+    List<DiagnosisAnswerRequest> parsedAnswers =
+        List.of(
+            new DiagnosisAnswerRequest(2L, "1"),
+            new DiagnosisAnswerRequest(3L, "2"),
+            new DiagnosisAnswerRequest(4L, "Y"));
+
+    Subject subject1 = new Subject(1L, "HTML", "FE", "Y", 1, "", null);
+    Subject subject2 = new Subject(1L, "HTML", "FE", "Y", 1, "", null);
+
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":subjects")).thenReturn(redisSubjects);
+    when(redisTemplate.opsForValue().get("guest:" + uuid + ":answers"))
+        .thenReturn(redisAnswersJson);
+    when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(parsedAnswers);
+    when(subjectRepository.findAllById(subjectIds)).thenReturn(List.of(subject1, subject2));
+
+    doNothing().when(roadmapService).saveRoadmap(userId, "게스트 로드맵", subjectIds, parsedAnswers);
+
+    // When
+    RoadmapSaveResDto result = roadmapService.saveGuestRoadmap(uuid, userId);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.subjects()).hasSize(2);
+    assertThat(result.uuid()).isEqualTo("uuid로 로드맵 생성 완료");
+
+    verify(redisTemplate).delete("guest:" + uuid + ":subjects");
+    verify(redisTemplate).delete("guest:" + uuid + ":answers");
+  }
+
+  @Test
+  @DisplayName("updateRoadmap - 기존 과목 순서만 업데이트")
+  void updateRoadmap_기존과목순서_업데이트() {
+    Long userId = 1L;
+    RoadmapManagement roadmapManagement =
+        RoadmapManagement.builder().roadmapManagementId(200L).userId(userId).build();
+
+    Subject subject1 = new Subject(1L, "HTML", "FE", "Y", 1, "", null);
+
+    Roadmap existing =
+        Roadmap.builder()
+            .roadmapManagement(roadmapManagement)
+            .subject(subject1)
+            .orderSub(1)
+            .build();
+
+    when(roadmapManagementRepository.findByUserId(userId)).thenReturn(roadmapManagement);
+    when(roadmapRepository.findByRoadmapManagement_RoadmapManagementId(200L))
+        .thenReturn(List.of(existing));
+
+    List<SubjectDto> updateSubjects = List.of(new SubjectDto(1L, "HTML", 5));
+
+    roadmapService.updateRoadmap(userId, updateSubjects);
+
+    assertThat(existing.getOrderSub()).isEqualTo(5); // 순서 변경 확인
+    verify(roadmapRepository).saveAll(any());
   }
 }
