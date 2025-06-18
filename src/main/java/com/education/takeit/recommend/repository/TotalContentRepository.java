@@ -3,16 +3,14 @@ package com.education.takeit.recommend.repository;
 import com.education.takeit.admin.dto.AdminContentResDto;
 import com.education.takeit.recommend.entity.TotalContent;
 import io.lettuce.core.dynamic.annotation.Param;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-
 public interface TotalContentRepository extends JpaRepository<TotalContent, Long> {
 
-  @Query("""
+  @Query(
+      """
   SELECT new com.education.takeit.admin.dto.AdminContentResDto(
       tc.totalContentId,
       tc.contentTitle,
@@ -30,7 +28,5 @@ public interface TotalContentRepository extends JpaRepository<TotalContent, Long
   GROUP BY tc.totalContentId, tc.contentTitle, tc.contentUrl, tc.contentType, tc.contentPlatform, s.subNm
 """)
   List<AdminContentResDto> findAllWithoutSort(
-          @Param("title") String title,
-          @Param("subName") String subName);
-
+      @Param("title") String title, @Param("subName") String subName);
 }

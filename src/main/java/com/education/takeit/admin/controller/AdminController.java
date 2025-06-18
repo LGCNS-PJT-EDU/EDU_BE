@@ -49,11 +49,11 @@ public class AdminController {
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/exams")
   public ResponseEntity<Message<Page<AdminExamResDto>>> getExams(
-          @RequestParam(required = false) String subName,
-          @RequestParam(required = false) String examContent,
-          @RequestParam(defaultValue = "id,asc") String sort,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(required = false) String subName,
+      @RequestParam(required = false) String examContent,
+      @RequestParam(defaultValue = "id,asc") String sort,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
 
     Page<AdminExamResDto> exams = adminService.getExams(subName, examContent, sort, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, exams));
@@ -62,14 +62,14 @@ public class AdminController {
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/contents")
   public ResponseEntity<Message<Page<AdminContentResDto>>> getContentList(
-          @RequestParam(required = false) String title,
-          @RequestParam(required = false) String subName,
-          @RequestParam(defaultValue = "id,asc") String sort,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(required = false) String title,
+      @RequestParam(required = false) String subName,
+      @RequestParam(defaultValue = "id,asc") String sort,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
 
-    Page<AdminContentResDto> contents = adminService.getContentList(title, subName, sort, page, size);
+    Page<AdminContentResDto> contents =
+        adminService.getContentList(title, subName, sort, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, contents));
   }
-
 }
