@@ -39,10 +39,10 @@ public class AdminController {
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Message<Page<AdminSubjectResDto>>> getSubjects(
       @RequestParam(required = false) String keyword,
-      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "id") String sort,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    Page<AdminSubjectResDto> subjects = adminService.getSubjects(keyword, sortBy, page, size);
+    Page<AdminSubjectResDto> subjects = adminService.getSubjects(keyword, sort, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, subjects));
   }
 
@@ -51,10 +51,11 @@ public class AdminController {
   public ResponseEntity<Message<Page<AdminExamResDto>>> getExams(
       @RequestParam(required = false) String subName,
       @RequestParam(required = false) String examContent,
-      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "id,asc") String sort,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    Page<AdminExamResDto> exams = adminService.getExams(subName, examContent, sortBy, page, size);
+
+    Page<AdminExamResDto> exams = adminService.getExams(subName, examContent, sort, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, exams));
   }
 
@@ -63,11 +64,12 @@ public class AdminController {
   public ResponseEntity<Message<Page<AdminContentResDto>>> getContentList(
       @RequestParam(required = false) String title,
       @RequestParam(required = false) String subName,
-      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "id,asc") String sort,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
+
     Page<AdminContentResDto> contents =
-        adminService.getContentList(title, subName, sortBy, page, size);
+        adminService.getContentList(title, subName, sort, page, size);
     return ResponseEntity.ok(new Message<>(StatusCode.OK, contents));
   }
 }
