@@ -38,7 +38,6 @@ Spring Boot 기반 RESTful API와 JWT 인증, AWS 배포 환경을 구성합니�
 | DB               | MySQL, Redis                                         |
 | Build Tool       | Gradle                                               |
 | Auth             | JWT + OAuth2 (Google, Naver, Kakao)                  |
-| AI Integration   | OpenAI API (GPT)                                     |
 | Infra            | AWS EC2, RDS, S3, CloudFront                         |
 | Monitoring       | Spring Actuator, Prometheus, Grafana                 |
 | CI/CD            | GitHub Actions, Docker, ArgoCD, Helm                 |
