@@ -31,19 +31,49 @@ Spring Boot 기반 RESTful API와 JWT 인증, AWS 배포 환경을 구성합니�
 
 ## 🛠 기술 스택
 
-| 분류             | 사용 기술                                             |
-| ---------------- | ---------------------------------------------------- |
-| Language         | Java 21                                              |
-| Framework        | Spring Boot 3.2, Spring Security, Spring Data JPA    |
-| DB               | MySQL, Redis                                         |
-| Build Tool       | Gradle                                               |
-| Auth             | JWT + OAuth2 (Google, Naver, Kakao)                  |
-| Infra            | AWS EC2, RDS, S3, CloudFront                         |
-| Monitoring       | Spring Actuator, Prometheus, Grafana                 |
-| CI/CD            | GitHub Actions, Docker, ArgoCD, Helm                 |
-| Docs             | Swagger (springdoc-openapi)                          |
+### 🔹 언어 & 빌드
+![Java](https://img.shields.io/badge/Java%2021-007396?style=flat&logo=java&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white)
 
----
+### ⚙️ 프레임워크 & 라이브러리
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203.2-6DB33F?style=flat&logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat)
+![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-21759B?style=flat)
+
+### 🛢 데이터베이스 & 캐시
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white)
+
+### 🔐 인증 및 보안
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white)
+![OAuth2](https://img.shields.io/badge/OAuth2-3C8CFF?style=flat&logo=oauth&logoColor=white)
+![Google](https://img.shields.io/badge/Google-4285F4?style=flat&logo=google&logoColor=white)
+![Kakao](https://img.shields.io/badge/Kakao-FFCD00?style=flat)
+![Naver](https://img.shields.io/badge/Naver-03C75A?style=flat)
+
+### ☁️ 인프라 & 배포
+![AWS EC2](https://img.shields.io/badge/AWS%20EC2-FF9900?style=flat&logo=amazonaws&logoColor=white)
+![RDS](https://img.shields.io/badge/AWS%20RDS-527FFF?style=flat)
+![S3](https://img.shields.io/badge/AWS%20S3-569A31?style=flat)
+![CloudFront](https://img.shields.io/badge/CloudFront-FF9933?style=flat)
+
+### 📈 모니터링
+![Spring Actuator](https://img.shields.io/badge/Spring%20Actuator-6DB33F?style=flat)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat&logo=grafana&logoColor=white)
+
+### 🚀 CI/CD
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-FE4C61?style=flat&logo=argo&logoColor=white)
+![Helm](https://img.shields.io/badge/Helm-277A9F?style=flat&logo=helm&logoColor=white)
+
+### 📄 문서화
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat&logo=swagger&logoColor=black)
+![springdoc-openapi](https://img.shields.io/badge/springdoc--openapi-6DB33F?style=flat)
+
+
+<br/>
 
 ## 📁 디렉토리 구조
 ```
