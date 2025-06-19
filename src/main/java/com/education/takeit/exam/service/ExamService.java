@@ -9,8 +9,8 @@ import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.global.exception.CustomException;
 import com.education.takeit.kafka.feedback.dto.FeedbackRequestDto;
 import com.education.takeit.kafka.feedback.producer.FeedbackKafkaProducer;
-import com.education.takeit.kafka.recommand.dto.RecomRequestDto;
-import com.education.takeit.kafka.recommand.producer.RecomKafkaProducer;
+import com.education.takeit.kafka.recommend.dto.RecomRequestDto;
+import com.education.takeit.kafka.recommend.producer.RecomKafkaProducer;
 import com.education.takeit.roadmap.entity.Roadmap;
 import com.education.takeit.roadmap.entity.Subject;
 import com.education.takeit.roadmap.repository.RoadmapRepository;
@@ -205,7 +205,7 @@ public class ExamService {
    * @param answers
    * @return
    */
-  private int calculatePreLevel(List<ExamAnswerDto> answers) {
+  int calculatePreLevel(List<ExamAnswerDto> answers) {
     int score =
         answers.stream()
             .mapToInt(a -> examLevelCalculator.calculateScoreByDifficulty(a, false))
@@ -225,7 +225,7 @@ public class ExamService {
    * @param answers
    * @return
    */
-  private int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
+  int calculatePostLevel(Roadmap roadmap, List<ExamAnswerDto> answers) {
     int scorePercent = examLevelCalculator.calculateScorePercent(answers);
     int levelDelta = examLevelCalculator.calculateLevelDelta(scorePercent);
     return examLevelCalculator.calculateNewLevel(roadmap.getLevel(), levelDelta);

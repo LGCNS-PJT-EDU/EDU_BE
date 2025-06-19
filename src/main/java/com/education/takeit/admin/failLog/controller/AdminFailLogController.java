@@ -6,7 +6,7 @@ import com.education.takeit.admin.failLog.dto.RecomFailLogDto;
 import com.education.takeit.global.dto.Message;
 import com.education.takeit.global.dto.StatusCode;
 import com.education.takeit.kafka.feedback.service.FeedbackFailLogService;
-import com.education.takeit.kafka.recommand.service.RecomFailLogService;
+import com.education.takeit.kafka.recommend.service.RecomFailLogService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +34,7 @@ public class AdminFailLogController {
    * @param pageable
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/feedback")
   public ResponseEntity<Message<Page<FeedbackFailLogDto>>> getFeedbackFailLogs(
       @RequestParam(required = false) String nickname,
@@ -54,6 +56,7 @@ public class AdminFailLogController {
    * @param pageable
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/recommend")
   public ResponseEntity<Message<Page<RecomFailLogDto>>> getRecomFailLogs(
       @RequestParam(required = false) String nickname,
@@ -71,6 +74,7 @@ public class AdminFailLogController {
    *
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/feedback/daily-counts")
   public ResponseEntity<Message<List<DailyLogCountDto>>> getFeedbackDailyCounts() {
     List<DailyLogCountDto> list = feedbackFailLogService.getDailyCounts();
@@ -82,6 +86,7 @@ public class AdminFailLogController {
    *
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/recommend/daily-counts")
   public ResponseEntity<Message<List<DailyLogCountDto>>> getRecommendDailyCounts() {
     List<DailyLogCountDto> list = recomFailLogService.getDailyCounts();
@@ -94,6 +99,7 @@ public class AdminFailLogController {
    * @param id
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/feedback/{id}/retry")
   public ResponseEntity<Message<Void>> retryFeedbackLog(@PathVariable Long id) {
     feedbackFailLogService.retryFailLog(id);
@@ -106,6 +112,7 @@ public class AdminFailLogController {
    * @param id
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/recommend/{id}/retry")
   public ResponseEntity<Message<Void>> retryRecommendLog(@PathVariable Long id) {
     recomFailLogService.retryFailLog(id);

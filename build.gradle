@@ -133,7 +133,7 @@ sonarqube {
 
 def jacocoIncludePatterns = [
         '**/diagnosis/service/**/*.class',
-        '**/exam/service/**/*.class',
+        '**/exam/service/**/*Service.class',
         '**/feedback/service/**/*.class',
         '**/interview/service/**/*.class',
         '**/auth/service/**/*.class',

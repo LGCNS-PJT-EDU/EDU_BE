@@ -8,6 +8,7 @@ import com.education.takeit.oauth.dto.OAuthLoginRequest;
 import com.education.takeit.oauth.dto.OAuthTokenResponse;
 import com.education.takeit.user.dto.UserSigninResDto;
 import com.education.takeit.user.entity.LoginType;
+import com.education.takeit.user.entity.Role;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -50,6 +51,8 @@ public class GoogleOAuthService implements OAuthService {
                             .email(userInfo.get("email"))
                             .nickname(userInfo.get("nickname"))
                             .loginType(loginType)
+                            .privacyStatus(false)
+                            .role(Role.USER)
                             .build()));
 
     return jwtUtils.generateTokens(user.getRole(), user.getUserId(), user.getPrivacyStatus());

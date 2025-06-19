@@ -1,6 +1,6 @@
-package com.education.takeit.kafka.recommand.consumer;
+package com.education.takeit.kafka.recommend.consumer;
 
-import com.education.takeit.kafka.recommand.dto.RecomResultDto;
+import com.education.takeit.kafka.recommend.dto.RecomResultDto;
 import com.education.takeit.recommend.service.RecommendService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
