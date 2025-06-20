@@ -13,11 +13,12 @@ import com.education.takeit.roadmap.repository.SubjectRepository;
 import com.education.takeit.user.entity.User;
 import com.education.takeit.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -71,21 +72,69 @@ public class InterviewService {
         .toList();
   }
 
+  //  public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
+  //      Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
+  //
+  //    // 1. 트랜잭션 안에서 필요한 데이터 미리 조회
+  //    User user = getUser(userId);
+  //    Map<Long, Interview> interviewMap = getInterviews(interviewAllReplyReqDto.answers());
+  //
+  //    // 2. 트랜잭션 종료 → 이제 느린 작업 가능
+  //    List<InterviewFeedbackResDto> feedbacks =
+  //        aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto.answers());
+  //
+  //    // 3. 응답 결과 → 트랜잭션 시작 후 저장
+  //    saveReplies(user, interviewMap, interviewAllReplyReqDto, feedbacks);
+  //
+  //    return feedbacks;
+  //  }
+  @Transactional
   public List<InterviewFeedbackResDto> saveReplyAndRequestFeedback(
       Long userId, InterviewAllReplyReqDto interviewAllReplyReqDto) {
 
-    // 1. 트랜잭션 안에서 필요한 데이터 미리 조회
-    User user = getUser(userId);
-    Map<Long, Interview> interviewMap = getInterviews(interviewAllReplyReqDto.answers());
+    try {
+      User user =
+          userRepository
+              .findById(userId)
+              .orElseThrow(() -> new CustomException(StatusCode.USER_NOT_FOUND));
 
-    // 2. 트랜잭션 종료 → 이제 느린 작업 가능
-    List<InterviewFeedbackResDto> feedbacks =
-        aiClient.getInterviewFeedback(userId, interviewAllReplyReqDto.answers());
+      List<AiFeedbackReqDto> answers = interviewAllReplyReqDto.answers();
+      List<InterviewFeedbackResDto> feedbacks = aiClient.getInterviewFeedback(userId, answers);
+      System.out.println(feedbacks);
 
-    // 3. 응답 결과 → 트랜잭션 시작 후 저장
-    saveReplies(user, interviewMap, interviewAllReplyReqDto, feedbacks);
+      List<UserInterviewReply> replies = new ArrayList<>();
 
-    return feedbacks;
+      for (int i = 0; i < answers.size(); i++) {
+        AiFeedbackReqDto dto = answers.get(i);
+        InterviewFeedbackResDto feedback = feedbacks.get(i);
+
+        Interview interview =
+            interviewRepository
+                .findById(dto.interviewId())
+                .orElseThrow(() -> new CustomException(StatusCode.INTERVIEW_NOT_FOUND));
+
+        UserInterviewReply reply =
+            UserInterviewReply.builder()
+                .user(user)
+                .interview(interview)
+                .userReply(dto.userReply())
+                .nth(interviewAllReplyReqDto.nth())
+                .aiFeedback(feedback.comment())
+                .modelAnswer(feedback.modelAnswer())
+                .summary(feedback.conceptSummary())
+                .keyword(String.join(",", feedback.recommendKeywords()))
+                .build();
+
+        replies.add(reply);
+      }
+      replyRepository.saveAll(replies);
+
+      return feedbacks;
+
+    } catch (Exception e) {
+      log.warn("면접 피드백 요청 실패 - userId: {}, reason: {}", userId, e.getMessage(), e);
+      return Collections.emptyList();
+    }
   }
 
   public InterviewAllSubIdResDto getInterviewAllSubId(Long userId) {
