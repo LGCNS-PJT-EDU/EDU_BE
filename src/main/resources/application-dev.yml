@@ -9,13 +9,13 @@ spring:
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
 
-#    hikari:
-#      maximum-pool-size: 100      # 최대 커넥션 수
-#      minimum-idle: 100           # 최소 유휴 커넥션 수
-#      idle-timeout: 90000         # 커넥션이 유휴 상태로 유지되는 최대 시간 (밀리초)
-#      max-lifetime: 1800000       # 커넥션 생존 시간
-#      connection-timeout: 90000   # 커넥션 풀에서 커넥션을 얻기까지 기다리는 최대 시간
-#      validation-timeout: 5000    # 커넥션 유효성 검사 타임아웃
+    hikari:
+      maximum-pool-size: 100      # 최대 커넥션 수
+      minimum-idle: 100           # 최소 유휴 커넥션 수
+      idle-timeout: 90000         # 커넥션이 유휴 상태로 유지되는 최대 시간 (밀리초)
+      max-lifetime: 1800000       # 커넥션 생존 시간
+      connection-timeout: 90000   # 커넥션 풀에서 커넥션을 얻기까지 기다리는 최대 시간
+      validation-timeout: 5000    # 커넥션 유효성 검사 타임아웃
 
   jpa:
     hibernate:
